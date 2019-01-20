@@ -1,0 +1,16 @@
+[
+{
+  "modid": "storagetech",
+  "name": "Storage Tech",
+  "description": "Storage Tech Mod",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://javapower.fr/",
+  "updateUrl": "",
+  "authorList": ["java_power"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

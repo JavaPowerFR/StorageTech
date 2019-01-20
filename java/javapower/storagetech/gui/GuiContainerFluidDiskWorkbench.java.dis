@@ -1,0 +1,200 @@
+package javapower.storagetech.gui;
+
+import java.io.IOException;
+
+import javapower.storagetech.container.ContainerFluidDiskWorkbench;
+import javapower.storagetech.core.StorageTech;
+import javapower.storagetech.proxy.ResourceLocationRegister;
+import javapower.storagetech.tileentity.TileEntityFluidDiskWorkbench;
+import javapower.storagetech.util.IGUITileSync;
+import javapower.storagetech.util.NetworkUtils;
+import javapower.storagetech.util.Tools;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+
+public class GuiContainerFluidDiskWorkbench extends GuiContainer implements IGUITileSync
+{
+	long memory = 0l;
+	boolean init = false;
+	int disk_size = 1000;
+	int disk_maxsize = 0;
+	GuiTextField textField_size;
+	GuiButton button_create = new GuiButton(1, 28, 17, 40, 20, "Create");
+	byte slot = -1;
+	TileEntityFluidDiskWorkbench tileentity;
+	
+	public GuiContainerFluidDiskWorkbench(TileEntityFluidDiskWorkbench tile, EntityPlayer player)
+	{
+		super(new ContainerFluidDiskWorkbench(tile, player));
+		tileentity = tile;
+		
+		xSize = 176;
+		ySize = 189;
+		NetworkUtils.sendToServerPlayerAsOpenGUI(tile, this);
+	}
+	
+	@Override
+	public void initGui()
+	{
+		super.initGui();
+		if(!init)
+		{
+			init = true;
+			textField_size = new GuiTextField(0, fontRenderer, 28, 17, 70, 20);
+			textField_size.setMaxStringLength(10);
+			textField_size.setText(""+disk_size);
+		}
+		
+		buttonList.clear();
+		buttonList.add(button_create);
+	}
+
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
+	{
+		mc.renderEngine.bindTexture(ResourceLocationRegister.gui_fdiskwb);
+		
+		int x = (width - xSize) /2;
+        int y = (height - ySize) /2;
+        
+        textField_size.x = x + 28;
+        textField_size.y = y + 57;
+        
+		button_create.x = x + 100;
+		button_create.y = y + 57;
+		
+        this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+        
+        this.drawString(fontRenderer, "available space: ", x + 28, y + 17, 0xffffff);
+        this.drawString(fontRenderer, Tools.longFormatToString(memory)+" VFT", x + 28, y + 27, 0xffffff);
+        this.drawString(fontRenderer, "disk size in VFT:", x + 28, y + 47, 0xffffff);
+        
+        textField_size.drawTextBox();
+        
+        this.drawString(fontRenderer, "VFT: Virtual Fluid Tank", x + 34, y + 87, 0xffffff);
+        this.drawString(fontRenderer, "1 VFT = for 1 fluid", x + 40, y + 97, 0xffffff);
+        
+        if(slot == 0)this.drawString(fontRenderer, "insert fluid storage part", x + 5, y + 4, 0xffffff);
+        else if(slot == 1)this.drawString(fontRenderer, "insert storage housing", x + 5, y + 4, 0xffffff);
+	}
+	
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks)
+	{
+		this.drawDefaultBackground();
+		super.drawScreen(mouseX, mouseY, partialTicks);
+		this.renderHoveredToolTip(mouseX, mouseY);
+	}
+	
+	@Override
+	public void updateScreen()
+	{
+		super.updateScreen();
+		textField_size.updateCursorCounter();
+		Slot s = getSlotUnderMouse();
+		if(s != null && s.getStack().isEmpty())
+		{
+			if(s.slotNumber == 36)//storage part
+			{
+				slot = 0;
+			}
+			else if(s.slotNumber == 37)//storage Housing
+			{
+				slot = 1;
+			}
+			else
+			{
+				slot = -1;
+			}
+		}
+		else
+			slot = -1;
+	}
+	
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+	{
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		textField_size.mouseClicked(mouseX, mouseY, mouseButton);
+		updateTFInteger();
+	}
+	
+	@Override
+	protected void keyTyped(char typedChar, int keyCode) throws IOException
+	{
+		super.keyTyped(typedChar, keyCode);
+		
+		if("0123456789".indexOf(typedChar) != -1 || keyCode == 14 || keyCode == 203 || keyCode == 205)
+		{
+			textField_size.textboxKeyTyped(typedChar, keyCode);
+			updateTFInteger();
+		}
+	}
+	
+	@Override
+	protected void actionPerformed(GuiButton button) throws IOException
+	{
+		if(button.id == 1)
+		{
+			if(disk_size < 1)
+			{
+				disk_size = 1;
+				textField_size.setText(""+disk_size);
+			}
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setInteger("createDisk", disk_size);
+			sendInfo(nbt);
+		}
+	}
+
+	@Override
+	public Class<? extends TileEntity> tileEntityLink()
+	{
+		return TileEntityFluidDiskWorkbench.class;
+	}
+
+	@Override
+	public void reciveDataFromServer(NBTTagCompound nbt)
+	{
+		if(nbt.hasKey("memory"))
+			memory = nbt.getLong("memory");
+		
+		if(nbt.hasKey("max"))
+			disk_maxsize = nbt.getInteger("max");
+	}
+	
+	private void updateTFInteger()
+	{
+		String text = textField_size.getText();
+		boolean invalid = false;
+		try
+		{
+			double disk_size_d = Double.parseDouble(text);
+			if(disk_size_d > disk_maxsize)
+				invalid = true;
+			else
+				disk_size = (int) disk_size_d;
+		}
+		catch (Exception e)
+		{
+			
+		}
+		
+		if(invalid)
+		{
+			disk_size = disk_maxsize;
+			textField_size.setText(""+disk_size);
+		}
+	}
+	
+	public void sendInfo(NBTTagCompound nbt)
+	{
+		NetworkUtils.sendToServerTheData(tileentity, this, nbt);
+	}
+
+}

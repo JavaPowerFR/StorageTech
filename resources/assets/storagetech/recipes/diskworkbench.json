@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "PCP",
+    "HSH"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:heavy_weighted_pressure_plate"
+    },
+    "C": {
+      "item": "minecraft:crafting_table"
+    },
+    "P": {
+      "item": "refinedstorage:processor",
+      "data": 5
+    },
+    "S": {
+      "item": "refinedstorage:storage_part",
+      "data": 3
+    },
+	"H": {
+      "item": "refinedstorage:storage_housing"
+    }
+  },
+  "result": {
+    "item": "storagetech:diskworkbench"
+  }
+}

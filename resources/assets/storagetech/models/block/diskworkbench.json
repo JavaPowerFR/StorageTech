@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "particle": "storagetech:blocks/diskwb_front",
+        "down": "storagetech:blocks/diskwb_down",
+        "up": "storagetech:blocks/diskwb_up",
+        "north": "storagetech:blocks/diskwb_front",
+        "east": "storagetech:blocks/diskwb_front",
+        "south": "storagetech:blocks/diskwb_front",
+        "west": "storagetech:blocks/diskwb_front"
+    }
+}

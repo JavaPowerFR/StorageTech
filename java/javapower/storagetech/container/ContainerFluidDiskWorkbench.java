@@ -2,7 +2,6 @@ package javapower.storagetech.container;
 
 import com.raoulvdberge.refinedstorage.RSItems;
 
-import javapower.storagetech.item.STItems;
 import javapower.storagetech.slot.IFilterStack;
 import javapower.storagetech.slot.SlotFiltred;
 import javapower.storagetech.slot.SlotOutput;
@@ -65,6 +64,28 @@ public class ContainerFluidDiskWorkbench extends Container
 		}));
         
         this.addSlotToContainer(new SlotOutput(block_inv, 2, 148, 66));
+        
+        for(int ids = 0; ids < 4; ++ids)
+        {
+        	this.addSlotToContainer(new SlotFiltred(block_inv, 3+ids, -17, 16+18*ids, new IFilterStack()
+	        {
+				@Override
+				public boolean canPutThisStack(ItemStack stack)
+				{
+					if(stack != null && !stack.isEmpty())
+						return stack.isItemEqual(new ItemStack(RSItems.UPGRADE, 1, RSItems.UPGRADE.TYPE_SPEED));
+					
+					return false;
+				}
+			})
+	        {
+	        	@Override
+	        	public int getSlotStackLimit()
+	        	{
+	        		return 1;
+	        	}
+	        });
+        }
 	}
 	
 	 public void addListener(IContainerListener listener)
@@ -77,7 +98,7 @@ public class ContainerFluidDiskWorkbench extends Container
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
 	{
 		 ItemStack from = getSlot(index).getStack();
-		 if(index >= 36 && index <= 38)
+		 if(index >= 36 && index <= 42)
 		 {
 			 for(int id_slot = 0; id_slot <= 35; ++id_slot)
 			 {
@@ -165,12 +186,6 @@ public class ContainerFluidDiskWorkbench extends Container
 	public boolean canInteractWith(EntityPlayer playerIn)
 	{
 		return true;
-	}
-	
-	@Override
-	public void putStackInSlot(int slotID, ItemStack stack)
-	{
-		super.putStackInSlot(slotID, stack);
 	}
 
 }

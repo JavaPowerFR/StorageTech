@@ -43,6 +43,7 @@ public class GuiContainerFluidDiskWorkbench extends GuiContainer implements IGUI
 	TileEntityFluidDiskWorkbench tileentity;
 	
 	private String[] i18nBuffer;
+	//private byte update_mouse = 0;
 	
 	public GuiContainerFluidDiskWorkbench(TileEntityFluidDiskWorkbench tile, EntityPlayer player)
 	{
@@ -53,9 +54,9 @@ public class GuiContainerFluidDiskWorkbench extends GuiContainer implements IGUI
 		ySize = 189;
 		NetworkUtils.sendToServerPlayerAsOpenGUI(tile, this);
 		
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setByte("up", (byte) 1);
-		sendInfo(nbt);
+		//NBTTagCompound nbt = new NBTTagCompound();
+		//nbt.setByte("up", (byte) 1);
+		//sendInfo(nbt);
 		
 		i18nBuffer = new String[]
 				{
@@ -102,6 +103,7 @@ public class GuiContainerFluidDiskWorkbench extends GuiContainer implements IGUI
 		button_create.y = y + 57;
 		
         this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+        this.drawTexturedModalRect(x-24, y+10, 210, 0, 27, 82);
        
         if(!update)
 			return;
@@ -114,7 +116,7 @@ public class GuiContainerFluidDiskWorkbench extends GuiContainer implements IGUI
 	        {
 	        	int yw = (int)(59*(energy/(float)capacity));
 	        	//int yw = 59;
-	        	this.drawTexturedModalRect(x+176, y+20+(59-yw), 198, 59-yw, 22, yw);
+	        	this.drawTexturedModalRect(x+176, y+20+(59-yw), 198, 59-yw, 12, yw);
 	        }
 	        
 	        if(prosses && prossesTime > 0.0f)
@@ -196,6 +198,11 @@ public class GuiContainerFluidDiskWorkbench extends GuiContainer implements IGUI
 	@Override
 	public void updateScreen()
 	{
+		/*if(update_mouse < 4)
+		{
+			++update_mouse;
+			Mouse.setGrabbed(false);
+		}*/
 		if(!update)
 			return;
 		super.updateScreen();

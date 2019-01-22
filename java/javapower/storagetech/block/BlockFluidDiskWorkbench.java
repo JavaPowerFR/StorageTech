@@ -5,6 +5,7 @@ import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.gui.GuiContainerFluidDiskWorkbench;
 import javapower.storagetech.item.ItemMemory;
 import javapower.storagetech.tileentity.TileEntityFluidDiskWorkbench;
+import javapower.storagetech.util.GuiUtils;
 import javapower.storagetech.util.IGuiRegister;
 import javapower.storagetech.util.TileNamed;
 import net.minecraft.block.Block;
@@ -64,7 +65,7 @@ public class BlockFluidDiskWorkbench extends BBaseContainer implements IGuiRegis
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
 		if(!playerIn.isSneaking())
-			playerIn.openGui(StorageTech.MODID, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+			GuiUtils.openGui(playerIn, StorageTech.MODID, 0, worldIn, pos);
 		return true;
 	}
 	

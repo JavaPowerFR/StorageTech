@@ -2,7 +2,6 @@ package javapower.storagetech.message;
 
 import javapower.storagetech.util.BlockPosDim;
 import javapower.storagetech.util.ITileUpdate;
-import javapower.storagetech.util.NetworkUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -24,9 +23,9 @@ public class ServerHandlerTileSync implements IMessageHandler<NetworkTileSync, I
 				((ITileUpdate)the_te).addOrRemovePlayer(ctx.getServerHandler().player, true);
 				
 				NBTTagCompound nbt = new NBTTagCompound();
+				
 				((ITileUpdate)the_te).onPlayerOpenGUISendData(nbt, ctx.getServerHandler().player);
-				nbt.setByte("lkl", (byte)1);
-				//NetworkUtils.sendToPlayerTheData(the_te, nbt, ctx.getServerHandler().player);
+				
 				return new NetworkTileSync(new BlockPosDim(the_te.getPos(), the_te.getWorld().provider.getDimension()), nbt, new NBTTagCompound());
 			}
 		}
@@ -45,6 +44,19 @@ public class ServerHandlerTileSync implements IMessageHandler<NetworkTileSync, I
 			if(the_te instanceof ITileUpdate)
 			{
 				((ITileUpdate)the_te).addOrRemovePlayer(ctx.getServerHandler().player, false);
+			}
+		}
+		else if(lock_key == 4)
+		{
+			TileEntity the_te = message.env.GetTileEntity();
+			if(the_te instanceof ITileUpdate)
+			{
+				NBTTagCompound nbt = new NBTTagCompound();
+				NBTTagCompound nbt_key = new NBTTagCompound();
+				
+				((ITileUpdate)the_te).onPlayerOpenGUISendData(nbt, ctx.getServerHandler().player);
+				nbt_key.setInteger("lk", 4);
+				return new NetworkTileSync(new BlockPosDim(the_te.getPos(), the_te.getWorld().provider.getDimension()), nbt, nbt_key);
 			}
 		}
 		

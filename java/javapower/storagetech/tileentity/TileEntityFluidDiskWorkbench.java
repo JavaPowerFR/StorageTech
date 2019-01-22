@@ -10,6 +10,7 @@ import javapower.storagetech.eventio.IEventVoid;
 import javapower.storagetech.item.STItems;
 import javapower.storagetech.util.DiskUtils;
 import javapower.storagetech.util.EnergyBuffer;
+import javapower.storagetech.util.Tools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -24,7 +25,7 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 {
 	public long memory = 0l;
 	boolean update = true;
-	public NonNullList<ItemStack> block_inv_content = NonNullList.<ItemStack>withSize(3, ItemStack.EMPTY);
+	public NonNullList<ItemStack> block_inv_content = NonNullList.<ItemStack>withSize(7, ItemStack.EMPTY);
 	
 	public EnergyBuffer energyBuffer = new EnergyBuffer(1000000, 1000000, 0);
 	
@@ -78,11 +79,11 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 			{
 				if(time > Config.TimeCostPerSize)
 				{
-					if(energyBuffer.energy >= Config.EnergyCostPerSize)
+					if(energyBuffer.energy >= Config.EnergyCostPerSize+countUpgrade())
 					{
 						time = 0;
-						createProsses += Config.ProssesAdvancementSizeFluid;
-						energyBuffer.energy -= Config.EnergyCostPerSize;
+						createProsses += Config.ProssesAdvancementSizeFluid*countUpgrade();
+						energyBuffer.energy -= Config.EnergyCostPerSize+countUpgrade();
 						
 						update = true;
 						markDirty();
@@ -174,7 +175,7 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 	public void onPlayerOpenGUISendData(NBTTagCompound nbt, EntityPlayer player)
 	{
 		nbt.setLong("memory", memory);
-		nbt.setLong("max", Config.DiskFluidMaxSize);
+		nbt.setInteger("max", Math.min(Config.DiskMaxSize, Tools.limiteLTI(memory)));
 		
 		nbt.setBoolean("prosses", prosses);
 		nbt.setFloat("prossestime", (createProsses/(float)diskSize));
@@ -192,7 +193,7 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 			update = false;
 			NBTTagCompound nbt_update = new NBTTagCompound();
 			nbt_update.setLong("memory", memory);
-			nbt_update.setLong("max", Config.DiskFluidMaxSize);
+			nbt_update.setInteger("max", Math.min(Config.DiskMaxSize, Tools.limiteLTI(memory)));
 			
 			nbt_update.setBoolean("prosses", prosses);
 			nbt_update.setFloat("prossestime", (createProsses/(float)diskSize));
@@ -289,6 +290,21 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 		update_prosses();
 		super.update();
 	}
+	
+	public int countUpgrade()
+	{
+		int u = 1;
+		if(!block_inv_content.get(3).isEmpty())
+			u *= 4;
+		if(!block_inv_content.get(4).isEmpty())
+			u *= 4;
+		if(!block_inv_content.get(5).isEmpty())
+			u *= 4;
+		if(!block_inv_content.get(6).isEmpty())
+			u *= 4;
+		
+		return u;
+	}
 
 	@Override
 	public String getName()
@@ -372,7 +388,7 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 	@Override
 	public boolean isItemValidForSlot(int index, ItemStack stack)
 	{
-		if(index == 2)
+		if(index >= 2 && index <= 6)
 			return false;
 		else if(index == 0)
 		{
@@ -383,6 +399,7 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 		{
 			return stack.isItemEqualIgnoreDurability(new ItemStack(RSItems.STORAGE_HOUSING));
 		}
+		
 	}
 
 	@Override

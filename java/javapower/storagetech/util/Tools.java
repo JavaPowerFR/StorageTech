@@ -208,4 +208,9 @@ public class Tools
     			return;
     	list.add(element);
     }
+    
+    public static int limiteLTI(long v)
+    {
+    	return (int) Math.min(v, Integer.MIN_VALUE-1);
+    }
 }

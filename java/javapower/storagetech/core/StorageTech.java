@@ -20,7 +20,7 @@
 *		email: cyril@famille-genin.fr
 *		creation date: 04/08/2017 (dd/mm/yyyy)
 *		creat at: Montigny Le Bretonneux France
-*		last modification: 01/12/2018 (dd/mm/yyyy)
+*		last modification: 22/01/2019 (dd/mm/yyyy)
 *		comment: RAS
 *		
 ***************************************************/
@@ -43,7 +43,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 public class StorageTech
 {
     public static final String MODID = "storagetech";
-    public static final String VERSION = "4.3";
+    public static final String VERSION = "5.0";
     
     @Instance
 	public static StorageTech INSTANCE;

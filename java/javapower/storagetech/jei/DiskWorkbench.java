@@ -1,29 +1,27 @@
 package javapower.storagetech.jei;
 
+import javapower.storagetech.core.ResourceLocationRegister;
 import javapower.storagetech.core.StorageTech;
-import javapower.storagetech.proxy.ResourceLocationRegister;
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableStatic;
-import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.IRecipeWrapperFactory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 public class DiskWorkbench
 {
 	public static class Category implements IRecipeCategory<Wrapper>
 	{
-
-		public static final String UID = StorageTech.MODID + ".diskiwb";
-		private final String localizedName;
 		
-		private final IDrawableStatic background;
+		public static final ResourceLocation UID = new ResourceLocation(StorageTech.MODID,"diskiwb");
+		private String localizedName;
+		private IDrawableStatic background;
 		
 		public Category(IGuiHelper guiHelper)
 		{
@@ -32,9 +30,15 @@ public class DiskWorkbench
 		}
 
 		@Override
-		public String getUid()
+		public ResourceLocation getUid()
 		{
 			return UID;
+		}
+
+		@Override
+		public Class<? extends Wrapper> getRecipeClass()
+		{
+			return Wrapper.class;
 		}
 
 		@Override
@@ -44,31 +48,36 @@ public class DiskWorkbench
 		}
 
 		@Override
-		public String getModName()
-		{
-			return "Storage Tech";
-		}
-
-		@Override
 		public IDrawable getBackground()
 		{
 			return background;
 		}
 
 		@Override
-		public void setRecipe(IRecipeLayout recipeLayout, Wrapper recipeWrapper, IIngredients ingredients)
+		public IDrawable getIcon()
 		{
-			IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-			
-			guiItemStacks.init(0, true, 4, 0);
-			guiItemStacks.init(1, false, 4, 50);
-			guiItemStacks.set(ingredients);
+			return null;
+		}
 
+		@Override
+		public void setIngredients(Wrapper recipe, IIngredients ingredients)
+		{
+			ingredients.setInput(VanillaTypes.ITEM, recipe.input);
+			ingredients.setOutput(VanillaTypes.ITEM, recipe.output);
+		}
+
+		@Override
+		public void setRecipe(IRecipeLayout recipeLayout, Wrapper recipe, IIngredients ingredients)
+		{
+			IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
+			itemStacks.init(0, true, 4, 0);
+			itemStacks.init(1, false, 4, 50);
+			itemStacks.set(ingredients);
 		}
 		
 	}
 	
-	public static class Wrapper implements IRecipeWrapper
+	public static class Wrapper
 	{
 		private ItemStack input;
 		private ItemStack output;
@@ -79,26 +88,10 @@ public class DiskWorkbench
 			output = _output;
 		}
 		
-		@Override
 		public void getIngredients(IIngredients ing)
 		{
 			ing.setInput(VanillaTypes.ITEM, input);
 			ing.setOutput(VanillaTypes.ITEM, output);
 		}
-	}
-	
-	public static class WrapperFactory implements IRecipeWrapperFactory<IRecipePattern>
-	{
-		@Override
-		public IRecipeWrapper getRecipeWrapper(IRecipePattern pattern)
-		{
-			return new Wrapper(pattern.input(), pattern.output());
-		}
-	}
-	
-	public static interface IRecipePattern
-	{
-		public ItemStack input();
-		public ItemStack output();
 	}
 }

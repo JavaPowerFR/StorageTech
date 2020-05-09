@@ -1,18 +1,7 @@
 {
-  "forge_marker": 1,
-  "defaults":
-  {
-    "model": "storagetech:diskworkbench"
-  },
-  "variants":
-  {
-    "inventory":
-    [
-      {"transform": "forge:default-block"}
-    ],
-    "normal":
-	{
-		"model": "storagetech:diskworkbench"
-	}
+  "variants": {
+    "": {
+      "model": "storagetech:block/diskworkbench"
+    }
   }
 }

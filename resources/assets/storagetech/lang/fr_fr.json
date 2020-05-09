@@ -1,0 +1,40 @@
+{
+"_comment": items",
+"item.storagetech.customdisk": "Disque Personnalisé",
+"item.storagetech.fluidcustomdisk": "Disque De Liquide Personnalisé",
+"item.storagetech.memory": "Mémoire",
+"item.storagetech.fluidmemory": "Mémoire De Liquide",
+
+"_comment": "block",
+"block.storagetech.diskworkbench": "Atelier De Disque",
+"block.storagetech.fluiddiskworkbench": "Atelier De Disque Pour Liquide",
+
+"_comment": "gui",
+"itemGroup.storagetech": "Storage Tech",
+
+"_comment": "jei",
+"storagetech.jei.category.diskiwb": "Atelier De Disque",
+"storagetech.jei.category.diskiwbm": "Atelier De Disque",
+"storagetech.jei.category.diskfwb": "Atelier De Disque Pour Liquide",
+"storagetech.jei.category.diskfwbm": "Atelier De Disque Pour Liquide",
+
+"_comment": "gui",
+"storagetech.gui.create": "Créer",
+"storagetech.gui.creation": "Création",
+"storagetech.gui.availablespace": "espace disponible",
+"storagetech.gui.disksizein": "taille du disque en",
+"storagetech.gui.info": "info",
+"storagetech.gui.insertfluidstoragepart": "insérer une partie de stockage pour fluide",
+"storagetech.gui.insertstoragepart": "insérer une partie de stockage",
+"storagetech.gui.insertstoragehousing": "insérer le boîtier de stockage",
+"storagetech.gui.for": "pour",
+"storagetech.gui.cost": "Coût Energétique Total",
+
+"_comment": "Tooltip",
+"storagetech.tooltip.putvft": "Mettez-moi Dans L'Atelier De Disque Pour Liquide",
+"storagetech.tooltip.putvib": "Mettez-moi Dans L'Atelier De Disque",
+"storagetech.tooltip.novft": "Pas De VFT Stocké",
+"storagetech.tooltip.novib": "Pas De VIB Stocké",
+"storagetech.tooltip.memory": "Mémoire",
+"storagetech.tooltip.inprocess": "En cours",
+}

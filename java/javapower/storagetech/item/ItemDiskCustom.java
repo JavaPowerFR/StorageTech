@@ -7,89 +7,60 @@ import javax.annotation.Nullable;
 
 import com.raoulvdberge.refinedstorage.RSItems;
 import com.raoulvdberge.refinedstorage.api.storage.StorageType;
+import com.raoulvdberge.refinedstorage.api.storage.disk.IStorageDisk;
 import com.raoulvdberge.refinedstorage.api.storage.disk.IStorageDiskProvider;
-import com.raoulvdberge.refinedstorage.api.storage.disk.IStorageDiskSyncData;
+import com.raoulvdberge.refinedstorage.api.storage.disk.StorageDiskSyncData;
 import com.raoulvdberge.refinedstorage.apiimpl.API;
+import com.raoulvdberge.refinedstorage.render.Styles;
 
 import javapower.storagetech.core.StorageTech;
-import javapower.storagetech.util.IItemRegister;
-import javapower.storagetech.util.IRenderItemRegister;
-import javapower.storagetech.util.ItemRenderCast;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
-public class ItemDiskCustom extends Item implements IItemRegister, IStorageDiskProvider, IRenderItemRegister
+public class ItemDiskCustom extends Item implements IStorageDiskProvider
 {
+
 	public ItemDiskCustom()
 	{
-		setRegistryName("customdisk");
-		setUnlocalizedName("customdisk");
-		setCreativeTab(StorageTech.creativeTab);
-		setMaxStackSize(1);
+		super(new Item.Properties().group(StorageTech.creativeTab));
+		setRegistryName(StorageTech.MODID,"customdisk");
 	}
 	
 	@Override
-	public Item getItem()
+	public int getItemStackLimit(ItemStack stack)
 	{
-		return this;
+		return 1;
 	}
 	
-	/*@Override
-    public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean selected)
+	@Override
+	public void inventoryTick(ItemStack stack, World world, Entity entityIn, int itemSlot, boolean isSelected)
 	{
-        super.onUpdate(stack, world, entity, slot, selected);
+        super.inventoryTick(stack, world, entityIn, itemSlot, isSelected);
 
-        if (!stack.hasTagCompound())
+        if (!world.isRemote && !stack.hasTag())
         {
-        	StorageTech.RS_API.getDefaultStorageDiskBehavior().initDisk(StorageDiskType.ITEMS, stack);
+            UUID id = UUID.randomUUID();
+            
+            API.instance().getStorageDiskManager((ServerWorld) world).set(id, API.instance().createDefaultItemDisk((ServerWorld) world, getCapacity(stack)));
+            API.instance().getStorageDiskManager((ServerWorld) world).markForSaving();
+
+            setId(stack, id);
         }
     }
 	
 	@Override
-    public void addInformation(ItemStack disk, World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-	{
-        IStorageDisk storage = create(disk);
-
-        if (storage.isValid(disk))
-        {
-            tooltip.add("Stored: " + storage.getStored() + "/" + storage.getCapacity());
-        }
-    }*/
-	
-	@Override
-    public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean selected)
-	{
-        super.onUpdate(stack, world, entity, slot, selected);
-
-        if (!world.isRemote)
-        {
-            if (!isValid(stack))
-            {
-                API.instance().getOneSixMigrationHelper().migrateDisk(world, stack);
-            }
-
-            if (!stack.hasTagCompound())
-            {
-                UUID id = UUID.randomUUID();
-
-                API.instance().getStorageDiskManager(world).set(id, API.instance().createDefaultItemDisk(world, getCapacity(stack)));
-                API.instance().getStorageDiskManager(world).markForSaving();
-
-                setId(stack, id);
-            }
-        }
-    }
-	
-	@Override
-	public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag flag)
+    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag)
 	{
         super.addInformation(stack, world, tooltip, flag);
 
@@ -99,16 +70,17 @@ public class ItemDiskCustom extends Item implements IItemRegister, IStorageDiskP
 
             API.instance().getStorageDiskSync().sendRequest(id);
 
-            IStorageDiskSyncData data = API.instance().getStorageDiskSync().getData(id);
+            StorageDiskSyncData data = API.instance().getStorageDiskSync().getData(id);
             if (data != null)
             {
-            	tooltip.add(I18n.format("misc.refinedstorage:storage.stored_capacity", API.instance().getQuantityFormatter().format(data.getStored()), API.instance().getQuantityFormatter().format(data.getCapacity())));
+                if (data.getCapacity() == -1)
+                    tooltip.add(new TranslationTextComponent("misc.refinedstorage.storage.stored", API.instance().getQuantityFormatter().format(data.getStored())).setStyle(Styles.GRAY));
+                else
+                    tooltip.add(new TranslationTextComponent("misc.refinedstorage.storage.stored_capacity", API.instance().getQuantityFormatter().format(data.getStored()), API.instance().getQuantityFormatter().format(data.getCapacity())).setStyle(Styles.GRAY));
             }
 
             if (flag.isAdvanced())
-            {
-                tooltip.add(id.toString());
-            }
+                tooltip.add(new StringTextComponent(id.toString()).setStyle(Styles.GRAY));
         }
     }
 	
@@ -118,57 +90,19 @@ public class ItemDiskCustom extends Item implements IItemRegister, IStorageDiskP
         return Integer.MAX_VALUE;
     }
 	
-	/*@Override
-    public void onCreated(ItemStack stack, World world, EntityPlayer player)
-	{
-        super.onCreated(stack, world, player);
-
-        StorageTech.RS_API.getDefaultStorageDiskBehavior().initDisk(StorageDiskType.ITEMS, stack);
-    }
-	
-	@Override
-	public NBTTagCompound getNBTShareTag(ItemStack stack)
-	{
-		NBTTagCompound nbt = StorageTech.RS_API.getDefaultStorageDiskBehavior().getShareTag(StorageDiskType.ITEMS, stack);
-		if(stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey("st_cap"))
-		{
-			nbt.setInteger("st_cap", stack.getTagCompound().getInteger("st_cap"));
-		}
-		return nbt;
-	}*/
-
-	/*@Override
-	public IStorageDisk<ItemStack> create(ItemStack disk)
-	{
-		//System.out.println(disk.getTagCompound());
-		int cappacity = 1;
-		if(disk != null && disk.getTagCompound() != null && disk.getTagCompound().hasKey("st_cap"))
-			 cappacity = disk.getTagCompound().getInteger("st_cap");
-		return StorageTech.RS_API.getDefaultStorageDiskBehavior().createItemStorage(disk.getTagCompound(), cappacity);
-	}*/
-
-	@Override
-	public ItemRenderCast[] getItemsRender()
-	{
-		return new ItemRenderCast[]
-				{
-						new ItemRenderCast(0, "customdisk")
-				};
-	}
-	
 	@Override
 	public int getCapacity(ItemStack disk)
 	{
 		int cappacity = 1;
-		if(disk != null && disk.getTagCompound() != null && disk.getTagCompound().hasKey("st_cap"))
-			 cappacity = disk.getTagCompound().getInteger("st_cap");
+		if(disk != null && disk.getTag() != null && disk.getTag().contains("st_cap"))
+			 cappacity = disk.getTag().getInt("st_cap");
 		return cappacity;
 	}
 
 	@Override
 	public UUID getId(ItemStack disk)
 	{
-		return disk.getTagCompound().getUniqueId("Id");
+		return disk.getTag().getUniqueId("Id");
 	}
 
 	@Override
@@ -178,38 +112,38 @@ public class ItemDiskCustom extends Item implements IItemRegister, IStorageDiskP
 	}
 
 	@Override
-	public boolean isValid(ItemStack disk)
+    public boolean isValid(ItemStack disk)
 	{
-		return disk.hasTagCompound() && disk.getTagCompound().hasUniqueId("Id") && disk.getTagCompound().hasKey("st_cap");
-	}
+        return disk.hasTag() && disk.getTag().hasUniqueId("Id");
+    }
 
 	@Override
-	public void setId(ItemStack disk, UUID id)
+    public void setId(ItemStack disk, UUID id)
 	{
-		disk.setTagCompound(new NBTTagCompound());
-        disk.getTagCompound().setUniqueId("Id", id);
-	}
+        disk.setTag(new CompoundNBT());
+        disk.getTag().putUniqueId("Id", id);
+    }
 	
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn)
 	{
-		if(!worldIn.isRemote && playerIn.isSneaking())
+		if(!worldIn.isRemote && playerIn.isCrouching())
 		{
 			ItemStack itemStack = playerIn.getHeldItem(handIn);
 			if(itemStack != null && itemStack.getItem() instanceof ItemDiskCustom)
 			{
-				UUID id = getId(itemStack);
-	
-	            API.instance().getStorageDiskSync().sendRequest(id);
-	            IStorageDiskSyncData storageData = API.instance().getStorageDiskSync().getData(id);
-	            if(storageData == null || storageData.getStored() <= 0)
-	            {
-	            	int cap = itemStack.getTagCompound().getInteger("st_cap");
-	            	ItemStack memory_item = ItemMemory.createItem(cap, false);
+				
+				@SuppressWarnings("rawtypes")
+				IStorageDisk disk = API.instance().getStorageDiskManager((ServerWorld) worldIn).getByStack(itemStack);
+				
+				if (disk != null && disk.getStored() == 0)
+				{
+					int cap = itemStack.getTag().getInt("st_cap");
+	            	ItemStack memory_item = ItemMemoryItem.createItem(cap);
 	            	playerIn.setHeldItem(handIn, new ItemStack(RSItems.STORAGE_HOUSING, 1));
 	            	if(cap > 0)
 	            		playerIn.dropItem(memory_item, true);
-	            }
+				}
 			}
 		}
 		return super.onItemRightClick(worldIn, playerIn, handIn);

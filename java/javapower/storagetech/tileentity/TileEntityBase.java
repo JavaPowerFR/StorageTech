@@ -1,100 +1,87 @@
 package javapower.storagetech.tileentity;
 
-import javax.annotation.Nullable;
-
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.tileentity.TileEntityType;
 
-public class TileEntityBase extends TileEntity
+public abstract class TileEntityBase extends TileEntity
 {
-	public NBTTagCompound write(NBTTagCompound tag)
+	
+	public TileEntityBase(TileEntityType<?> tileEntityTypeIn)
 	{
-        return tag;
-    }
-
-    public NBTTagCompound writeUpdate(NBTTagCompound tag)
-    {
-        return tag;
-    }
-
-    public void read(NBTTagCompound tag)
-    {
-    	
-    }
-
-    public void readUpdate(NBTTagCompound tag)
-    {
-    	
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        return writeUpdate(super.getUpdateTag());
-    }
-
-    @Nullable
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        return new SPacketUpdateTileEntity(pos, 1, getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet)
-    {
-        readUpdate(packet.getNbtCompound());
-    }
-
-    @Override
-    public void handleUpdateTag(NBTTagCompound tag)
-    {
-        super.readFromNBT(tag);
-
-        readUpdate(tag);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag)
-    {
-        super.readFromNBT(tag);
-
-        read(tag);
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag)
-    {
-        return write(super.writeToNBT(tag));
-    }
-    
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState)
-    {
-        return oldState.getBlock() != newState.getBlock();
-    }
-    
-    @Override
-    public int hashCode()
-    {
-        int result = pos.hashCode();
-        result = 31 * result + world.provider.getDimension();
-        return result;
-    }
-    
-    public void UpdateCkunk()
-	{
-		if(world != null)
-		{
-			Chunk ch = world.getChunkFromBlockCoords(pos);
-			if(ch != null)
-				ch.markDirty();
-		}
+		super(tileEntityTypeIn);
 	}
+
+	@Override
+	public void read(CompoundNBT tag)
+	{
+		super.read(tag);
+		
+		readFromNBT(tag);
+	}
+	@Override
+	public CompoundNBT write(CompoundNBT tag)
+	{
+		super.write(tag);
+		return writeToNBT(tag);
+	}
+	
+	// ---------------- abstract ----------------
+	public abstract void readFromNBT(CompoundNBT tag);
+	
+	public abstract CompoundNBT writeToNBT(CompoundNBT tag);
+
+	protected abstract void readFromServer(CompoundNBT tag);
+	
+	protected abstract CompoundNBT writeToClient(CompoundNBT tag);
+	// ---------------- end abstract ----------------
+	
+	
+	// ---------------- NBT SYNC ----------------
+	// NBT Synchronizing on chunk load
+	// send to client packet
+	@Override
+	public CompoundNBT getUpdateTag()
+	{
+		CompoundNBT nbtTag = new CompoundNBT();
+		super.write(nbtTag);
+	    writeToClient(nbtTag);
+		return nbtTag;
+	}
+	//recive from server packet
+	@Override
+	public void handleUpdateTag(CompoundNBT nbt)
+	{
+		super.read(nbt);
+		readFromServer(nbt);
+	}
+	
+	// NBT Synchronizing on block update
+	// send to client packet
+	public SUpdateTileEntityPacket getUpdatePacket()
+	{
+	    CompoundNBT nbtTag = new CompoundNBT();
+	    super.write(nbtTag);
+	    writeToClient(nbtTag);
+	    return new SUpdateTileEntityPacket(getPos(), -1, nbtTag);
+	}
+	//recive from server packet
+	@Override
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
+	{
+		CompoundNBT nbt = pkt.getNbtCompound();
+		super.read(nbt);
+		readFromServer(nbt);
+	}
+	// ---------------- END NBT SYNC ----------------
+	
+	@Override
+    public void markDirty()
+	{
+        if (world != null)
+            world.markChunkDirty(pos, this);
+    }
+
 }

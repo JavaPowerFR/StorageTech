@@ -1,18 +1,7 @@
 {
-  "forge_marker": 1,
-  "defaults":
-  {
-    "model": "storagetech:fluiddiskworkbench"
-  },
-  "variants":
-  {
-    "inventory":
-    [
-      {"transform": "forge:default-block"}
-    ],
-    "normal":
-	{
-		"model": "storagetech:fluiddiskworkbench"
-	}
+  "variants": {
+    "": {
+      "model": "storagetech:block/fluiddiskworkbench"
+    }
   }
 }

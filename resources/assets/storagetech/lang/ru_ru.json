@@ -1,0 +1,40 @@
+{
+"_comment":items",
+"item.storagetech.customdisk": "Пользовательский диск",
+"item.storagetech.fluidcustomdisk": "Жидкостный пользовательский диск",
+"item.storagetech.memory": "Память",
+"item.storagetech.fluidmemory": "Память из жидкостного",
+
+"_comment": "block",
+"block.storagetech.diskworkbench": "Верстак для диска",
+"block.storagetech.fluiddiskworkbench": "Верстак для жидкостного диска",
+
+"_comment": "gui",
+"itemGroup.storagetech": "Storage Tech",
+
+"_comment": "jei",
+"storagetech.jei.category.diskiwb": "Верстак для диска",
+"storagetech.jei.category.diskiwbm": "Верстак для диска",
+"storagetech.jei.category.diskfwb": "Верстак для жидкостного диска",
+"storagetech.jei.category.diskfwbm": "Верстак для жидкостного диска",
+
+"_comment": "gui",
+"storagetech.gui.create": "Создать",
+"storagetech.gui.creation": "Cоздание",
+"storagetech.gui.availablespace": "доступное пространство",
+"storagetech.gui.disksizein": "размер диска в",
+"storagetech.gui.info": "Информация",
+"storagetech.gui.insertfluidstoragepart": "вставить жидкостная дискетная плата",
+"storagetech.gui.insertstoragepart": "вставить дискетная плата",
+"storagetech.gui.insertstoragehousing": "вставить xранилище корпуса",
+"storagetech.gui.for": "за",
+"storagetech.gui.cost": "Общая Стоимость Энергии",
+
+"_comment": "Tooltip",
+"storagetech.tooltip.putvft": "Поместите меня в верстак для жидкостного диска",
+"storagetech.tooltip.putvib": "Поместите меня в верстак для диска",
+"storagetech.tooltip.novft": "Нет VFT Хранится",
+"storagetech.tooltip.novib": "Нет VIB Хранится",
+"storagetech.tooltip.memory": "Память",
+"storagetech.tooltip.inprocess": "В процессе
+}

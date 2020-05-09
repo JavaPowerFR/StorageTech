@@ -1,52 +1,45 @@
 package javapower.storagetech.block;
 
 import javapower.storagetech.core.StorageTech;
-import javapower.storagetech.util.IBlockRegister;
-import javapower.storagetech.util.IRenderItemRegister;
-import javapower.storagetech.util.ITileRegister;
-import javapower.storagetech.util.ItemRenderCast;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.Block;
+import net.minecraft.block.ContainerBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class BBaseContainer extends BlockContainer implements IBlockRegister, IRenderItemRegister, ITileRegister
+public abstract class BBaseContainer extends ContainerBlock
 {
-	String _name;
-	Item thisItem;
+	protected Item thisItem;
+	public String name;
 	
-	public BBaseContainer(Material materialIn, String name)
+	protected BBaseContainer(Properties builder, String _name)
 	{
-		super(materialIn);
-		setRegistryName(name);
-		setUnlocalizedName(name);
-		_name = name;
-		setCreativeTab(StorageTech.creativeTab);
-		setHardness(2.5F);
-		setResistance(3F);
+		super(builder);
+		name = _name;
+		setRegistryName(StorageTech.MODID,name);
 	}
 	
-	@Override
 	public Item getItem()
 	{
 		if(thisItem == null)
 		{
-			thisItem = new ItemBlock(this);
-			thisItem.setRegistryName(_name);
+			thisItem = new BlockItem(this, new Item.Properties().group(StorageTech.creativeTab));
+			thisItem.setRegistryName(StorageTech.MODID,name);
 		}
 		return thisItem;
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
-	public ItemRenderCast[] getItemsRender()
+	public Item asItem()
 	{
-		return new ItemRenderCast[]
-				{
-						new ItemRenderCast(0, "inventory")
-				};
+		return getItem();
 	}
+
+	@Override
+	public Block getBlock()
+	{
+		return this;
+	}
+	
+	
 
 }

@@ -1,0 +1,39 @@
+{
+"_comment": "items",
+"item.storagetech.customdisk": "사용자 지정 디스크",
+"item.storagetech.fluidcustomdisk": "유체 사용자 지정 디스크",
+"item.storagetech.memory": "메모리",
+"item.storagetech.fluidmemory": "유체 메모리",
+"_comment": "block",
+"block.storagetech.diskworkbench": "디스크 작업대",
+"block.storagetech.fluiddiskworkbench": "유체 디스크 작업대",
+
+"_comment": "gui",
+"itemGroup.storagetech": "스토리지 테크",
+
+"_comment": "jei",
+"storagetech.jei.category.diskiwb": "디스크 작업대",
+"storagetech.jei.category.diskiwbm": "디스크 작업대",
+"storagetech.jei.category.diskfwb": "유체 디스크 작업대",
+"storagetech.jei.category.diskfwbm": "유체 디스크 작업대",
+
+"_comment": "gui",
+"storagetech.gui.create": "만들기",
+"storagetech.gui.creation": "구축",
+"storagetech.gui.availablespace": "이용 가능한 공간",
+"storagetech.gui.disksizein": "디스크 크기",
+"storagetech.gui.info": "정보",
+"storagetech.gui.insertfluidstoragepart": "유체 저장 부품을 삽입",
+"storagetech.gui.insertstoragepart": "저장 부품을 삽입",
+"storagetech.gui.insertstoragehousing": "저장 주택을 삽입",
+"storagetech.gui.for": "목적",
+"storagetech.gui.cost": "총 에너지 비용",
+
+"_comment": "Tooltip",
+"storagetech.tooltip.putvft": "유체 디스크 작업대에 넣어 주십시오.",
+"storagetech.tooltip.putvib": "디스크 작업대에 넣어 주십시오.",
+"storagetech.tooltip.novft": "저장된 유체 디스크가 없습니다.",
+"storagetech.tooltip.novib": "저장된 디스크가 없습니다.",
+"storagetech.tooltip.memory": "메모리",
+"storagetech.tooltip.inprocess": "진행 중"
+}

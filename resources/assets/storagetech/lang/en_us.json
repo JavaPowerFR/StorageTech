@@ -4,6 +4,7 @@
 "item.storagetech.fluidcustomdisk": "Fluid Custom Disk",
 "item.storagetech.memory": "Memory",
 "item.storagetech.fluidmemory": "Fluid Memory",
+
 "_comment": "block",
 "block.storagetech.diskworkbench": "Disk Workbench",
 "block.storagetech.fluiddiskworkbench": "Fluid Disk Workbench",
@@ -16,6 +17,7 @@
 "storagetech.jei.category.diskiwbm": "Disk Workbench",
 "storagetech.jei.category.diskfwb": "Fluid Disk Workbench",
 "storagetech.jei.category.diskfwbm": "Fluid Disk Workbench",
+"storagetech.jei.info.diskwbm.value": "Memory",
 
 "_comment": "gui",
 "storagetech.gui.create": "Create",

@@ -1,43 +1,34 @@
 package javapower.storagetech.util;
 
+import java.util.List;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class DiskUtils
 {
+	private static PartValue[] item_part = {}, fluid_part = {};
+	
+	public static void updateValidParts(List<PartValue> item_part2, List<PartValue> fluid_part2)
+	{
+		item_part = new PartValue[item_part2.size()];
+		fluid_part = new PartValue[fluid_part2.size()];
+		
+		item_part = item_part2.toArray(item_part);
+		fluid_part = fluid_part2.toArray(fluid_part);	
+	}
+	
 	public static long getMemoryFromItemPart(ItemStack itemstack)
 	{
 		if(!itemstack.isEmpty())
 		{
-			Item item = itemstack.getItem();
-			if(item != null)
+			for(PartValue partv : item_part)
 			{
-				int quant = itemstack.getCount();
-				String path = item.getRegistryName().getPath();
-				if(path.contains("_storage_part"))
-				{
-					if(path.contains("64k"))
-					{
-						return 64000l*quant;
-					}
-					else if(path.contains("16k"))
-					{
-						return 16000l*quant;
-					}
-					else if(path.contains("4k"))
-					{
-						return 4000l*quant;
-					}
-					else if(path.contains("1k"))
-					{
-						return 1000l*quant;
-					}
-					
-					
-					
-				}
+				if(partv.getItem() == itemstack.getItem())
+					return partv.getValue();
 			}
 		}
+		
 		return 0;
 	}
 	
@@ -45,32 +36,13 @@ public class DiskUtils
 	{
 		if(!itemstack.isEmpty())
 		{
-			Item item = itemstack.getItem();
-			if(item != null)
+			for(PartValue partv : fluid_part)
 			{
-				int quant = itemstack.getCount();
-				String path = item.getRegistryName().getPath();
-				if(path.contains("_fluid_storage_part"))
-				{
-					if(path.contains("64k"))
-					{
-						return 64000l*quant;
-					}
-					else if(path.contains("256k"))
-					{
-						return 256000l*quant;
-					}
-					else if(path.contains("1024k"))
-					{
-						return 1024000l*quant;
-					}
-					else if(path.contains("4096k"))
-					{
-						return 4096000l*quant;
-					}
-				}
+				if(partv.getItem() == itemstack.getItem())
+					return partv.getValue();
 			}
 		}
+		
 		return 0;
 	}
 	
@@ -84,10 +56,6 @@ public class DiskUtils
 				String path = item.getRegistryName().getPath();
 				if(path.contains("_storage_part") && !path.contains("_fluid"))
 					return true;
-				/*else if(item.equals(STItems.item_memory) && itemstack.getItemDamage() == 0 && itemstack.getTagCompound() != null)
-				{
-					return true;
-				}*/
 			}
 		}
 		return false;
@@ -103,12 +71,18 @@ public class DiskUtils
 				String path = item.getRegistryName().getPath();
 				if(path.contains("_fluid_storage_part"))
 					return true;
-				/*else if(item.equals(STItems.item_memory) && itemstack.getItemDamage() == 1 && itemstack.getTagCompound() != null)
-				{
-					return true;
-				}*/
 			}
 		}
 		return false;
+	}
+	
+	public static PartValue[] getFluidParts()
+	{
+		return fluid_part;
+	}
+	
+	public static PartValue[] getItemParts()
+	{
+		return item_part;
 	}
 }

@@ -4,6 +4,7 @@
 "item.storagetech.fluidcustomdisk": "유체 사용자 지정 디스크",
 "item.storagetech.memory": "메모리",
 "item.storagetech.fluidmemory": "유체 메모리",
+
 "_comment": "block",
 "block.storagetech.diskworkbench": "디스크 작업대",
 "block.storagetech.fluiddiskworkbench": "유체 디스크 작업대",
@@ -16,6 +17,7 @@
 "storagetech.jei.category.diskiwbm": "디스크 작업대",
 "storagetech.jei.category.diskfwb": "유체 디스크 작업대",
 "storagetech.jei.category.diskfwbm": "유체 디스크 작업대",
+"storagetech.jei.info.diskwbm.value": "메모리",
 
 "_comment": "gui",
 "storagetech.gui.create": "만들기",

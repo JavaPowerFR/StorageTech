@@ -17,6 +17,7 @@
 "storagetech.jei.category.diskiwbm": "Atelier De Disque",
 "storagetech.jei.category.diskfwb": "Atelier De Disque Pour Liquide",
 "storagetech.jei.category.diskfwbm": "Atelier De Disque Pour Liquide",
+"storagetech.jei.info.diskwbm.value": "Mémoire",
 
 "_comment": "gui",
 "storagetech.gui.create": "Créer",

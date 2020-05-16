@@ -20,7 +20,7 @@
 *		creation date: 04/08/2017 (dd/mm/yyyy)
 *		recreation date: 03/05/2020 (dd/mm/yyyy)
 *		creat at: Montigny Le Bretonneux France
-*		last modification: 09/05/2020 (dd/mm/yyyy)
+*		last modification: 16/05/2020 (dd/mm/yyyy)
 *		comment: RAS
 *		
 ***************************************************/
@@ -87,6 +87,7 @@ public class StorageTech
         CommonSetup commonSetup = new CommonSetup();
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(commonSetup::onCommonSetup);
+        
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, commonSetup::onRegisterBlocks);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(TileEntityType.class, commonSetup::onRegisterTiles);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, commonSetup::onRegisterItems);

@@ -10,6 +10,8 @@ import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.item.STItems;
 import javapower.storagetech.screen.ScreenContainerDiskWorkbench;
 import javapower.storagetech.screen.ScreenContainerFluidDiskWorkbench;
+import javapower.storagetech.util.DiskUtils;
+import javapower.storagetech.util.PartValue;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -76,11 +78,10 @@ public class StorageTechJEIPlugin implements IModPlugin
 		
 		List<DiskWorkbenchMemory.Wrapper> recipes_diskWorkbenchMemory = new ArrayList<DiskWorkbenchMemory.Wrapper>();
 		
-		recipes_diskWorkbenchMemory.add(new DiskWorkbenchMemory.Wrapper(new ItemStack(RSItems.ONE_K_STORAGE_PART)));
-		recipes_diskWorkbenchMemory.add(new DiskWorkbenchMemory.Wrapper(new ItemStack(RSItems.FOUR_K_STORAGE_PART)));
-		recipes_diskWorkbenchMemory.add(new DiskWorkbenchMemory.Wrapper(new ItemStack(RSItems.SIXTEEN_K_STORAGE_PART)));
-		recipes_diskWorkbenchMemory.add(new DiskWorkbenchMemory.Wrapper(new ItemStack(RSItems.SIXTY_FOUR_K_STORAGE_PART)));
-		recipes_diskWorkbenchMemory.add(new DiskWorkbenchMemory.Wrapper(new ItemStack(STItems.item_memory)));
+		for(PartValue item : DiskUtils.getItemParts())
+			recipes_diskWorkbenchMemory.add(new DiskWorkbenchMemory.Wrapper(new ItemStack(item.getItem()), item.getValue()));
+		
+		recipes_diskWorkbenchMemory.add(new DiskWorkbenchMemory.Wrapper(new ItemStack(STItems.item_memory), -1));
 		
 		registry.addRecipes(recipes_diskWorkbenchMemory, DiskWorkbenchMemory.Category.UID);
 		
@@ -96,11 +97,10 @@ public class StorageTechJEIPlugin implements IModPlugin
 		
 		List<FluidDiskWorkbenchMemory.Wrapper> recipes_fluidDiskWorkbenchMemory = new ArrayList<FluidDiskWorkbenchMemory.Wrapper>();
 		
-		recipes_fluidDiskWorkbenchMemory.add(new FluidDiskWorkbenchMemory.Wrapper(new ItemStack(RSItems.SIXTY_FOUR_K_FLUID_STORAGE_PART)));
-		recipes_fluidDiskWorkbenchMemory.add(new FluidDiskWorkbenchMemory.Wrapper(new ItemStack(RSItems.TWO_HUNDRED_FIFTY_SIX_K_FLUID_STORAGE_PART)));
-		recipes_fluidDiskWorkbenchMemory.add(new FluidDiskWorkbenchMemory.Wrapper(new ItemStack(RSItems.THOUSAND_TWENTY_FOUR_K_FLUID_STORAGE_PART)));
-		recipes_fluidDiskWorkbenchMemory.add(new FluidDiskWorkbenchMemory.Wrapper(new ItemStack(RSItems.FOUR_THOUSAND_NINETY_SIX_K_FLUID_STORAGE_PART)));
-		recipes_fluidDiskWorkbenchMemory.add(new FluidDiskWorkbenchMemory.Wrapper(new ItemStack(STItems.item_memory_fluid)));
+		for(PartValue item : DiskUtils.getFluidParts())
+			recipes_fluidDiskWorkbenchMemory.add(new FluidDiskWorkbenchMemory.Wrapper(new ItemStack(item.getItem()), item.getValue()));
+		
+		recipes_fluidDiskWorkbenchMemory.add(new FluidDiskWorkbenchMemory.Wrapper(new ItemStack(STItems.item_memory_fluid), -1));
 		
 		registry.addRecipes(recipes_fluidDiskWorkbenchMemory, FluidDiskWorkbenchMemory.Category.UID);
 		

@@ -17,6 +17,7 @@
 "storagetech.jei.category.diskiwbm": "Верстак для диска",
 "storagetech.jei.category.diskfwb": "Верстак для жидкостного диска",
 "storagetech.jei.category.diskfwbm": "Верстак для жидкостного диска",
+"storagetech.jei.info.diskwbm.value": "Памяти",
 
 "_comment": "gui",
 "storagetech.gui.create": "Создать",

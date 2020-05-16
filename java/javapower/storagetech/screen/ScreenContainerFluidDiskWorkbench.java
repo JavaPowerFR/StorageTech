@@ -69,7 +69,7 @@ public class ScreenContainerFluidDiskWorkbench extends ContainerScreen<Container
 	@Override
 	public void init()
 	{
-		this.xSize = 176;
+		this.xSize = 176 + (CommonConfig.Value_EnableCostDisk ? 45 : 0);
 	    this.ySize = 189;
 	    
 		super.init();
@@ -161,7 +161,7 @@ public class ScreenContainerFluidDiskWorkbench extends ContainerScreen<Container
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 	    minecraft.getTextureManager().bindTexture(ResourceLocationRegister.gui_fdiskwb);
 	    
-	    blit(guiLeft, guiTop, 0, 0, xSize, ySize);
+	    blit(guiLeft, guiTop, 0, 0, xSize - (CommonConfig.Value_EnableCostDisk ? 45 : 0), ySize);
 	    blit(guiLeft-24, guiTop+10, 210, 0, 27, 82);
 	    
 	    if(CommonConfig.Value_EnableCostDisk)

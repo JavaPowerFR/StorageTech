@@ -5,12 +5,12 @@ import java.util.Collection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.raoulvdberge.refinedstorage.api.storage.AccessType;
-import com.raoulvdberge.refinedstorage.api.storage.disk.IStorageDisk;
-import com.raoulvdberge.refinedstorage.api.storage.disk.IStorageDiskContainerContext;
-import com.raoulvdberge.refinedstorage.api.storage.disk.IStorageDiskListener;
-import com.raoulvdberge.refinedstorage.api.util.Action;
-import com.raoulvdberge.refinedstorage.tile.config.IWhitelistBlacklist;
+import com.refinedmods.refinedstorage.api.storage.AccessType;
+import com.refinedmods.refinedstorage.api.storage.disk.IStorageDisk;
+import com.refinedmods.refinedstorage.api.storage.disk.IStorageDiskContainerContext;
+import com.refinedmods.refinedstorage.api.storage.disk.IStorageDiskListener;
+import com.refinedmods.refinedstorage.api.util.Action;
+import com.refinedmods.refinedstorage.tile.config.IWhitelistBlacklist;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;

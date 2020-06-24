@@ -2,8 +2,8 @@ package javapower.storagetech.block;
 
 import java.util.List;
 
-import com.raoulvdberge.refinedstorage.container.factory.PositionalTileContainerProvider;
-import com.raoulvdberge.refinedstorage.render.Styles;
+import com.refinedmods.refinedstorage.container.factory.PositionalTileContainerProvider;
+import com.refinedmods.refinedstorage.render.Styles;
 
 import javapower.storagetech.container.ContainerDiskWorkbench;
 import javapower.storagetech.core.StorageTech;

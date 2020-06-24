@@ -2,14 +2,14 @@ package javapower.storagetech.tileentity;
 
 import javax.annotation.Nonnull;
 
-import com.raoulvdberge.refinedstorage.api.storage.AccessType;
-import com.raoulvdberge.refinedstorage.tile.NetworkNodeTile;
-import com.raoulvdberge.refinedstorage.tile.config.IAccessType;
-import com.raoulvdberge.refinedstorage.tile.config.IComparable;
-import com.raoulvdberge.refinedstorage.tile.config.IPrioritizable;
-import com.raoulvdberge.refinedstorage.tile.config.IWhitelistBlacklist;
-import com.raoulvdberge.refinedstorage.tile.data.RSSerializers;
-import com.raoulvdberge.refinedstorage.tile.data.TileDataParameter;
+import com.refinedmods.refinedstorage.api.storage.AccessType;
+import com.refinedmods.refinedstorage.tile.NetworkNodeTile;
+import com.refinedmods.refinedstorage.tile.config.IAccessType;
+import com.refinedmods.refinedstorage.tile.config.IComparable;
+import com.refinedmods.refinedstorage.tile.config.IPrioritizable;
+import com.refinedmods.refinedstorage.tile.config.IWhitelistBlacklist;
+import com.refinedmods.refinedstorage.tile.data.RSSerializers;
+import com.refinedmods.refinedstorage.tile.data.TileDataParameter;
 
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.node.CustomStorageNetworkNode;

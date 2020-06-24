@@ -3,7 +3,7 @@ package javapower.storagetech.jei;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.raoulvdberge.refinedstorage.RSItems;
+import com.refinedmods.refinedstorage.RSItems;
 
 import javapower.storagetech.block.STBlocks;
 import javapower.storagetech.core.StorageTech;

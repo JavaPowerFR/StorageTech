@@ -1,6 +1,6 @@
 package javapower.storagetech.screen;
 
-import com.raoulvdberge.refinedstorage.screen.StorageScreen;
+import com.refinedmods.refinedstorage.screen.StorageScreen;
 
 import javapower.storagetech.container.CustomStorageContainer;
 import javapower.storagetech.tileentity.CustomStorageTile;

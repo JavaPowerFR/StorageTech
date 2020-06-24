@@ -1,6 +1,6 @@
 package javapower.storagetech.container;
 
-import com.raoulvdberge.refinedstorage.RSItems;
+import com.refinedmods.refinedstorage.RSItems;
 
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.slot.IFilterStack;

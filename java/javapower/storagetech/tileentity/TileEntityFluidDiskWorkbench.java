@@ -2,8 +2,8 @@ package javapower.storagetech.tileentity;
 
 import java.util.UUID;
 
-import com.raoulvdberge.refinedstorage.RSItems;
-import com.raoulvdberge.refinedstorage.apiimpl.API;
+import com.refinedmods.refinedstorage.RSItems;
+import com.refinedmods.refinedstorage.apiimpl.API;
 
 import javapower.storagetech.container.ContainerFluidDiskWorkbench;
 import javapower.storagetech.core.CommonConfig;

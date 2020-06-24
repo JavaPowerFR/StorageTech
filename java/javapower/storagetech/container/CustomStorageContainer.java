@@ -1,7 +1,7 @@
 package javapower.storagetech.container;
 
-import com.raoulvdberge.refinedstorage.container.BaseContainer;
-import com.raoulvdberge.refinedstorage.container.slot.filter.FilterSlot;
+import com.refinedmods.refinedstorage.container.BaseContainer;
+import com.refinedmods.refinedstorage.container.slot.filter.FilterSlot;
 
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.tileentity.CustomStorageTile;

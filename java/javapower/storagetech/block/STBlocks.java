@@ -1,6 +1,6 @@
 package javapower.storagetech.block;
 
-import com.raoulvdberge.refinedstorage.container.factory.PositionalTileContainerFactory;
+import com.refinedmods.refinedstorage.container.factory.PositionalTileContainerFactory;
 
 import javapower.storagetech.container.ContainerDiskWorkbench;
 import javapower.storagetech.container.ContainerFluidDiskWorkbench;

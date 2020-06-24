@@ -5,13 +5,13 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.raoulvdberge.refinedstorage.RSItems;
-import com.raoulvdberge.refinedstorage.api.storage.StorageType;
-import com.raoulvdberge.refinedstorage.api.storage.disk.IStorageDisk;
-import com.raoulvdberge.refinedstorage.api.storage.disk.IStorageDiskProvider;
-import com.raoulvdberge.refinedstorage.api.storage.disk.StorageDiskSyncData;
-import com.raoulvdberge.refinedstorage.apiimpl.API;
-import com.raoulvdberge.refinedstorage.render.Styles;
+import com.refinedmods.refinedstorage.RSItems;
+import com.refinedmods.refinedstorage.api.storage.StorageType;
+import com.refinedmods.refinedstorage.api.storage.disk.IStorageDisk;
+import com.refinedmods.refinedstorage.api.storage.disk.IStorageDiskProvider;
+import com.refinedmods.refinedstorage.api.storage.disk.StorageDiskSyncData;
+import com.refinedmods.refinedstorage.apiimpl.API;
+import com.refinedmods.refinedstorage.render.Styles;
 
 import javapower.storagetech.core.StorageTech;
 import net.minecraft.client.util.ITooltipFlag;

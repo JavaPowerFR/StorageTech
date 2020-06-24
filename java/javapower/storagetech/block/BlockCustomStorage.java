@@ -5,16 +5,16 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.raoulvdberge.refinedstorage.RSBlocks;
-import com.raoulvdberge.refinedstorage.api.storage.disk.IStorageDisk;
-import com.raoulvdberge.refinedstorage.api.storage.disk.StorageDiskSyncData;
-import com.raoulvdberge.refinedstorage.apiimpl.API;
-import com.raoulvdberge.refinedstorage.apiimpl.network.node.storage.StorageNetworkNode;
-import com.raoulvdberge.refinedstorage.block.NetworkNodeBlock;
-import com.raoulvdberge.refinedstorage.container.factory.PositionalTileContainerProvider;
-import com.raoulvdberge.refinedstorage.item.blockitem.BaseBlockItem;
-import com.raoulvdberge.refinedstorage.render.Styles;
-import com.raoulvdberge.refinedstorage.util.NetworkUtils;
+import com.refinedmods.refinedstorage.RSBlocks;
+import com.refinedmods.refinedstorage.api.storage.disk.IStorageDisk;
+import com.refinedmods.refinedstorage.api.storage.disk.StorageDiskSyncData;
+import com.refinedmods.refinedstorage.apiimpl.API;
+import com.refinedmods.refinedstorage.apiimpl.network.node.storage.StorageNetworkNode;
+import com.refinedmods.refinedstorage.block.NetworkNodeBlock;
+import com.refinedmods.refinedstorage.container.factory.PositionalTileContainerProvider;
+import com.refinedmods.refinedstorage.item.blockitem.BaseBlockItem;
+import com.refinedmods.refinedstorage.render.Styles;
+import com.refinedmods.refinedstorage.util.NetworkUtils;
 
 import javapower.storagetech.container.CustomStorageContainer;
 import javapower.storagetech.core.StorageTech;

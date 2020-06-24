@@ -14,7 +14,7 @@ loaderVersion="[31,)" #mandatory This is typically bumped every Minecraft versio
 # The modid of the mod
 modId="storagetech" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="R7.1" #mandatory
+version="R7.2" #mandatory
  # A display name for the mod
 displayName="Storage Tech" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -54,6 +54,6 @@ Storage Tech Mod
 [[dependencies.storagetech]]
     modId="refinedstorage"
     mandatory=true
-    versionRange="[1.8.3,]"
+    versionRange="[1.8.5,]"
     ordering="NONE"
     side="BOTH"

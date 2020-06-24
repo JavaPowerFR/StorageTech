@@ -2,7 +2,7 @@ package javapower.storagetech.item;
 
 import java.util.List;
 
-import com.raoulvdberge.refinedstorage.render.Styles;
+import com.refinedmods.refinedstorage.render.Styles;
 
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.util.Tools;

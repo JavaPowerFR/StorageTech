@@ -1,8 +1,7 @@
 package javapower.storagetech.util;
 
 import javapower.storagetech.eventio.IEventVoid;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.energy.EnergyStorage;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.energy.IEnergyStorage;
 
 public class EnergyBuffer implements IEnergyStorage
@@ -92,16 +91,16 @@ public class EnergyBuffer implements IEnergyStorage
         return this.maxReceive > 0;
     }
     
-    public void WriteToNBT(NBTTagCompound nbt)
+    public void WriteToNBT(CompoundNBT nbt)
     {
-    	nbt.setInteger("energy", energy);
+    	nbt.putInt("energy", energy);
     }
     
-    public boolean ReadFromNBT(NBTTagCompound nbt)
+    public boolean ReadFromNBT(CompoundNBT nbt)
     {
-    	if(nbt.hasKey("energy"))
+    	if(nbt.contains("energy"))
     	{
-    		energy = nbt.getInteger("energy");
+    		energy = nbt.getInt("energy");
     		return true;
     	}
     	return false;

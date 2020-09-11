@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RRR",
+    "RPR",
+    "RRR"
+  ],
+  "key": {
+    "P": {
+      "item": "refinedstorage:basic_processor"
+    },
+    "R": {
+      "item": "storagetech:capacitive_redstone"
+    }
+  },
+  "result": {
+    "item": "storagetech:10p_energy_io_interface"
+  }
+}

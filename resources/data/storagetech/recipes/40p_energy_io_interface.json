@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RRR",
+    "LPL",
+    "RLR"
+  ],
+  "key": {
+    "P": {
+      "item": "refinedstorage:improved_processor"
+    },
+    "R": {
+      "item": "storagetech:capacitive_redstone"
+    },
+    "L": {
+      "item": "storagetech:20p_energy_io_interface"
+    }
+  },
+  "result": {
+    "item": "storagetech:40p_energy_io_interface"
+  }
+}

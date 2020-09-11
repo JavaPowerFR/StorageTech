@@ -3,124 +3,193 @@ package javapower.storagetech.jei;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.raoulvdberge.refinedstorage.RSItems;
+import com.refinedmods.refinedstorage.RSItems;
 
 import javapower.storagetech.block.STBlocks;
+import javapower.storagetech.core.CommonSetup;
+import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.item.STItems;
+import javapower.storagetech.screen.ScreenContainerDiskWorkbench;
+import javapower.storagetech.screen.ScreenContainerFluidDiskWorkbench;
+import javapower.storagetech.util.DiskUtils;
+import javapower.storagetech.util.PartValue;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.recipe.IRecipeCategoryRegistration;
-import net.minecraft.item.Item;
+import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ICraftingRecipe;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
-@JEIPlugin
+@JeiPlugin
 public class StorageTechJEIPlugin implements IModPlugin
 {
+
 	@Override
-	public void register(IModRegistry registry)
+	public ResourceLocation getPluginUid()
 	{
-		//DiskWorkbench
-		
-		List<DiskWorkbench.IRecipePattern> diskiwb_recipes = new ArrayList<DiskWorkbench.IRecipePattern>();
-		diskiwb_recipes.add(new DiskWorkbench.IRecipePattern()
-		{
-			@Override public ItemStack output() {return new ItemStack(STItems.item_diskcustom);}
-			@Override public ItemStack input() {return new ItemStack(RSItems.STORAGE_HOUSING);}
-		});
-		
-		registry.handleRecipes(DiskWorkbench.IRecipePattern.class, new DiskWorkbench.WrapperFactory(), DiskWorkbench.Category.UID);
-		registry.addRecipes(diskiwb_recipes, DiskWorkbench.Category.UID);
-		registry.addRecipeCatalyst(new ItemStack(STBlocks.block_diskWorkbench), DiskWorkbench.Category.UID);
-		
-		//FluidDiskWorkbench
-		
-		List<FluidDiskWorkbench.IRecipePattern> diskfwb_recipes = new ArrayList<FluidDiskWorkbench.IRecipePattern>();
-		diskfwb_recipes.add(new FluidDiskWorkbench.IRecipePattern()
-		{
-			@Override public ItemStack output() {return new ItemStack(STItems.item_fluiddiskcustom);}
-			@Override public ItemStack input() {return new ItemStack(RSItems.STORAGE_HOUSING);}
-		});
-		
-		registry.handleRecipes(FluidDiskWorkbench.IRecipePattern.class, new FluidDiskWorkbench.WrapperFactory(), FluidDiskWorkbench.Category.UID);
-		registry.addRecipes(diskfwb_recipes, FluidDiskWorkbench.Category.UID);
-		registry.addRecipeCatalyst(new ItemStack(STBlocks.block_fluiddiskWorkbench), FluidDiskWorkbench.Category.UID);
-		
-		//DiskWorkbench
-		
-		List<DiskWorkbenchMemory.IRecipePattern> diskiwbm_recipes = new ArrayList<DiskWorkbenchMemory.IRecipePattern>();
-		
-		diskiwbm_recipes.add(new DiskWorkbenchMemory.IRecipePattern()
-			{@Override public ItemStack input() {return new ItemStack(RSItems.STORAGE_PART, 1, 0);}});
-		diskiwbm_recipes.add(new DiskWorkbenchMemory.IRecipePattern()
-			{@Override public ItemStack input() {return new ItemStack(RSItems.STORAGE_PART, 1, 1);}});
-		diskiwbm_recipes.add(new DiskWorkbenchMemory.IRecipePattern()
-			{@Override public ItemStack input() {return new ItemStack(RSItems.STORAGE_PART, 1, 2);}});
-		diskiwbm_recipes.add(new DiskWorkbenchMemory.IRecipePattern()
-			{@Override public ItemStack input() {return new ItemStack(RSItems.STORAGE_PART, 1, 3);}});
-		
-		Item i = Item.getByNameOrId("rebornstorage:storagepart");
-		if(i != null)
-		{
-			diskiwbm_recipes.add(new DiskWorkbenchMemory.IRecipePattern()
-				{@Override public ItemStack input() {return new ItemStack(i, 1, 0);}});
-			diskiwbm_recipes.add(new DiskWorkbenchMemory.IRecipePattern()
-				{@Override public ItemStack input() {return new ItemStack(i, 1, 1);}});
-			diskiwbm_recipes.add(new DiskWorkbenchMemory.IRecipePattern()
-				{@Override public ItemStack input() {return new ItemStack(i, 1, 2);}});
-			diskiwbm_recipes.add(new DiskWorkbenchMemory.IRecipePattern()
-				{@Override public ItemStack input() {return new ItemStack(i, 1, 3);}});
-		}
-		
-		diskiwbm_recipes.add(new DiskWorkbenchMemory.IRecipePattern()
-		{@Override public ItemStack input() {return new ItemStack(STItems.item_memory, 1, 0);}});
-		
-		registry.handleRecipes(DiskWorkbenchMemory.IRecipePattern.class, new DiskWorkbenchMemory.WrapperFactory(), DiskWorkbenchMemory.Category.UID);
-		registry.addRecipes(diskiwbm_recipes, DiskWorkbenchMemory.Category.UID);
-		registry.addRecipeCatalyst(new ItemStack(STBlocks.block_diskWorkbench), DiskWorkbenchMemory.Category.UID);
-		
-		//FluidDiskWorkbench
-		
-		List<FluidDiskWorkbenchMemory.IRecipePattern> diskfwbm_recipes = new ArrayList<FluidDiskWorkbenchMemory.IRecipePattern>();
-		
-		diskfwbm_recipes.add(new FluidDiskWorkbenchMemory.IRecipePattern()
-			{@Override public ItemStack input() {return new ItemStack(RSItems.FLUID_STORAGE_PART, 1, 0);}});
-		diskfwbm_recipes.add(new FluidDiskWorkbenchMemory.IRecipePattern()
-			{@Override public ItemStack input() {return new ItemStack(RSItems.FLUID_STORAGE_PART, 1, 1);}});
-		diskfwbm_recipes.add(new FluidDiskWorkbenchMemory.IRecipePattern()
-			{@Override public ItemStack input() {return new ItemStack(RSItems.FLUID_STORAGE_PART, 1, 2);}});
-		diskfwbm_recipes.add(new FluidDiskWorkbenchMemory.IRecipePattern()
-			{@Override public ItemStack input() {return new ItemStack(RSItems.FLUID_STORAGE_PART, 1, 3);}});
-		
-		if(i != null)
-		{
-			diskfwbm_recipes.add(new FluidDiskWorkbenchMemory.IRecipePattern()
-				{@Override public ItemStack input() {return new ItemStack(i, 1, 4);}});
-			diskfwbm_recipes.add(new FluidDiskWorkbenchMemory.IRecipePattern()
-				{@Override public ItemStack input() {return new ItemStack(i, 1, 5);}});
-			diskfwbm_recipes.add(new FluidDiskWorkbenchMemory.IRecipePattern()
-				{@Override public ItemStack input() {return new ItemStack(i, 1, 6);}});
-			diskfwbm_recipes.add(new FluidDiskWorkbenchMemory.IRecipePattern()
-				{@Override public ItemStack input() {return new ItemStack(i, 1, 7);}});
-		}
-		
-		diskfwbm_recipes.add(new FluidDiskWorkbenchMemory.IRecipePattern()
-		{@Override public ItemStack input() {return new ItemStack(STItems.item_memory, 1, 1);}});
-		
-		registry.handleRecipes(FluidDiskWorkbenchMemory.IRecipePattern.class, new FluidDiskWorkbenchMemory.WrapperFactory(), FluidDiskWorkbenchMemory.Category.UID);
-		registry.addRecipes(diskfwbm_recipes, FluidDiskWorkbenchMemory.Category.UID);
-		registry.addRecipeCatalyst(new ItemStack(STBlocks.block_fluiddiskWorkbench), FluidDiskWorkbenchMemory.Category.UID);
-				
-				
+		return new ResourceLocation(StorageTech.MODID, "jei");
 	}
 	
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registry)
 	{
-		registry.addRecipeCategories(new DiskWorkbench.Category(registry.getJeiHelpers().getGuiHelper()));
-		registry.addRecipeCategories(new FluidDiskWorkbench.Category(registry.getJeiHelpers().getGuiHelper()));
-		registry.addRecipeCategories(new DiskWorkbenchMemory.Category(registry.getJeiHelpers().getGuiHelper()));
-		registry.addRecipeCategories(new FluidDiskWorkbenchMemory.Category(registry.getJeiHelpers().getGuiHelper()));
+		IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
+		
+		registry.addRecipeCategories(new DiskWorkbench.Category(guiHelper));
+		registry.addRecipeCategories(new DiskWorkbenchMemory.Category(guiHelper));
+		
+		registry.addRecipeCategories(new FluidDiskWorkbench.Category(guiHelper));
+		registry.addRecipeCategories(new FluidDiskWorkbenchMemory.Category(guiHelper));
+	}
+	
+	@Override
+	public void registerGuiHandlers(IGuiHandlerRegistration registry)
+	{
+		registry.addRecipeClickArea(ScreenContainerDiskWorkbench.class, 8, 36, 15, 46, DiskWorkbenchMemory.Category.UID);
+		registry.addRecipeClickArea(ScreenContainerDiskWorkbench.class, 148, 36, 15, 22, DiskWorkbench.Category.UID);
+		registry.addRecipeClickArea(ScreenContainerFluidDiskWorkbench.class, 8, 36, 15, 46, FluidDiskWorkbenchMemory.Category.UID);
+		registry.addRecipeClickArea(ScreenContainerFluidDiskWorkbench.class, 148, 36, 15, 22, FluidDiskWorkbench.Category.UID);
 		
 	}
+	
+	/*@Override
+	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration)
+	{
+		registration.addRecipeTransferHandler(ContainerDiskWorkbench.class,DiskWorkbench.Category.UID,0,1,37,1);
+		registration.addRecipeTransferHandler(ContainerDiskWorkbench.class,DiskWorkbenchMemory.Category.UID,0,1,36,1);
+		
+		registration.addRecipeTransferHandler(ContainerFluidDiskWorkbench.class,FluidDiskWorkbench.Category.UID,0,1,37,1);
+		registration.addRecipeTransferHandler(ContainerFluidDiskWorkbench.class,FluidDiskWorkbenchMemory.Category.UID,0,1,36,1);
+		
+	}*/
+	@Override
+	public void registerRecipes(IRecipeRegistration registry)
+	{
+		List<DiskWorkbench.Wrapper> recipes_diskWorkbench = new ArrayList<DiskWorkbench.Wrapper>();
+		
+		recipes_diskWorkbench.add(new DiskWorkbench.Wrapper(new ItemStack(RSItems.STORAGE_HOUSING), new ItemStack(STItems.item_diskcustom)));
+		
+		registry.addRecipes(recipes_diskWorkbench, DiskWorkbench.Category.UID);
+		
+		// ----------------
+		
+		List<DiskWorkbenchMemory.Wrapper> recipes_diskWorkbenchMemory = new ArrayList<DiskWorkbenchMemory.Wrapper>();
+		
+		for(PartValue item : DiskUtils.getItemParts())
+			recipes_diskWorkbenchMemory.add(new DiskWorkbenchMemory.Wrapper(new ItemStack(item.getItem()), item.getValue()));
+		
+		recipes_diskWorkbenchMemory.add(new DiskWorkbenchMemory.Wrapper(new ItemStack(STItems.item_memory), -1));
+		
+		registry.addRecipes(recipes_diskWorkbenchMemory, DiskWorkbenchMemory.Category.UID);
+		
+		// ----------------
+		
+		List<FluidDiskWorkbench.Wrapper> recipes_fluidDiskWorkbench = new ArrayList<FluidDiskWorkbench.Wrapper>();
+		
+		recipes_fluidDiskWorkbench.add(new FluidDiskWorkbench.Wrapper(new ItemStack(RSItems.STORAGE_HOUSING), new ItemStack(STItems.item_fluiddiskcustom)));
+		
+		registry.addRecipes(recipes_fluidDiskWorkbench, FluidDiskWorkbench.Category.UID);
+		
+		// ----------------
+		
+		List<FluidDiskWorkbenchMemory.Wrapper> recipes_fluidDiskWorkbenchMemory = new ArrayList<FluidDiskWorkbenchMemory.Wrapper>();
+		
+		for(PartValue item : DiskUtils.getFluidParts())
+			recipes_fluidDiskWorkbenchMemory.add(new FluidDiskWorkbenchMemory.Wrapper(new ItemStack(item.getItem()), item.getValue()));
+		
+		recipes_fluidDiskWorkbenchMemory.add(new FluidDiskWorkbenchMemory.Wrapper(new ItemStack(STItems.item_memory_fluid), -1));
+		
+		registry.addRecipes(recipes_fluidDiskWorkbenchMemory, FluidDiskWorkbenchMemory.Category.UID);
+		
+		// ----------------
+		List<ICraftingRecipe> recipes_energy_cell_builder = new ArrayList<ICraftingRecipe>();
+		NonNullList<Ingredient> ing = NonNullList.create();
+		
+		ing.add(Ingredient.fromItems(STItems.item_energy_storage_housing));
+		ing.add(Ingredient.fromItems(
+				STItems.item_10p_energy_io_interface,
+				STItems.item_20p_energy_io_interface,
+				STItems.item_40p_energy_io_interface,
+				STItems.item_80p_energy_io_interface
+				));
+		ing.add(Ingredient.fromItems(
+				STItems.item_100k_energy_storage_part,
+				STItems.item_400k_energy_storage_part,
+				STItems.item_1M6_energy_storage_part,
+				STItems.item_6M4_energy_storage_part,
+				STItems.item_25M6_energy_storage_part,
+				STItems.item_102M4_energy_storage_part
+				));
+		
+		recipes_energy_cell_builder.add(new ICraftingRecipe() {
+			
+			@Override
+			public NonNullList<Ingredient> getIngredients()
+			{
+				return ing;
+			}
+			
+			@Override
+			public boolean matches(CraftingInventory inv, World worldIn)
+			{
+				return true;
+			}
+			
+			@Override
+			public IRecipeSerializer<?> getSerializer()
+			{
+				return CommonSetup.CRAFTING_STORAGETECH_CELL;
+			}
+			
+			@Override
+			public ItemStack getRecipeOutput()
+			{
+				return new ItemStack(STItems.item_energy_storage_cell);
+			}
+			
+			@Override
+			public ResourceLocation getId()
+			{
+				return CommonSetup.CRAFTING_STORAGETECH_CELL.getRegistryName();
+			}
+			
+			@Override
+			public ItemStack getCraftingResult(CraftingInventory inv)
+			{
+				return new ItemStack(STItems.item_energy_storage_cell);
+			}
+			
+			@Override
+			public boolean canFit(int width, int height)
+			{
+				return width*height >= 3;
+			}
+		});
+		
+		registry.addRecipes(recipes_energy_cell_builder, VanillaRecipeCategoryUid.CRAFTING);
+		
+		
+	}
+	
+	@Override
+	public void registerRecipeCatalysts(IRecipeCatalystRegistration registry)
+	{
+		registry.addRecipeCatalyst(new ItemStack(STBlocks.blockDiskWorkbench), DiskWorkbench.Category.UID);
+		registry.addRecipeCatalyst(new ItemStack(STBlocks.blockDiskWorkbench), DiskWorkbenchMemory.Category.UID);
+		
+		registry.addRecipeCatalyst(new ItemStack(STBlocks.blockFluidDiskWorkbench), FluidDiskWorkbench.Category.UID);
+		registry.addRecipeCatalyst(new ItemStack(STBlocks.blockFluidDiskWorkbench), FluidDiskWorkbenchMemory.Category.UID);
+		
+	}
+
 }

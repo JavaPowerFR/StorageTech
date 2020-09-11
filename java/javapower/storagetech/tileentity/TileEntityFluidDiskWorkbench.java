@@ -2,32 +2,51 @@ package javapower.storagetech.tileentity;
 
 import java.util.UUID;
 
-import com.raoulvdberge.refinedstorage.RSItems;
-import com.raoulvdberge.refinedstorage.apiimpl.API;
+import com.refinedmods.refinedstorage.RSItems;
+import com.refinedmods.refinedstorage.apiimpl.API;
 
-import javapower.storagetech.core.Config;
+import javapower.storagetech.container.ContainerFluidDiskWorkbench;
+import javapower.storagetech.core.CommonConfig;
+import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.eventio.IEventVoid;
 import javapower.storagetech.item.STItems;
 import javapower.storagetech.util.DiskUtils;
 import javapower.storagetech.util.EnergyBuffer;
-import javapower.storagetech.util.Tools;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.registries.ObjectHolder;
 
-public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized implements IInventory
+public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInventory, ITickableTileEntity, INamedContainerProvider, ICreateDisk
 {
+	@ObjectHolder(StorageTech.MODID+":fluiddiskworkbench")
+	public static final TileEntityType<TileEntityFluidDiskWorkbench> CURRENT_TILE = null;
+	
 	public long memory = 0l;
-	boolean update = true;
+	//boolean update = true;
 	public NonNullList<ItemStack> block_inv_content = NonNullList.<ItemStack>withSize(7, ItemStack.EMPTY);
 	
-	public EnergyBuffer energyBuffer = new EnergyBuffer(1000000, 1000000, 0);
+	public EnergyBuffer energyBuffer = new EnergyBuffer(CommonConfig.Value_EnergyBuffer, CommonConfig.Value_EnergyBuffer, 0);
+	private final LazyOptional<IEnergyStorage> energyProxyCap = LazyOptional.of(() -> energyBuffer);
 	
 	public boolean prosses = false;
 	public int time = 0;
@@ -36,13 +55,33 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 	
 	public TileEntityFluidDiskWorkbench()
 	{
+		super(CURRENT_TILE);
+		
+		energyBuffer.eventchange = new IEventVoid()
+		{
+			
+			@Override
+			public void event()
+			{
+				if(world != null && !world.isRemote)
+				{
+					markDirty();
+					world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), Constants.BlockFlags.BLOCK_UPDATE);//send update to client
+				}
+				
+			}
+		};
+		
 		energyBuffer.eventchange = new IEventVoid()
 		{
 			@Override
 			public void event()
 			{
-				update = true;
-				markDirty();
+				if(world != null && !world.isRemote)
+				{
+					markDirty();
+					world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), Constants.BlockFlags.BLOCK_UPDATE);//send update to client
+				}
 			}
 		};
 	}
@@ -51,46 +90,48 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 	{
 		if(prosses)
 		{
-			if(createProsses >= diskSize || !Config.EnableCostDisk)
+			if(createProsses >= diskSize || !CommonConfig.Value_EnableCostDisk)
 			{
 					ItemStack itemstack_diskcustom = new ItemStack(STItems.item_fluiddiskcustom);
 					itemstack_diskcustom.getItem().onCreated(itemstack_diskcustom, world, null);
-					NBTTagCompound nbtitemdisk = itemstack_diskcustom.getTagCompound();
+					CompoundNBT nbtitemdisk = itemstack_diskcustom.getOrCreateTag();
 					
 					if(nbtitemdisk == null)
-						nbtitemdisk = new NBTTagCompound();
+						nbtitemdisk = new CompoundNBT();
 					
-					nbtitemdisk.setInteger("st_cap", diskSize);
+					nbtitemdisk.putInt("st_cap", diskSize);
 					
 					UUID id = UUID.randomUUID();
-					API.instance().getStorageDiskManager(world).set(id, API.instance().createDefaultFluidDisk(world, diskSize));
-	                API.instance().getStorageDiskManager(world).markForSaving();
-	                
-	                nbtitemdisk.setUniqueId("Id", id);
-	                itemstack_diskcustom.setTagCompound(nbtitemdisk);
+					API.instance().getStorageDiskManager((ServerWorld) world).set(id, API.instance().createDefaultFluidDisk((ServerWorld) world, diskSize));
+	                API.instance().getStorageDiskManager((ServerWorld) world).markForSaving();
+	                nbtitemdisk.putUniqueId("Id", id);
+	                itemstack_diskcustom.setTag(nbtitemdisk);
 	                
 					block_inv_content.set(2, itemstack_diskcustom);
 					
 					prosses = false;
-					update = true;
+					//update = true;
 					markDirty();
+					world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), Constants.BlockFlags.BLOCK_UPDATE);
 			}
 			else
 			{
-				if(time > Config.TimeCostPerSize)
+				if(time > CommonConfig.Value_TimeCostPerSize)
 				{
-					if(energyBuffer.energy >= Config.EnergyCostPerSize+countUpgrade())
+					if(energyBuffer.energy >= CommonConfig.Value_EnergyCostPerSize+countUpgrade())
 					{
 						time = 0;
-						createProsses += Config.ProssesAdvancementSizeFluid*countUpgrade();
-						energyBuffer.energy -= Config.EnergyCostPerSize+countUpgrade();
+						createProsses += CommonConfig.Value_ProssesAdvancementSizeFluid*countUpgrade();
+						energyBuffer.energy -= CommonConfig.Value_EnergyCostPerSize+countUpgrade();
 						
-						update = true;
+						//update = true;
 						markDirty();
+						world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), Constants.BlockFlags.BLOCK_UPDATE);
 					}
 				}
 				else
 				{
+					//System.out.println(countUpgrade());
 					++time;
 				}
 			}
@@ -98,197 +139,25 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 	}
 	
 	@Override
-	public void reciveDataFromClient(NBTTagCompound nbt, EntityPlayer player)
-	{
-		if(nbt.hasKey("up"))
-			update = true;
-		
-		if(nbt.hasKey("startCreateDisk"))
-		{
-			int disksize = nbt.getInteger("startCreateDisk");
-			ItemStack itemin = block_inv_content.get(1);
-			ItemStack itemout = block_inv_content.get(2);
-			
-			if(itemout.isEmpty() && !itemin.isEmpty() && itemin.getCount() > 0 && disksize > 0 && disksize <= memory)
-			{
-				if(!prosses)
-				{
-					time = 0;
-					createProsses = 0;
-					diskSize = disksize;
-					prosses = true;
-					memory -= disksize;
-					update = true;
-					markDirty();
-					if(itemin.getCount() == 1)
-					{
-						block_inv_content.set(1, ItemStack.EMPTY);
-					}
-					else
-					{
-						itemin.setCount(itemin.getCount()-1);
-					}
-				}
-			}
-		}
-		/*if(nbt.hasKey("createDisk"))
-		{
-			int disksize = nbt.getInteger("createDisk");
-			ItemStack itemin = block_inv_content.get(1);
-			if(block_inv_content.get(2).isEmpty() && !itemin.isEmpty() && itemin.getCount() > 0 && disksize <= memory)
-			{
-				ItemStack itemstack_diskcustom = new ItemStack(STItems.item_fluiddiskcustom);
-				itemstack_diskcustom.getItem().onCreated(itemstack_diskcustom, world, player);
-				NBTTagCompound nbtitemdisk = itemstack_diskcustom.getTagCompound();
-				
-				if(nbtitemdisk == null)
-					nbtitemdisk = new NBTTagCompound();
-				
-				nbtitemdisk.setInteger("st_cap", disksize);
-				
-				UUID id = UUID.randomUUID();
-				API.instance().getStorageDiskManager(world).set(id, API.instance().createDefaultFluidDisk(world, disksize));
-                API.instance().getStorageDiskManager(world).markForSaving();
-                
-                nbtitemdisk.setUniqueId("Id", id);
-                
-				itemstack_diskcustom.setTagCompound(nbtitemdisk);
-				
-				block_inv_content.set(2, itemstack_diskcustom);
-				if(itemin.getCount() == 1)
-				{
-					block_inv_content.set(1, ItemStack.EMPTY);
-				}
-				else
-				{
-					itemin.setCount(itemin.getCount()-1);
-				}
-				
-				memory -= disksize;
-				update = true;
-				markDirty();
-			}
-		}*/
-	}
-
-	@Override
-	public void onPlayerOpenGUISendData(NBTTagCompound nbt, EntityPlayer player)
-	{
-		nbt.setLong("memory", memory);
-		nbt.setInteger("max", Math.min(Config.DiskMaxSize, Tools.limiteLTI(memory)));
-		
-		nbt.setBoolean("prosses", prosses);
-		nbt.setFloat("prossestime", (createProsses/(float)diskSize));
-		
-		nbt.setInteger("energy", energyBuffer.energy);
-		nbt.setInteger("capacity", energyBuffer.capacity);
-		nbt.setBoolean("encd", Config.EnableCostDisk);
-	}
-
-	@Override
-	public NBTTagCompound updateData()
-	{
-		if(update)
-		{
-			update = false;
-			NBTTagCompound nbt_update = new NBTTagCompound();
-			nbt_update.setLong("memory", memory);
-			nbt_update.setInteger("max", Math.min(Config.DiskMaxSize, Tools.limiteLTI(memory)));
-			
-			nbt_update.setBoolean("prosses", prosses);
-			nbt_update.setFloat("prossestime", (createProsses/(float)diskSize));
-			
-			nbt_update.setInteger("energy", energyBuffer.energy);
-			nbt_update.setInteger("capacity", energyBuffer.capacity);
-			nbt_update.setBoolean("encd", Config.EnableCostDisk);
-			return nbt_update;
-		}
-		return null;
-	}
-	
-	@Override
-	public void read(NBTTagCompound tag)
-	{
-		if(tag.hasKey("memory"))
-			memory = tag.getLong("memory");
-		
-		if(tag.hasKey("inv"))
-			ItemStackHelper.loadAllItems(tag.getCompoundTag("inv"), block_inv_content);
-		
-		energyBuffer.ReadFromNBT(tag);
-		
-		if(tag.hasKey("prosses"))
-			prosses = tag.getBoolean("prosses");
-		
-		if(tag.hasKey("time"))
-			time = tag.getInteger("time");
-		
-		if(tag.hasKey("createprosses"))
-			createProsses = tag.getInteger("createprosses");
-		
-		if(tag.hasKey("disksize"))
-			diskSize = tag.getInteger("disksize");
-		
-		markDirty();
-	}
-	
-	@Override
-	public NBTTagCompound write(NBTTagCompound tag)
-	{
-		tag.setLong("memory", memory);
-		
-		NBTTagCompound nbt_inv = new NBTTagCompound();
-		ItemStackHelper.saveAllItems(nbt_inv, block_inv_content);
-		tag.setTag("inv", nbt_inv);
-		
-		energyBuffer.WriteToNBT(tag);
-		
-		tag.setBoolean("prosses", prosses);
-		tag.setInteger("time", time);
-		tag.setInteger("createprosses", createProsses);
-		tag.setInteger("disksize", diskSize);
-		
-		return tag;
-	}
-	
-	@Override
-	public void update()
+	public void tick()
 	{
 		ItemStack i = block_inv_content.get(0);
 		if(!i.isEmpty())
 		{
-			if(DiskUtils.validFluidDisk(i))
+			if(DiskUtils.validFluidPart(i))
 			{
-				long memadd = DiskUtils.getMemoryFromFluidDisk(i);
+				long memadd = DiskUtils.getMemoryFromFluidPart(i);
 				memory += memadd;
-				update = true;
+				//update = true;
 				block_inv_content.set(0, ItemStack.EMPTY);
 				markDirty();
+				world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), Constants.BlockFlags.BLOCK_UPDATE);
 			}
-			/*if(i.getItem().equals(RSItems.FLUID_STORAGE_PART))
-			{
-				int dam = i.getItemDamage();
-				int quant = i.getCount();
-				long memadd = (long) (Math.pow(2, dam+6)*quant*1000);
-				if(memadd + memory > memory)
-				{
-					memory += memadd;
-					update = true;
-					block_inv_content.set(0, ItemStack.EMPTY);
-					markDirty();
-				}
-			}
-			else if(i.getItem().equals(STItems.item_memory) && i.getItemDamage() == 1 && i.getTagCompound() != null)
-			{
-				memory += i.getTagCompound().getLong("memory");
-				update = true;
-				block_inv_content.set(0, ItemStack.EMPTY);
-				markDirty();
-			}*/
 		}
 		
-		update_prosses();
-		super.update();
+		if(!world.isRemote)
+			update_prosses();
+		//super.update();
 	}
 	
 	public int countUpgrade()
@@ -307,15 +176,141 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 	}
 
 	@Override
-	public String getName()
+	public void readFromNBT(CompoundNBT tag)
 	{
-		return "fluiddiskWB";
+		if(tag.contains("memory"))
+			memory = tag.getLong("memory");
+		
+		if(tag.contains("inv"))
+			ItemStackHelper.loadAllItems(tag.getCompound("inv"), block_inv_content);
+		
+		energyBuffer.ReadFromNBT(tag);
+		
+		if(tag.contains("prosses"))
+			prosses = tag.getBoolean("prosses");
+		
+		if(tag.contains("time"))
+			time = tag.getInt("time");
+		
+		if(tag.contains("createprosses"))
+			createProsses = tag.getInt("createprosses");
+		
+		if(tag.contains("disksize"))
+			diskSize = tag.getInt("disksize");
+		
+		markDirty();
 	}
 
 	@Override
-	public boolean hasCustomName()
+	public CompoundNBT writeToNBT(CompoundNBT tag)
 	{
-		return false;
+		tag.putLong("memory", memory);
+		
+		CompoundNBT nbt_inv = new CompoundNBT();
+		ItemStackHelper.saveAllItems(nbt_inv, block_inv_content);
+		tag.put("inv", nbt_inv);
+		
+		energyBuffer.WriteToNBT(tag);
+		
+		tag.putBoolean("prosses", prosses);
+		tag.putInt("time", time);
+		tag.putInt("createprosses", createProsses);
+		tag.putInt("disksize", diskSize);
+		
+		return tag;
+	}
+
+	@Override
+	protected void readFromServer(CompoundNBT tag)
+	{
+		if(tag.contains("memory"))
+			memory = tag.getLong("memory");
+		
+		if(tag.contains("inv"))
+			ItemStackHelper.loadAllItems(tag.getCompound("inv"), block_inv_content);
+		
+		energyBuffer.ReadFromNBT(tag);
+		
+		if(tag.contains("prosses"))
+			prosses = tag.getBoolean("prosses");
+		
+		if(tag.contains("time"))
+			time = tag.getInt("time");
+		
+		if(tag.contains("createprosses"))
+			createProsses = tag.getInt("createprosses");
+		
+		if(tag.contains("disksize"))
+			diskSize = tag.getInt("disksize");
+	}
+
+	@Override
+	protected CompoundNBT writeToClient(CompoundNBT tag)
+	{
+		tag.putLong("memory", memory);
+		
+		CompoundNBT nbt_inv = new CompoundNBT();
+		ItemStackHelper.saveAllItems(nbt_inv, block_inv_content);
+		tag.put("inv", nbt_inv);
+		
+		energyBuffer.WriteToNBT(tag);
+		
+		tag.putBoolean("prosses", prosses);
+		tag.putInt("time", time);
+		tag.putInt("createprosses", createProsses);
+		tag.putInt("disksize", diskSize);
+		
+		return tag;
+	}
+	
+	@Override
+	public CompoundNBT getUpdateTag()
+	{
+		CompoundNBT nbt = super.getUpdateTag();
+		
+		//send server config to client
+		CompoundNBT nbt_cfg = new CompoundNBT();
+		nbt_cfg.putLong("BP", pos.toLong());
+		
+		nbt_cfg.putInt("DMS",CommonConfig.Value_DiskMaxSize);
+		nbt_cfg.putInt("DFMS",CommonConfig.Value_DiskFluidMaxSize);
+		nbt_cfg.putBoolean("ECD",CommonConfig.Value_EnableCostDisk);
+		nbt_cfg.putInt("ECPS",CommonConfig.Value_EnergyCostPerSize);
+		nbt_cfg.putInt("TCPS",CommonConfig.Value_TimeCostPerSize);
+		nbt_cfg.putInt("PAS",CommonConfig.Value_ProssesAdvancementSize);
+		nbt_cfg.putInt("PASF",CommonConfig.Value_ProssesAdvancementSizeFluid);
+		
+		nbt.put("cfg", nbt_cfg);
+		return nbt;
+	}
+	
+	@Override
+	public void handleUpdateTag(BlockState state, CompoundNBT nbt)
+	{
+		super.handleUpdateTag(state, nbt);
+		
+		//update configuration from server
+		if(nbt.contains("cfg"))
+		{
+			CompoundNBT nbt_cfg = nbt.getCompound("cfg");
+			
+			pos = BlockPos.fromLong(nbt_cfg.getLong("BP"));
+			
+			CommonConfig.Value_DiskMaxSize = nbt_cfg.getInt("DMS");
+			CommonConfig.Value_DiskFluidMaxSize = nbt_cfg.getInt("DFMS");
+			CommonConfig.Value_EnableCostDisk = nbt_cfg.getBoolean("ECD");
+			CommonConfig.Value_EnergyCostPerSize = nbt_cfg.getInt("ECPS");
+			CommonConfig.Value_TimeCostPerSize = nbt_cfg.getInt("TCPS");
+			CommonConfig.Value_ProssesAdvancementSize = nbt_cfg.getInt("PAS");
+			CommonConfig.Value_ProssesAdvancementSizeFluid = nbt_cfg.getInt("PASF");
+		}
+	}
+
+	// ---------------- INVENTORY ----------------
+	@Override
+	public void clear()
+	{
+		block_inv_content.clear();
 	}
 
 	@Override
@@ -362,85 +357,86 @@ public class TileEntityFluidDiskWorkbench extends TileEntitySynchronized impleme
 	}
 
 	@Override
-	public int getInventoryStackLimit()
-	{
-		return 64;
-	}
-
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player)
+	public boolean isUsableByPlayer(PlayerEntity player)
 	{
 		return true;
 	}
-
+	
 	@Override
-	public void openInventory(EntityPlayer player)
+	public boolean isItemValidForSlot(int slot, ItemStack stack)
 	{
-		
-	}
-
-	@Override
-	public void closeInventory(EntityPlayer player)
-	{
-		
-	}
-
-	@Override
-	public boolean isItemValidForSlot(int index, ItemStack stack)
-	{
-		if(index >= 2 && index <= 6)
-			return false;
-		else if(index == 0)
+		if(slot == 0)
 		{
-			return DiskUtils.validFluidDisk(stack);
-			//return stack.getItem().equals(RSItems.FLUID_STORAGE_PART) || (stack.getItem().equals(STItems.item_memory) && stack.getItemDamage() == 1);
+			ItemStack slot_itemStack = block_inv_content.get(0);
+			if(slot_itemStack.isEmpty())
+				return DiskUtils.validFluidPart(stack);
+			if(slot_itemStack.getCount() < slot_itemStack.getMaxStackSize() && slot_itemStack.isItemEqual(stack))
+				return true;
 		}
-		else
+		else if(slot == 1)
 		{
-			return stack.isItemEqualIgnoreDurability(new ItemStack(RSItems.STORAGE_HOUSING));
+			ItemStack slot_itemStack = block_inv_content.get(1);
+			if(slot_itemStack.isEmpty())
+				return stack.getItem() == RSItems.STORAGE_HOUSING;
+			if(slot_itemStack.getCount() < slot_itemStack.getMaxStackSize() && slot_itemStack.isItemEqual(stack))
+				return true;
 		}
 		
-	}
-
-	@Override
-	public int getField(int id)
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, int value)
-	{
-		
-	}
-
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void clear()
-	{
-		block_inv_content.clear();
+		return false; 
 	}
 	
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
+	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
 	{
-		return capability == CapabilityEnergy.ENERGY ||
-				super.hasCapability(capability, facing);
+		if(cap == CapabilityEnergy.ENERGY)
+		{
+			return energyProxyCap.cast();
+		}
+		
+		return super.getCapability(cap, side);
 	}
 	
+
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
+	public Container createMenu(int windowid, PlayerInventory playerInv, PlayerEntity player)
 	{
-		if(capability == CapabilityEnergy.ENERGY)
-		{
-			return (T) energyBuffer;
-		}
-		return super.getCapability(capability, facing);
+		return new ContainerFluidDiskWorkbench(windowid, this, playerInv);
 	}
 
+	@Override
+	public ITextComponent getDisplayName()
+	{
+		return new TranslationTextComponent("fluiddiskworkbench");
+	}
+
+	@Override
+	public void createDisk(int disksize)
+	{
+		ItemStack itemin = block_inv_content.get(1);
+		ItemStack itemout = block_inv_content.get(2);
+		
+		if(itemout.isEmpty() && !itemin.isEmpty() && itemin.getCount() > 0 && disksize > 0 && disksize <= memory)
+		{
+			if(!prosses)
+			{
+				time = 0;
+				createProsses = 0;
+				diskSize = disksize;
+				prosses = true;
+				memory -= disksize;
+				
+				markDirty();
+				world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), Constants.BlockFlags.BLOCK_UPDATE);
+				
+				if(itemin.getCount() == 1)
+				{
+					block_inv_content.set(1, ItemStack.EMPTY);
+				}
+				else
+				{
+					itemin.setCount(itemin.getCount()-1);
+				}
+			}
+		}
+	}
 }

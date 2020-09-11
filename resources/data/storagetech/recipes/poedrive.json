@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RRR",
+    "RMR",
+    "RRR"
+  ],
+  "key":
+  {
+    "R":
+    {
+      "item": "storagetech:capacitive_redstone"
+    },
+    "M":
+    {
+      "item": "refinedstorage:disk_drive"
+    }
+  },
+  "result": {
+    "item": "storagetech:poedrive"
+  }
+}

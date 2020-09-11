@@ -1,135 +1,88 @@
 package javapower.storagetech.util;
 
-import javax.annotation.Nonnull;
+import java.util.List;
 
-import com.raoulvdberge.refinedstorage.RSItems;
-
-import javapower.storagetech.item.STItems;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class DiskUtils
 {
-	public static long getMemoryFromItemDisk(ItemStack itemstack)
+	private static PartValue[] item_part = {}, fluid_part = {};
+	
+	public static void updateValidParts(List<PartValue> item_part2, List<PartValue> fluid_part2)
+	{
+		item_part = new PartValue[item_part2.size()];
+		fluid_part = new PartValue[fluid_part2.size()];
+		
+		item_part = item_part2.toArray(item_part);
+		fluid_part = fluid_part2.toArray(fluid_part);	
+	}
+	
+	public static long getMemoryFromItemPart(ItemStack itemstack)
 	{
 		if(!itemstack.isEmpty())
 		{
-			Item item = itemstack.getItem();
-			if(item != null)
+			for(PartValue partv : item_part)
 			{
-				if(item.equals(RSItems.STORAGE_PART))
-				{
-					int dam = itemstack.getItemDamage();
-					int quant = itemstack.getCount();
-					long memadd = (long) (Math.pow(2, 2*dam)*quant*1000);
-					return memadd;
-				}
-				else if(item.equals(Item.getByNameOrId("rebornstorage:storagepart")))
-				{
-					int dam = itemstack.getItemDamage();
-					if(dam >= 0 && dam <= 3)
-					{
-						int quant = itemstack.getCount();
-						long memadd = (long) (Math.pow(2, 2*(dam+4))*quant*1000);
-						return memadd;
-					}
-				}
-				else if(item.equals(STItems.item_memory) && itemstack.getItemDamage() == 0 && itemstack.getTagCompound() != null)
-				{
-					return itemstack.getTagCompound().getLong("memory");
-				}
+				if(partv.getItem() == itemstack.getItem())
+					return partv.getValue();
 			}
 		}
+		
 		return 0;
 	}
 	
-	public static long getMemoryFromFluidDisk(ItemStack itemstack)
+	public static long getMemoryFromFluidPart(ItemStack itemstack)
 	{
 		if(!itemstack.isEmpty())
 		{
-			Item item = itemstack.getItem();
-			if(item != null)
+			for(PartValue partv : fluid_part)
 			{
-				if(item.equals(RSItems.FLUID_STORAGE_PART))
-				{
-					int dam = itemstack.getItemDamage();
-					int quant = itemstack.getCount();
-					long memadd = (long) (Math.pow(2, (dam*2)+6)*quant*1000);
-					return memadd;
-				}
-				else if(item.equals(Item.getByNameOrId("rebornstorage:storagepart")))
-				{
-					int dam = itemstack.getItemDamage();
-					if(dam >= 4 && dam <= 7)
-					{
-						int quant = itemstack.getCount();
-						int exp = dam == 4 ? 14 : dam == 5 ? 15 : dam == 6 ? 17 : dam == 7 ? 19 : 0;
-						long memadd = (long) (Math.pow(2, exp)*quant*1000);
-						return memadd;
-					}
-				}
-				else if(item.equals(STItems.item_memory) && itemstack.getItemDamage() == 1 && itemstack.getTagCompound() != null)
-				{
-					return itemstack.getTagCompound().getLong("memory");
-				}
+				if(partv.getItem() == itemstack.getItem())
+					return partv.getValue();
 			}
 		}
+		
 		return 0;
 	}
 	
-	public static boolean validItemDisk(ItemStack itemstack)
+	public static boolean validItemPart(ItemStack itemstack)
 	{
 		if(!itemstack.isEmpty())
 		{
 			Item item = itemstack.getItem();
 			if(item != null)
 			{
-				if(item.equals(RSItems.STORAGE_PART))
-				{
+				String path = item.getRegistryName().getPath();
+				if(path.contains("_storage_part") && !path.contains("_fluid"))
 					return true;
-				}
-				else if(item.equals(Item.getByNameOrId("rebornstorage:storagepart")))
-				{
-					int dam = itemstack.getItemDamage();
-					if(dam >= 0 && dam <= 3)
-					{
-						return true;
-					}
-				}
-				else if(item.equals(STItems.item_memory) && itemstack.getItemDamage() == 0 && itemstack.getTagCompound() != null)
-				{
-					return true;
-				}
 			}
 		}
 		return false;
 	}
 	
-	public static boolean validFluidDisk(ItemStack itemstack)
+	public static boolean validFluidPart(ItemStack itemstack)
 	{
 		if(!itemstack.isEmpty())
 		{
 			Item item = itemstack.getItem();
 			if(item != null)
 			{
-				if(item.equals(RSItems.FLUID_STORAGE_PART))
-				{
+				String path = item.getRegistryName().getPath();
+				if(path.contains("_fluid_storage_part"))
 					return true;
-				}
-				else if(item.equals(Item.getByNameOrId("rebornstorage:storagepart")))
-				{
-					int dam = itemstack.getItemDamage();
-					if(dam >= 4 && dam <= 7)
-					{
-						return true;
-					}
-				}
-				else if(item.equals(STItems.item_memory) && itemstack.getItemDamage() == 1 && itemstack.getTagCompound() != null)
-				{
-					return true;
-				}
 			}
 		}
 		return false;
+	}
+	
+	public static PartValue[] getFluidParts()
+	{
+		return fluid_part;
+	}
+	
+	public static PartValue[] getItemParts()
+	{
+		return item_part;
 	}
 }

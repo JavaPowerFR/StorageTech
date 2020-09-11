@@ -1,0 +1,4 @@
+{
+  "parent": "item/generated",
+  "textures": {"layer0": "storagetech:items/energy_storage_housing"}
+}

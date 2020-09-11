@@ -1,0 +1,4 @@
+{
+  "parent": "item/generated",
+  "textures": {"layer0": "storagetech:items/40p_energy_io_interface"}
+}

@@ -1,57 +1,68 @@
 package javapower.storagetech.container;
 
-import com.raoulvdberge.refinedstorage.RSItems;
+import com.refinedmods.refinedstorage.RSItems;
 
+import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.slot.IFilterStack;
 import javapower.storagetech.slot.SlotFiltred;
 import javapower.storagetech.slot.SlotOutput;
 import javapower.storagetech.tileentity.TileEntityDiskWorkbench;
 import javapower.storagetech.util.DiskUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.inventory.container.IContainerListener;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.registries.ObjectHolder;
 
 public class ContainerDiskWorkbench extends Container
 {
-	IInventory block_inv;
-	InventoryPlayer playerInventory;
+	@ObjectHolder(StorageTech.MODID+":diskworkbench")
+    public static final ContainerType<ContainerDiskWorkbench> CURRENT_CONTAINER = null;
 	
-	public ContainerDiskWorkbench(TileEntityDiskWorkbench tile, EntityPlayer player)
+	public TileEntityDiskWorkbench tile;
+	PlayerInventory playerInventory;
+	
+	public ContainerDiskWorkbench(int windowId, PlayerInventory _playerInventory)
 	{
-		playerInventory = player.inventory;
-		block_inv = tile;
+		this(windowId, new TileEntityDiskWorkbench(), _playerInventory);
+	}
+	
+	public ContainerDiskWorkbench(int windowId, TileEntityDiskWorkbench _tile, PlayerInventory _playerInventory)
+	{
+		super(CURRENT_CONTAINER, windowId);
+		
+		playerInventory = _playerInventory;
+		tile = _tile;
 		
 		for (int i = 0; i < 3; ++i)
         {
             for (int j = 0; j < 9; ++j)
             {
-                this.addSlotToContainer(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 107 + i * 18));
+                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 107 + i * 18));
             }
         }
 
         for (int k = 0; k < 9; ++k)
         {
-            this.addSlotToContainer(new Slot(playerInventory, k, 8 + k * 18, 165));
+            this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 165));
         }
         
-        this.addSlotToContainer(new SlotFiltred(block_inv, 0, 8, 16, new IFilterStack()
+        this.addSlot(new SlotFiltred(tile, 0, 8, 16, new IFilterStack()
         {
 			@Override
 			public boolean canPutThisStack(ItemStack stack)
 			{
 				if(stack != null && !stack.isEmpty())
-					return DiskUtils.validItemDisk(stack);
-					//return stack.getItem().equals(RSItems.STORAGE_PART) || (stack.getItem().equals(STItems.item_memory) && stack.getItemDamage() == 0);
+					return DiskUtils.validItemPart(stack);
 				
 				return false;
 			}
 		}));
         
-        this.addSlotToContainer(new SlotFiltred(block_inv, 1, 148, 16, new IFilterStack()
+        this.addSlot(new SlotFiltred(tile, 1, 148, 16, new IFilterStack()
         {
 			@Override
 			public boolean canPutThisStack(ItemStack stack)
@@ -63,17 +74,17 @@ public class ContainerDiskWorkbench extends Container
 			}
 		}));
         
-        this.addSlotToContainer(new SlotOutput(block_inv, 2, 148, 66));
+        this.addSlot(new SlotOutput(tile, 2, 148, 66));
         
         for(int ids = 0; ids < 4; ++ids)
         {
-        	this.addSlotToContainer(new SlotFiltred(block_inv, 3+ids, -17, 16+18*ids, new IFilterStack()
+        	this.addSlot(new SlotFiltred(tile, 3+ids, -17, 16+18*ids, new IFilterStack()
 	        {
 				@Override
 				public boolean canPutThisStack(ItemStack stack)
 				{
 					if(stack != null && !stack.isEmpty())
-						return stack.isItemEqual(new ItemStack(RSItems.UPGRADE, 1, RSItems.UPGRADE.TYPE_SPEED));
+						return stack.isItemEqual(new ItemStack(RSItems.SPEED_UPGRADE,1));
 					
 					return false;
 				}
@@ -88,14 +99,8 @@ public class ContainerDiskWorkbench extends Container
         }
 	}
 	
-	 public void addListener(IContainerListener listener)
-	 {
-	        super.addListener(listener);
-	        listener.sendAllWindowProperties(this, this.block_inv);
-	 }
-	 
-	 @Override
-	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
+	@Override
+	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
 	{
 		 ItemStack from = getSlot(index).getStack();
 		 if(index >= 36 && index <= 42)
@@ -151,10 +156,10 @@ public class ContainerDiskWorkbench extends Container
 				 from.setCount(from.getCount() - putitemscount);
 			 }
 		 }
-		 else if(DiskUtils.validItemDisk(from))
+		 else if(DiskUtils.validItemPart(from))
 		 {
 			 Slot go = getSlot(36);
-			 if(go.getStack().isEmpty() || DiskUtils.validItemDisk(go.getStack()))
+			 if(go.getStack().isEmpty() || DiskUtils.validItemPart(go.getStack()))
 			 {
 				 int total = go.getStack().getCount() + from.getCount();
 				 if(total <= go.getStack().getMaxStackSize())
@@ -181,12 +186,17 @@ public class ContainerDiskWorkbench extends Container
 		 
 		 return ItemStack.EMPTY;
 	}
+	
+	public void addListener(IContainerListener listener)
+	{
+		super.addListener(listener);
+		//listener.sendAllContents(this, this.tile);
+	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer playerIn)
+	public boolean canInteractWith(PlayerEntity playerIn)
 	{
 		return true;
 	}
-	
 
 }

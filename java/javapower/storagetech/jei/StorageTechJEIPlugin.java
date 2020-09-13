@@ -3,14 +3,15 @@ package javapower.storagetech.jei;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.refinedmods.refinedstorage.RSBlocks;
 import com.refinedmods.refinedstorage.RSItems;
 
 import javapower.storagetech.block.STBlocks;
-import javapower.storagetech.core.CommonSetup;
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.item.STItems;
 import javapower.storagetech.screen.ScreenContainerDiskWorkbench;
 import javapower.storagetech.screen.ScreenContainerFluidDiskWorkbench;
+import javapower.storagetech.setup.CommonSetup;
 import javapower.storagetech.util.DiskUtils;
 import javapower.storagetech.util.PartValue;
 import mezz.jei.api.IModPlugin;
@@ -62,22 +63,13 @@ public class StorageTechJEIPlugin implements IModPlugin
 		
 	}
 	
-	/*@Override
-	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration)
-	{
-		registration.addRecipeTransferHandler(ContainerDiskWorkbench.class,DiskWorkbench.Category.UID,0,1,37,1);
-		registration.addRecipeTransferHandler(ContainerDiskWorkbench.class,DiskWorkbenchMemory.Category.UID,0,1,36,1);
-		
-		registration.addRecipeTransferHandler(ContainerFluidDiskWorkbench.class,FluidDiskWorkbench.Category.UID,0,1,37,1);
-		registration.addRecipeTransferHandler(ContainerFluidDiskWorkbench.class,FluidDiskWorkbenchMemory.Category.UID,0,1,36,1);
-		
-	}*/
 	@Override
 	public void registerRecipes(IRecipeRegistration registry)
 	{
 		List<DiskWorkbench.Wrapper> recipes_diskWorkbench = new ArrayList<DiskWorkbench.Wrapper>();
 		
 		recipes_diskWorkbench.add(new DiskWorkbench.Wrapper(new ItemStack(RSItems.STORAGE_HOUSING), new ItemStack(STItems.item_diskcustom)));
+		recipes_diskWorkbench.add(new DiskWorkbench.Wrapper(new ItemStack(RSBlocks.MACHINE_CASING), new ItemStack(STBlocks.blockCustomStorage)));
 		
 		registry.addRecipes(recipes_diskWorkbench, DiskWorkbench.Category.UID);
 		
@@ -97,6 +89,7 @@ public class StorageTechJEIPlugin implements IModPlugin
 		List<FluidDiskWorkbench.Wrapper> recipes_fluidDiskWorkbench = new ArrayList<FluidDiskWorkbench.Wrapper>();
 		
 		recipes_fluidDiskWorkbench.add(new FluidDiskWorkbench.Wrapper(new ItemStack(RSItems.STORAGE_HOUSING), new ItemStack(STItems.item_fluiddiskcustom)));
+		recipes_fluidDiskWorkbench.add(new FluidDiskWorkbench.Wrapper(new ItemStack(RSBlocks.MACHINE_CASING), new ItemStack(STBlocks.blockCustomFluidStorage)));
 		
 		registry.addRecipes(recipes_fluidDiskWorkbench, FluidDiskWorkbench.Category.UID);
 		
@@ -112,6 +105,7 @@ public class StorageTechJEIPlugin implements IModPlugin
 		registry.addRecipes(recipes_fluidDiskWorkbenchMemory, FluidDiskWorkbenchMemory.Category.UID);
 		
 		// ----------------
+		
 		List<ICraftingRecipe> recipes_energy_cell_builder = new ArrayList<ICraftingRecipe>();
 		NonNullList<Ingredient> ing = NonNullList.create();
 		
@@ -177,7 +171,7 @@ public class StorageTechJEIPlugin implements IModPlugin
 		});
 		
 		registry.addRecipes(recipes_energy_cell_builder, VanillaRecipeCategoryUid.CRAFTING);
-		
+		// ----------------
 		
 	}
 	

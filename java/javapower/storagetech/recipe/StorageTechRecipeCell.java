@@ -1,9 +1,10 @@
-package javapower.storagetech.core;
+package javapower.storagetech.recipe;
 
 import javapower.storagetech.item.ItemEnergyCell;
 import javapower.storagetech.item.ItemEnergyInterface;
 import javapower.storagetech.item.ItemEnergyStoragePart;
 import javapower.storagetech.item.STItems;
+import javapower.storagetech.setup.CommonSetup;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;

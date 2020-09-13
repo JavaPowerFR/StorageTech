@@ -31,7 +31,7 @@ authors="java_power" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 Storage Tech Mod
-Experimental B 9.0
+Experimental B 9.1
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.storagetech]] #optional

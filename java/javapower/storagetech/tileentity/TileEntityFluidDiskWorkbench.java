@@ -2,9 +2,11 @@ package javapower.storagetech.tileentity;
 
 import java.util.UUID;
 
+import com.refinedmods.refinedstorage.RSBlocks;
 import com.refinedmods.refinedstorage.RSItems;
 import com.refinedmods.refinedstorage.apiimpl.API;
 
+import javapower.storagetech.block.BlockCustomFluidStorage;
 import javapower.storagetech.container.ContainerFluidDiskWorkbench;
 import javapower.storagetech.core.CommonConfig;
 import javapower.storagetech.core.StorageTech;
@@ -34,9 +36,11 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ObjectHolder;
 
-public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInventory, ITickableTileEntity, INamedContainerProvider, ICreateDisk
+public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInventory, ITickableTileEntity, INamedContainerProvider, ICreateDisk, IItemHandler
 {
 	@ObjectHolder(StorageTech.MODID+":fluiddiskworkbench")
 	public static final TileEntityType<TileEntityFluidDiskWorkbench> CURRENT_TILE = null;
@@ -47,11 +51,14 @@ public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInv
 	
 	public EnergyBuffer energyBuffer = new EnergyBuffer(CommonConfig.Value_EnergyBuffer, CommonConfig.Value_EnergyBuffer, 0);
 	private final LazyOptional<IEnergyStorage> energyProxyCap = LazyOptional.of(() -> energyBuffer);
+	private final LazyOptional<IItemHandler> itemsCapability = LazyOptional.of(() -> this);
 	
 	public boolean prosses = false;
 	public int time = 0;
 	public int createProsses = 0;
 	public int diskSize = 0;
+	
+	private boolean isBlock = false;
 	
 	public TileEntityFluidDiskWorkbench()
 	{
@@ -92,6 +99,12 @@ public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInv
 		{
 			if(createProsses >= diskSize || !CommonConfig.Value_EnableCostDisk)
 			{
+				if(isBlock)
+				{
+					block_inv_content.set(2, BlockCustomFluidStorage.createItemBlock(diskSize));
+				}
+				else
+				{
 					ItemStack itemstack_diskcustom = new ItemStack(STItems.item_fluiddiskcustom);
 					itemstack_diskcustom.getItem().onCreated(itemstack_diskcustom, world, null);
 					CompoundNBT nbtitemdisk = itemstack_diskcustom.getOrCreateTag();
@@ -108,11 +121,12 @@ public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInv
 	                itemstack_diskcustom.setTag(nbtitemdisk);
 	                
 					block_inv_content.set(2, itemstack_diskcustom);
-					
-					prosses = false;
-					//update = true;
-					markDirty();
-					world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), Constants.BlockFlags.BLOCK_UPDATE);
+				}
+				
+				prosses = false;
+				//update = true;
+				markDirty();
+				world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), Constants.BlockFlags.BLOCK_UPDATE);
 			}
 			else
 			{
@@ -198,6 +212,9 @@ public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInv
 		if(tag.contains("disksize"))
 			diskSize = tag.getInt("disksize");
 		
+		if(tag.contains("isblock"))
+			isBlock = tag.getBoolean("isblock");
+		
 		markDirty();
 	}
 
@@ -216,6 +233,7 @@ public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInv
 		tag.putInt("time", time);
 		tag.putInt("createprosses", createProsses);
 		tag.putInt("disksize", diskSize);
+		tag.putBoolean("isblock", isBlock);
 		
 		return tag;
 	}
@@ -377,7 +395,7 @@ public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInv
 		{
 			ItemStack slot_itemStack = block_inv_content.get(1);
 			if(slot_itemStack.isEmpty())
-				return stack.getItem() == RSItems.STORAGE_HOUSING;
+				return stack.getItem() == RSItems.STORAGE_HOUSING || stack.getItem() == RSBlocks.MACHINE_CASING.asItem();
 			if(slot_itemStack.getCount() < slot_itemStack.getMaxStackSize() && slot_itemStack.isItemEqual(stack))
 				return true;
 		}
@@ -392,11 +410,14 @@ public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInv
 		{
 			return energyProxyCap.cast();
 		}
+		else if(cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+		{
+			return itemsCapability.cast();
+		}
 		
 		return super.getCapability(cap, side);
 	}
 	
-
 	@Override
 	public Container createMenu(int windowid, PlayerInventory playerInv, PlayerEntity player)
 	{
@@ -419,6 +440,7 @@ public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInv
 		{
 			if(!prosses)
 			{
+				isBlock = itemin.getItem().equals(RSBlocks.MACHINE_CASING.asItem());
 				time = 0;
 				createProsses = 0;
 				diskSize = disksize;
@@ -438,5 +460,93 @@ public class TileEntityFluidDiskWorkbench extends TileEntityBase implements IInv
 				}
 			}
 		}
+	}
+	
+	@Override
+	public int getSlots()
+	{
+		return 3;
+	}
+
+	@Override
+	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate)
+	{
+		if(slot < 2)
+		{
+			ItemStack stack2 = block_inv_content.get(slot);
+			if(stack2 == ItemStack.EMPTY)
+			{
+				if(!simulate)
+				{
+					block_inv_content.set(slot, stack.copy());
+					markDirty();
+				}
+				return ItemStack.EMPTY;
+			}
+			else
+			{
+				if(stack2.isItemEqual(stack))
+				{
+					int space = stack2.getMaxStackSize() - stack2.getCount();
+					if(space >= stack.getCount())
+					{
+						if(!simulate)
+						{
+							stack2.grow(stack.getCount());
+							markDirty();
+						}
+						return ItemStack.EMPTY;
+					}
+					else if(space > 0)
+					{
+						if(!simulate)
+						{
+							stack2.setCount(stack2.getMaxStackSize());
+							markDirty();
+						}
+						
+						ItemStack stack_return = stack.copy();
+						stack_return.shrink(space);
+						return stack_return;
+					}
+				}
+			}
+		}
+		return stack;
+	}
+
+	@Override
+	public ItemStack extractItem(int slot, int amount, boolean simulate)
+	{
+		if(slot == 2)
+		{
+			ItemStack stack = block_inv_content.get(2);
+			
+			int i = Math.min(amount, stack.getCount());
+		    ItemStack itemstack = stack.copy();
+		    itemstack.setCount(i);
+		    if(!simulate)
+		    {
+		    	stack.shrink(i);
+		    	markDirty();
+		    }
+		    return itemstack;
+		}
+		return ItemStack.EMPTY;
+	}
+
+	@Override
+	public int getSlotLimit(int slot)
+	{
+		if(slot == 2)
+			return 0;
+		
+		return 64;
+	}
+
+	@Override
+	public boolean isItemValid(int slot, ItemStack stack)
+	{
+		return isItemValidForSlot(slot, stack);
 	}
 }

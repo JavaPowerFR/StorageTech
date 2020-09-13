@@ -37,12 +37,12 @@ public class ItemMemoryItem extends Item
 			CompoundNBT nbt = stack.getTag();
 			if(nbt != null && nbt.contains("memory"))
 			{
-				tooltip.add(new TranslationTextComponent(Tools.longFormatToString(nbt.getLong("memory")) + " VIB").func_230530_a_(Styles.GRAY));
-				tooltip.add(new TranslationTextComponent(I18n.format("storagetech.tooltip.putvib")).func_230530_a_(Styles.GRAY));
+				tooltip.add(new TranslationTextComponent(I18n.format("tooltip.storagetech.valuevib", Tools.longFormatToString(nbt.getLong("memory")))).func_230530_a_(Styles.GRAY));
+				tooltip.add(new TranslationTextComponent(I18n.format("tooltip.storagetech.putvib")).func_230530_a_(Styles.GRAY));
 			}
 			else
 			{
-				tooltip.add(new TranslationTextComponent(I18n.format("storagetech.tooltip.novib")).func_230530_a_(Styles.GRAY));
+				tooltip.add(new TranslationTextComponent(I18n.format("tooltip.storagetech.novib")).func_230530_a_(Styles.GRAY));
 			}
 		}
 	}

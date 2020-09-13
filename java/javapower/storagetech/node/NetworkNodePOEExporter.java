@@ -36,6 +36,9 @@ public class NetworkNodePOEExporter extends NetworkNode
 	
 	public int tickUpdate;
 	
+	public boolean energyRestrictionEnable = false;
+	public int energyRestrictionValue = 0;
+	
 	private final UpgradeItemHandler upgrades = (UpgradeItemHandler) new UpgradeItemHandler(4, UpgradeItem.Type.SPEED)
 	        .addListener(new NetworkNodeInventoryListener(this))
 	        .addListener((handler, slot, reading) ->
@@ -89,7 +92,7 @@ public class NetworkNodePOEExporter extends NetworkNode
 								long space = energy_node.getEnergyStored();
 								if(space > 0)
 								{
-									int insertedEnergy = energystorage.receiveEnergy((int) Math.min(Math.min(space, energy_node.getIOCapacity()), Integer.MAX_VALUE - 1), false); 
+									int insertedEnergy = energystorage.receiveEnergy((int) Math.min(Math.min(space, energy_node.getIOCapacity()), getMaxRate()), false); 
 									energy_node.extractEnergy(insertedEnergy, false);
 									break;
 								}
@@ -101,6 +104,14 @@ public class NetworkNodePOEExporter extends NetworkNode
 			else
 				++tickUpdate;
 		}
+	}
+	
+	private long getMaxRate()
+	{
+		if(energyRestrictionEnable)
+			return energyRestrictionValue;
+		
+		return Integer.MAX_VALUE - 1;
 	}
 	
 	@Override
@@ -120,7 +131,10 @@ public class NetworkNodePOEExporter extends NetworkNode
         super.write(tag);
 
         StackUtils.writeItems(upgrades, 1, tag);
-
+        
+        tag.putBoolean("energyRestE", energyRestrictionEnable);
+        tag.putInt("energyRestV", energyRestrictionValue);
+        
         return tag;
     }
 	
@@ -130,11 +144,40 @@ public class NetworkNodePOEExporter extends NetworkNode
         super.read(tag);
 
         StackUtils.readItems(upgrades, 1, tag);
+        
+        if(tag.contains("energyRestE"))
+        	energyRestrictionEnable = tag.getBoolean("energyRestE");
+        
+        if(tag.contains("energyRestV"))
+        	energyRestrictionValue = tag.getInt("energyRestV");
     }
 
 	public IItemHandler getUpgrades()
 	{
 		return upgrades;
+	}
+	
+	public boolean getEnergyRestrictionMode()
+	{
+		return energyRestrictionEnable;
+	}
+
+	public void setEnergyRestrictionMode(boolean _energyRestrictionEnable)
+	{
+		energyRestrictionEnable = _energyRestrictionEnable;
+		
+		markDirty();
+	}
+
+	public int getEnergyRestrictionValue()
+	{
+		return energyRestrictionValue;
+	}
+
+	public void setEnergyRestrictionMode(int _energyRestrictionValue)
+	{
+		energyRestrictionValue = _energyRestrictionValue;
+		markDirty();
 	}
 
 }

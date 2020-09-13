@@ -1,6 +1,7 @@
 package javapower.storagetech.screen;
 
 import javapower.storagetech.container.ContainerPOEDrive;
+import javapower.storagetech.tileentity.TileEntityPOEDrive;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
 
@@ -13,9 +14,10 @@ public class ScreenPOEDrive extends ScreenNodeEnergyStorage<ContainerPOEDrive>
             inventory,
             title,
             "guis/poe_drive.png",
-            container.tileNode::getEnergyStored,
-            container.tileNode::getEnergyCapacity,
-            container.tileNode::getEnergyIOCapacity
+            TileEntityPOEDrive.REDSTONE_MODE,
+            TileEntityPOEDrive.STORED::getValue,
+            TileEntityPOEDrive.CAPACITY::getValue,
+            TileEntityPOEDrive.IO_CAPACITY::getValue
         );
     }
 }

@@ -9,11 +9,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import javapower.storagetech.container.ContainerDiskWorkbench;
 import javapower.storagetech.core.ClientConfig;
-import javapower.storagetech.core.ClientSetup;
 import javapower.storagetech.core.CommonConfig;
-import javapower.storagetech.core.PacketCreateDisk;
 import javapower.storagetech.core.ResourceLocationRegister;
 import javapower.storagetech.core.StorageTech;
+import javapower.storagetech.packet.PacketCreateDisk;
+import javapower.storagetech.setup.ClientSetup;
 import javapower.storagetech.util.Tools;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -33,12 +33,11 @@ public class ScreenContainerDiskWorkbench extends ContainerScreen<ContainerDiskW
 	TextFieldWidget textField_size;
 	
 	int disk_size = 1000;
-	private String[] i18nBuffer;
 	int slot = -1;
 	int animaite = 0;
 	long energycost = 0;
 	//28 17
-	Button button_create = new Button(28, 17, 40, 20, new TranslationTextComponent(I18n.format("storagetech.gui.create")), (button) ->
+	Button button_create = new Button(28, 17, 40, 20, new TranslationTextComponent(I18n.format("gui.storagetech.create")), (button) ->
 	{
 		//TODO send to server the starting
 		StorageTech.INSTANCE_CHANNEL.sendToServer(new PacketCreateDisk(container.tile.getPos(), disk_size));
@@ -49,18 +48,6 @@ public class ScreenContainerDiskWorkbench extends ContainerScreen<ContainerDiskW
 		super(_screenContainer, inv, titleIn);
 		
 		ClientConfig.loadConfig();
-		
-	    i18nBuffer = new String[]
-				{
-					I18n.format("storagetech.gui.creation"),
-					I18n.format("storagetech.gui.availablespace"),
-					I18n.format("storagetech.gui.disksizein"),
-					I18n.format("storagetech.gui.info"),
-					I18n.format("storagetech.gui.insertstoragepart"),
-					I18n.format("storagetech.gui.insertstoragehousing"),
-					I18n.format("storagetech.gui.for"),
-					I18n.format("storagetech.gui.cost")
-				};
 	    
 	    //addButton(button_create);
 	    //addButton(textField_size);
@@ -138,16 +125,16 @@ public class ScreenContainerDiskWorkbench extends ContainerScreen<ContainerDiskW
 			if(slot == 0)
 	        {
 	        	List<ITextComponent> list = new ArrayList<ITextComponent>();
-	        	list.add(new TranslationTextComponent("§b(i) §f"+i18nBuffer[3]));
-	        	list.add(new TranslationTextComponent("§7"+i18nBuffer[4]));
+	        	list.add(new TranslationTextComponent(I18n.format("gui.storagetech.info")));
+	        	list.add(new TranslationTextComponent(I18n.format("gui.storagetech.info.insertstoragepart")));
 	        	
 	        	GuiUtils.drawHoveringText(matrix, list, mouseX, mouseY, minecraft.currentScreen.width, minecraft.currentScreen.height, 150, font);
 	        }
 			else if(slot == 1)
 			{
 				List<ITextComponent> list = new ArrayList<ITextComponent>();
-	        	list.add(new TranslationTextComponent("§b(i) §f"+i18nBuffer[3]));
-	        	list.add(new TranslationTextComponent("§7"+i18nBuffer[5]));
+	        	list.add(new TranslationTextComponent(I18n.format("gui.storagetech.info")));
+	        	list.add(new TranslationTextComponent(I18n.format("gui.storagetech.info.insertstoragehousing")));
 	        	GuiUtils.drawHoveringText(matrix, list, mouseX, mouseY, minecraft.currentScreen.width, minecraft.currentScreen.height, 150, font);
 			}
 		}
@@ -189,7 +176,7 @@ public class ScreenContainerDiskWorkbench extends ContainerScreen<ContainerDiskW
         	blit(matrix, guiLeft+27, guiTop+16, 0 + animaite, 189, 114, 5);
         	blit(matrix, guiLeft+27, guiTop+48, 0 + animaite, 189, 114, 5);
         	
-        	 this.drawCenteredString(matrix, font, i18nBuffer[0]+" "+(((int)(prossesTime()*10000))/100f)+" %", guiLeft + 84, guiTop + 30, 0xffffff);
+        	this.drawCenteredString(matrix, font, I18n.format("gui.storagetech.progress", ""+(((int)(prossesTime()*10000))/100f)), guiLeft + 84, guiTop + 30, 0xffffff);
 	        if(animaite < 0)
 	        	animaite = 10;
 	        else
@@ -198,7 +185,7 @@ public class ScreenContainerDiskWorkbench extends ContainerScreen<ContainerDiskW
         else
         {
         
-	        this.drawString(matrix, font, i18nBuffer[1]+": ", guiLeft + 28, guiTop + 6, 0xffffff);
+	        this.drawString(matrix, font, I18n.format("gui.storagetech.availablespace"), guiLeft + 28, guiTop + 6, 0xffffff);
 	        if (container.tile.memory < 1000_000_000_000l)
         	{
         		String stringshow = ClientSetup.formatter.format(container.tile.memory);
@@ -232,14 +219,10 @@ public class ScreenContainerDiskWorkbench extends ContainerScreen<ContainerDiskW
 	        		}
         		}
 	        }
-	        this.drawString(matrix, font, i18nBuffer[2]+" VIB:", guiLeft + 28, guiTop + 47, 0xffffff);
+	        
+	        this.drawString(matrix, font, I18n.format("gui.storagetech.disksize"), guiLeft + 30, guiTop + 51, 0xffffff);
         
         }
-	    
-	    //textField_size.render(mouseX, mouseY, partialTicks);//TODO
-	    
-	    this.drawString(matrix, font, "VIB: Virtual Item Box", guiLeft + 34, guiTop + 87, 0xffffff);
-        this.drawString(matrix, font, "1 VIB = "+i18nBuffer[6]+" 1 item", guiLeft + 40, guiTop + 97, 0xffffff);
         
         if(CommonConfig.Value_EnableCostDisk)
         {
@@ -260,7 +243,7 @@ public class ScreenContainerDiskWorkbench extends ContainerScreen<ContainerDiskW
 	        if(textField_size.isFocused())
 	        {
 	        	List<ITextComponent> list = new ArrayList<ITextComponent>();
-	        	list.add(new TranslationTextComponent(i18nBuffer[7]+": "+Tools.longFormatToString(energycost)+" RF"));
+	        	list.add(new TranslationTextComponent(I18n.format("gui.storagetech.cost", Tools.longFormatToString(energycost))));
 	        	GuiUtils.drawHoveringText(matrix, list, guiLeft, guiTop, minecraft.currentScreen.width, minecraft.currentScreen.height, 200, font);
 	        }
         }

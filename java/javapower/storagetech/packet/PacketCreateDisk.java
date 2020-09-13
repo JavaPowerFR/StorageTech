@@ -1,4 +1,4 @@
-package javapower.storagetech.core;
+package javapower.storagetech.packet;
 
 import java.nio.ByteBuffer;
 import java.util.function.Supplier;

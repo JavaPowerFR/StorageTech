@@ -1,5 +1,6 @@
 package javapower.storagetech.container;
 
+import com.refinedmods.refinedstorage.RSBlocks;
 import com.refinedmods.refinedstorage.RSItems;
 
 import javapower.storagetech.core.StorageTech;
@@ -68,7 +69,7 @@ public class ContainerFluidDiskWorkbench extends Container
 			public boolean canPutThisStack(ItemStack stack)
 			{
 				if(stack != null && !stack.isEmpty())
-					return stack.isItemEqualIgnoreDurability(new ItemStack(RSItems.STORAGE_HOUSING));
+					return stack.isItemEqualIgnoreDurability(new ItemStack(RSItems.STORAGE_HOUSING)) || stack.isItemEqualIgnoreDurability(new ItemStack(RSBlocks.MACHINE_CASING));
 				
 				return false;
 			}
@@ -132,7 +133,7 @@ public class ContainerFluidDiskWorkbench extends Container
 				 }
 			 }
 		 }
-		 else if(from.getItem().equals(RSItems.STORAGE_HOUSING))
+		 else if(from.getItem().equals(RSItems.STORAGE_HOUSING) || from.getItem().equals(RSBlocks.MACHINE_CASING.asItem()))
 		 {
 			 Slot go = getSlot(37);
 			 int total = go.getStack().getCount() + from.getCount();

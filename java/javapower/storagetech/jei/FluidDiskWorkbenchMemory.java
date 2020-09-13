@@ -2,9 +2,9 @@ package javapower.storagetech.jei;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import javapower.storagetech.core.ClientDiskOverlay;
 import javapower.storagetech.core.ResourceLocationRegister;
 import javapower.storagetech.core.StorageTech;
+import javapower.storagetech.render.ClientDiskOverlay;
 import javapower.storagetech.util.Tools;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -32,8 +32,8 @@ public class FluidDiskWorkbenchMemory
 		
 		public Category(IGuiHelper guiHelper)
 		{
-			localizedName = I18n.format(StorageTech.MODID+".jei.category.diskfwbm");
-			info_value = I18n.format(StorageTech.MODID+".jei.info.diskwbm.value");
+			localizedName = I18n.format("jei."+StorageTech.MODID+".category.diskfwbm");
+			info_value = I18n.format("jei."+StorageTech.MODID+".info.diskwbm.value");
 			
 			background = guiHelper.createDrawable(ResourceLocationRegister.textrue_gui_jei_recipe, 28, 81, 56, 82);
 		}
@@ -86,13 +86,11 @@ public class FluidDiskWorkbenchMemory
 		public void draw(Wrapper recipe, MatrixStack matrixStack, double mouseX, double mouseY)
 		{
 			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-			MatrixStack textStack = new MatrixStack();
-            textStack.translate(0.0D, 0.0D, 300D);
-            Matrix4f textLocation = textStack.getLast().getMatrix();
+			
+            Matrix4f textLocation = matrixStack.getLast().getMatrix();
             String text = recipe.getString(info_value);
             int text_x = -(ClientDiskOverlay.minecraft.fontRenderer.getStringWidth(text))/2 + background.getWidth()/2;
-            
-            ClientDiskOverlay.minecraft.fontRenderer.renderString(text, /*X*/ text_x, /*Y*/ 71, 0xffffff, false, textLocation, renderType, false, 0, 15728880);
+        	ClientDiskOverlay.minecraft.fontRenderer.renderString(text, /*X*/ text_x, /*Y*/ 71, 0xffffff, false, textLocation, renderType, false, 0, 15728880);
 			renderType.finish();
 		}
 		

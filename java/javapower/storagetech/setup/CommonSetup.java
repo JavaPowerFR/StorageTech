@@ -1,4 +1,4 @@
-package javapower.storagetech.core;
+package javapower.storagetech.setup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,10 @@ import com.refinedmods.refinedstorage.apiimpl.API;
 import com.refinedmods.refinedstorage.block.ControllerBlock;
 
 import javapower.storagetech.block.STBlocks;
+import javapower.storagetech.core.CommonConfig;
 import javapower.storagetech.event.ControllerLoadEvent;
 import javapower.storagetech.item.STItems;
+import javapower.storagetech.recipe.StorageTechRecipeCell;
 import javapower.storagetech.util.DiskUtils;
 import javapower.storagetech.util.PartValue;
 import net.minecraft.block.Block;

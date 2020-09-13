@@ -1,4 +1,4 @@
-package javapower.storagetech.core;
+package javapower.storagetech.setup;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;

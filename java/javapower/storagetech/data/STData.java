@@ -12,6 +12,7 @@ public class STData
 {
 	private World world;
 	private BlockPos controllerPos;
+	@SuppressWarnings("unused")
 	private STNetworkManager parent;
 	private List<IEnergyStorageNode> energyStorages;
 	

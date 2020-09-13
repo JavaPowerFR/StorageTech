@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.refinedmods.refinedstorage.RS;
 import com.refinedmods.refinedstorage.api.network.INetwork;
-import com.refinedmods.refinedstorage.api.network.node.INetworkNode;
 import com.refinedmods.refinedstorage.api.storage.AccessType;
 import com.refinedmods.refinedstorage.api.storage.IStorage;
 import com.refinedmods.refinedstorage.api.storage.IStorageProvider;
@@ -20,18 +19,17 @@ import com.refinedmods.refinedstorage.apiimpl.API;
 import com.refinedmods.refinedstorage.apiimpl.network.node.ConnectivityStateChangeCause;
 import com.refinedmods.refinedstorage.apiimpl.network.node.IStorageScreen;
 import com.refinedmods.refinedstorage.apiimpl.network.node.NetworkNode;
-import com.refinedmods.refinedstorage.apiimpl.storage.cache.ItemStorageCache;
-import com.refinedmods.refinedstorage.inventory.item.BaseItemHandler;
-import com.refinedmods.refinedstorage.inventory.listener.NetworkNodeInventoryListener;
-import com.refinedmods.refinedstorage.tile.StorageTile;
+import com.refinedmods.refinedstorage.apiimpl.storage.cache.FluidStorageCache;
+import com.refinedmods.refinedstorage.inventory.fluid.FluidInventory;
+import com.refinedmods.refinedstorage.inventory.listener.NetworkNodeFluidInventoryListener;
+import com.refinedmods.refinedstorage.tile.FluidStorageTile;
 import com.refinedmods.refinedstorage.tile.config.IAccessType;
 import com.refinedmods.refinedstorage.tile.config.IComparable;
 import com.refinedmods.refinedstorage.tile.config.IPrioritizable;
 import com.refinedmods.refinedstorage.tile.config.IWhitelistBlacklist;
 import com.refinedmods.refinedstorage.util.AccessTypeUtils;
-import com.refinedmods.refinedstorage.util.StackUtils;
 
-import javapower.storagetech.block.BlockCustomStorage;
+import javapower.storagetech.block.BlockCustomFluidStorage;
 import javapower.storagetech.core.StorageTech;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -43,29 +41,31 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fluids.FluidStack;
 
-public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScreen, IStorageProvider, IComparable, IWhitelistBlacklist, IPrioritizable, IAccessType, IStorageDiskContainerContext {
-
-    private static final Logger LOGGER = LogManager.getLogger(NetworkNodeCustomStorage.class);
+public class NetworkNodeCustomFluidStorage extends NetworkNode implements IStorageScreen, IStorageProvider, IComparable, IWhitelistBlacklist, IPrioritizable, IAccessType, IStorageDiskContainerContext
+{
+    private static final Logger LOGGER = LogManager.getLogger(NetworkNodeCustomFluidStorage.class);
 
     private static final String NBT_PRIORITY = "Priority";
     private static final String NBT_COMPARE = "Compare";
     private static final String NBT_MODE = "Mode";
+    private static final String NBT_FILTERS = "Filters";
     public static final String NBT_ID = "Id";
 
-    private BaseItemHandler filters = new BaseItemHandler(9).addListener(new NetworkNodeInventoryListener(this));
+    private final FluidInventory filters = new FluidInventory(9).addListener(new NetworkNodeFluidInventoryListener(this));
     
-    public static final ResourceLocation NETWORK_NODE_ID = new ResourceLocation(StorageTech.MODID, BlockCustomStorage.raw_name);
+    public static final ResourceLocation NETWORK_NODE_ID = new ResourceLocation(StorageTech.MODID, BlockCustomFluidStorage.raw_name);
 
     private AccessType accessType = AccessType.INSERT_EXTRACT;
     private int priority = 0;
     private int compare = IComparer.COMPARE_NBT;
     private int mode = IWhitelistBlacklist.BLACKLIST;
-    
-    private UUID storageId = UUID.randomUUID();
-    private IStorageDisk<ItemStack> storage;
-    public int storageCapacity = 1;
 
-    public NetworkNodeCustomStorage(World world, BlockPos pos)
+    private UUID storageId = UUID.randomUUID();
+    private IStorageDisk<FluidStack> storage;
+    
+    public int storageCapacity = 1000;
+
+    public NetworkNodeCustomFluidStorage(World world, BlockPos pos)
     {
         super(world, pos);
     }
@@ -73,7 +73,7 @@ public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScr
     @Override
     public int getEnergyUsage()
     {
-    	return RS.SERVER_CONFIG.getStorageBlock().getSixtyFourKUsage();
+        return RS.SERVER_CONFIG.getFluidStorageBlock().getFourThousandNinetySixKUsage();
     }
 
     @Override
@@ -81,24 +81,25 @@ public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScr
     {
         super.onConnectedStateChange(network, state, cause);
 
-        LOGGER.debug("Connectivity state of item storage block at {} changed to {} due to {}", pos, state, cause);
+        LOGGER.debug("Connectivity state of fluid storage block at {} changed to {} due to {}", pos, state, cause);
 
-        network.getNodeGraph().runActionWhenPossible(ItemStorageCache.INVALIDATE.apply(InvalidateCause.CONNECTED_STATE_CHANGED));
+        network.getNodeGraph().runActionWhenPossible(FluidStorageCache.INVALIDATE.apply(InvalidateCause.CONNECTED_STATE_CHANGED));
     }
 
     @Override
     public void addItemStorages(List<IStorage<ItemStack>> storages)
     {
-        if (storage == null)
-            loadStorage();
-
-        storages.add(storage);
+        // NO OP
     }
 
     @Override
     public void addFluidStorages(List<IStorage<FluidStack>> storages)
     {
-        // NO OP
+        if (storage == null)
+        {
+            loadStorage();
+        }
+        storages.add(storage);
     }
 
     @Override
@@ -126,37 +127,33 @@ public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScr
         if(tag.contains("capacity"))
         	storageCapacity = tag.getInt("capacity");
 
-        if (tag.hasUniqueId(NBT_ID))
-        {
-            storageId = tag.getUniqueId(NBT_ID);  
+        if (tag.hasUniqueId(NBT_ID)) {
+            storageId = tag.getUniqueId(NBT_ID);
+
             loadStorage();
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "rawtypes", "unchecked" })
 	public void loadStorage()
     {
-		IStorageDisk disk = API.instance().getStorageDiskManager((ServerWorld) world).get(storageId);
+        IStorageDisk disk = API.instance().getStorageDiskManager((ServerWorld) world).get(storageId);
 
         if (disk == null)
         {
-        	INetworkNode node = API.instance().getNetworkNodeManager((ServerWorld)world).getNode(pos);
-        	if(node instanceof NetworkNodeCustomStorage)
-        	{
-	            API.instance().getStorageDiskManager((ServerWorld) world).set(storageId, disk = API.instance().createDefaultItemDisk((ServerWorld) world, ((NetworkNodeCustomStorage)node).getStorageCapacity()));
-	            API.instance().getStorageDiskManager((ServerWorld) world).markForSaving();
-        	}
+            API.instance().getStorageDiskManager((ServerWorld) world).set(storageId, disk = API.instance().createDefaultFluidDisk((ServerWorld) world, getStorageCapacity()));
+            API.instance().getStorageDiskManager((ServerWorld) world).markForSaving();
         }
 
-        this.storage = new CustomItemStorageWrapperStorageDisk(this, disk);
+        this.storage = new CustomFluidStorageWrapperStorageDisk(this, disk);
     }
-
+    
     private int getStorageCapacity()
     {
 		return storageCapacity;
 	}
 
-	public void setStorageId(UUID id)
+    public void setStorageId(UUID id)
     {
         this.storageId = id;
 
@@ -168,7 +165,7 @@ public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScr
         return storageId;
     }
 
-    public IStorageDisk<ItemStack> getStorage()
+    public IStorageDisk<FluidStack> getStorage()
     {
         return storage;
     }
@@ -177,14 +174,14 @@ public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScr
     public CompoundNBT writeConfiguration(CompoundNBT tag)
     {
         super.writeConfiguration(tag);
-        StackUtils.writeItems(filters, 0, tag);
 
+        tag.put(NBT_FILTERS, filters.writeToNbt());
         tag.putInt(NBT_PRIORITY, priority);
         tag.putInt(NBT_COMPARE, compare);
         tag.putInt(NBT_MODE, mode);
 
         AccessTypeUtils.writeAccessType(tag, accessType);
-        
+
         return tag;
     }
 
@@ -193,16 +190,21 @@ public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScr
     {
         super.readConfiguration(tag);
 
-        StackUtils.readItems(filters, 0, tag);
+        if (tag.contains(NBT_FILTERS)) {
+            filters.readFromNbt(tag.getCompound(NBT_FILTERS));
+        }
 
-        if (tag.contains(NBT_PRIORITY))
+        if (tag.contains(NBT_PRIORITY)) {
             priority = tag.getInt(NBT_PRIORITY);
+        }
 
-        if (tag.contains(NBT_COMPARE))
+        if (tag.contains(NBT_COMPARE)) {
             compare = tag.getInt(NBT_COMPARE);
+        }
 
-        if (tag.contains(NBT_MODE))
+        if (tag.contains(NBT_MODE)) {
             mode = tag.getInt(NBT_MODE);
+        }
 
         accessType = AccessTypeUtils.readAccessType(tag);
     }
@@ -235,7 +237,7 @@ public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScr
         markDirty();
     }
 
-    public BaseItemHandler getFilters()
+    public FluidInventory getFilters()
     {
         return filters;
     }
@@ -243,55 +245,19 @@ public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScr
     @Override
     public ITextComponent getTitle()
     {
-        return new TranslationTextComponent("block.storagetech.customstorageblock");
+    	return new TranslationTextComponent("block.storagetech.customfluidstorageblock");
     }
-
-    /*@Override
-    public TileDataParameter<Integer, ?> getTypeParameter()
-    {
-        return null;
-    }
-
-    @Override
-    public TileDataParameter<Integer, ?> getRedstoneModeParameter()
-    {
-        return StorageTile.REDSTONE_MODE;
-    }
-
-    @Override
-    public TileDataParameter<Integer, ?> getCompareParameter()
-    {
-        return StorageTile.COMPARE;
-    }
-
-    @Override
-    public TileDataParameter<Integer, ?> getWhitelistBlacklistParameter()
-    {
-        return StorageTile.WHITELIST_BLACKLIST;
-    }
-
-    @Override
-    public TileDataParameter<Integer, ?> getPriorityParameter()
-    {
-        return StorageTile.PRIORITY;
-    }
-
-    @Override
-    public TileDataParameter<AccessType, ?> getAccessTypeParameter()
-    {
-        return StorageTile.ACCESS_TYPE;
-    }*/
 
     @Override
     public long getStored()
     {
-        return StorageTile.STORED.getValue();
+        return FluidStorageTile.STORED.getValue();
     }
 
     @Override
     public long getCapacity()
     {
-        return getStorageCapacity();
+        return storageCapacity;
     }
 
     @Override
@@ -306,9 +272,7 @@ public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScr
         this.accessType = value;
 
         if (network != null)
-        {
-            network.getItemStorageCache().invalidate(InvalidateCause.DEVICE_CONFIGURATION_CHANGED);
-        }
+            network.getFluidStorageCache().invalidate(InvalidateCause.DEVICE_CONFIGURATION_CHANGED);
 
         markDirty();
     }
@@ -326,8 +290,7 @@ public class NetworkNodeCustomStorage extends NetworkNode implements IStorageScr
 
         markDirty();
 
-        if (network != null) {
-            network.getItemStorageCache().sort();
-        }
+        if (network != null)
+            network.getFluidStorageCache().sort();
     }
 }

@@ -1,4 +1,4 @@
-package javapower.storagetech.core;
+package javapower.storagetech.render;
 
 import java.util.UUID;
 
@@ -15,6 +15,8 @@ import com.refinedmods.refinedstorage.item.blockitem.FluidStorageBlockItem;
 import com.refinedmods.refinedstorage.item.blockitem.StorageBlockItem;
 
 import javapower.storagetech.api.IEnergyStorageCell;
+import javapower.storagetech.core.ClientConfig;
+import javapower.storagetech.core.ResourceLocationRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;

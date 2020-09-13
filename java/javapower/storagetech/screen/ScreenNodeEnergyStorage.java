@@ -6,10 +6,10 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.refinedmods.refinedstorage.apiimpl.API;
 import com.refinedmods.refinedstorage.screen.BaseScreen;
 import com.refinedmods.refinedstorage.screen.widget.sidebutton.RedstoneModeSideButton;
+import com.refinedmods.refinedstorage.tile.data.TileDataParameter;
 import com.refinedmods.refinedstorage.util.RenderUtils;
 
 import javapower.storagetech.core.StorageTech;
-import javapower.storagetech.tileentity.TileEntityPOEDrive;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -27,12 +27,14 @@ public class ScreenNodeEnergyStorage <T extends Container> extends BaseScreen<T>
     private final Supplier<Long> storedSupplier;
     private final Supplier<Long> capacitySupplier;
     private final Supplier<Long> ioCapacitySupplier;
+	private TileDataParameter<Integer, ?> redstonemode;
 
-    public ScreenNodeEnergyStorage(T container, PlayerInventory inventory, ITextComponent title, String _texture, Supplier<Long> _storedSupplier, Supplier<Long> _capacitySupplier, Supplier<Long> _ioCapacitySupplier)
+    public ScreenNodeEnergyStorage(T container, PlayerInventory inventory, ITextComponent title, String _texture, TileDataParameter<Integer, ?> _redstonemode, Supplier<Long> _storedSupplier, Supplier<Long> _capacitySupplier, Supplier<Long> _ioCapacitySupplier)
     {
         super(container, 176, 207, inventory, title);
 
         texture = _texture;
+        redstonemode = _redstonemode;
         storedSupplier = _storedSupplier;
         capacitySupplier = _capacitySupplier;
         ioCapacitySupplier = _ioCapacitySupplier;
@@ -41,7 +43,7 @@ public class ScreenNodeEnergyStorage <T extends Container> extends BaseScreen<T>
     @Override
     public void onPostInit(int x, int y)
     {
-    	addSideButton(new RedstoneModeSideButton(this, TileEntityPOEDrive.REDSTONE_MODE));
+    	addSideButton(new RedstoneModeSideButton(this, redstonemode));
     }
 
     @Override

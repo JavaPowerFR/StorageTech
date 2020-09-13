@@ -37,12 +37,12 @@ public class ItemMemoryFluid extends Item
 			CompoundNBT nbt = stack.getTag();
 			if(nbt != null && nbt.contains("memory"))
 			{
-				tooltip.add(new TranslationTextComponent(Tools.longFormatToString(nbt.getLong("memory")) + " VFT").func_230530_a_(Styles.GRAY));
-				tooltip.add(new TranslationTextComponent(I18n.format("storagetech.tooltip.putvft")).func_230530_a_(Styles.GRAY));
+				tooltip.add(new TranslationTextComponent(I18n.format("tooltip.storagetech.valuevft", Tools.longFormatToString(nbt.getLong("memory")))).func_230530_a_(Styles.GRAY));
+				tooltip.add(new TranslationTextComponent(I18n.format("tooltip.storagetech.putvft")).func_230530_a_(Styles.GRAY));
 			}
 			else
 			{
-				tooltip.add(new TranslationTextComponent(I18n.format("storagetech.tooltip.novft")).func_230530_a_(Styles.GRAY));
+				tooltip.add(new TranslationTextComponent(I18n.format("tooltip.storagetech.novft")).func_230530_a_(Styles.GRAY));
 			}
 		}
 	}

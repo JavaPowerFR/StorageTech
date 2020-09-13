@@ -10,7 +10,7 @@ public class ItemEnergyStoragePart extends Item
 	public ItemEnergyStoragePart(String subname, int _size)
 	{
 		super(STItems.DEFAULT_PROPERTIES);
-		setRegistryName(StorageTech.MODID, subname+"_energy_storage_part");
+		setRegistryName(StorageTech.MODID, subname+"_energy_part");
 		size = _size;
 	}
 	

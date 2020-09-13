@@ -6,6 +6,8 @@ import javax.annotation.Nonnull;
 
 import com.refinedmods.refinedstorage.apiimpl.network.node.DiskState;
 import com.refinedmods.refinedstorage.tile.NetworkNodeTile;
+import com.refinedmods.refinedstorage.tile.data.RSSerializers;
+import com.refinedmods.refinedstorage.tile.data.TileDataParameter;
 import com.refinedmods.refinedstorage.util.WorldUtils;
 
 import javapower.storagetech.core.StorageTech;
@@ -27,6 +29,11 @@ public class TileEntityPOEDrive extends NetworkNodeTile<NetworkNodePOEDrive>
 	@ObjectHolder(StorageTech.MODID+":poedrive")
 	public static final TileEntityType<TileEntityPOEDrive> CURRENT_TILE = null;
 	
+	public static final TileDataParameter<Long, TileEntityPOEDrive> STORED = new TileDataParameter<>(RSSerializers.LONG_SERIALIZER, 0L, t -> t.getNode().getEnergyStored());
+	public static final TileDataParameter<Long, TileEntityPOEDrive> CAPACITY = new TileDataParameter<>(RSSerializers.LONG_SERIALIZER, 0L, t -> t.getNode().getCapacity());
+	public static final TileDataParameter<Long, TileEntityPOEDrive> IO_CAPACITY = new TileDataParameter<>(RSSerializers.LONG_SERIALIZER, 0L, t -> t.getNode().getIOCapacity());
+    
+	
 	public static final ModelProperty<DiskState[]> DISK_STATE_PROPERTY = new ModelProperty<>();
 	private final DiskState[] diskState = new DiskState[8];
     
@@ -47,6 +54,11 @@ public class TileEntityPOEDrive extends NetworkNodeTile<NetworkNodePOEDrive>
     public TileEntityPOEDrive()
     {
         super(CURRENT_TILE);
+        
+        dataManager.addWatchedParameter(STORED);
+        dataManager.addWatchedParameter(CAPACITY);
+        dataManager.addWatchedParameter(IO_CAPACITY);
+        
         Arrays.fill(diskState, DiskState.NONE);
     }
 

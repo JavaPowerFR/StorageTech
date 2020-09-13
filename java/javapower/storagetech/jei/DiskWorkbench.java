@@ -25,7 +25,7 @@ public class DiskWorkbench
 		
 		public Category(IGuiHelper guiHelper)
 		{
-			localizedName = I18n.format(StorageTech.MODID+".jei.category.diskiwb");
+			localizedName = I18n.format("jei."+StorageTech.MODID+".category.diskiwb");
 			background = guiHelper.createDrawable(ResourceLocationRegister.textrue_gui_jei_recipe, 0, 0, 26, 72);
 		}
 

@@ -16,11 +16,11 @@ import com.refinedmods.refinedstorage.item.blockitem.BaseBlockItem;
 import com.refinedmods.refinedstorage.render.Styles;
 import com.refinedmods.refinedstorage.util.NetworkUtils;
 
-import javapower.storagetech.container.ContainerCustomStorage;
+import javapower.storagetech.container.ContainerCustomFluidStorage;
 import javapower.storagetech.core.StorageTech;
-import javapower.storagetech.item.ItemMemoryItem;
-import javapower.storagetech.node.NetworkNodeCustomStorage;
-import javapower.storagetech.tileentity.TileEntityCustomStorage;
+import javapower.storagetech.item.ItemMemoryFluid;
+import javapower.storagetech.node.NetworkNodeCustomFluidStorage;
+import javapower.storagetech.tileentity.TileEntityCustomFluidStorage;
 import javapower.storagetech.util.Tools;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -47,12 +47,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-public class BlockCustomStorage extends NetworkNodeBlock
+public class BlockCustomFluidStorage extends NetworkNodeBlock
 {
 	protected Item thisItem;
-	public static String raw_name = "customstorageblock";
+	public static String raw_name = "customfluidstorageblock";
 	
-	public BlockCustomStorage()
+	public BlockCustomFluidStorage()
 	{
 		super(STBlocks.DEFAULT_BLOCK_PROPERTIES);
 		setRegistryName(StorageTech.MODID, raw_name);
@@ -112,7 +112,7 @@ public class BlockCustomStorage extends NetworkNodeBlock
 			            // Newly created storages won't have a tag yet, so allow invalid disks as well.
 			            if (disk == null || disk.getStored() == 0)
 			            {
-			            	ItemStack storagePart = ItemMemoryItem.createItem(disk.getCapacity());
+			            	ItemStack storagePart = ItemMemoryFluid.createItem(disk.getCapacity());
 
 			                if (!player.inventory.addItemStackToInventory(storagePart.copy()))
 			                {
@@ -152,7 +152,7 @@ public class BlockCustomStorage extends NetworkNodeBlock
 				public ITextComponent getDisplayName(ItemStack stack)
 				{
 					if(stack.hasTag() && stack.getTag().contains("capacity"))
-						return new TranslationTextComponent("block.storagetech.customstorageblock.val", Tools.longFormatToString(stack.getTag().getInt("capacity")));
+						return new TranslationTextComponent("block.storagetech.customfluidstorageblock.val", Tools.longFormatToString(stack.getTag().getInt("capacity")));
 					
 					return super.getDisplayName(stack);
 				}
@@ -181,14 +181,14 @@ public class BlockCustomStorage extends NetworkNodeBlock
 	{
         if (!world.isRemote)
         {
-            NetworkNodeCustomStorage storage = ((TileEntityCustomStorage) world.getTileEntity(pos)).getNode();
+            NetworkNodeCustomFluidStorage storage = ((TileEntityCustomFluidStorage) world.getTileEntity(pos)).getNode();
             if(stack.hasTag())
             {
 	            storage.storageCapacity = stack.getTag().getInt("capacity");
 	            
-	            if (stack.getTag().hasUniqueId(NetworkNodeCustomStorage.NBT_ID))
+	            if (stack.getTag().hasUniqueId(NetworkNodeCustomFluidStorage.NBT_ID))
 	            {
-	                storage.setStorageId(stack.getTag().getUniqueId(NetworkNodeCustomStorage.NBT_ID));
+	                storage.setStorageId(stack.getTag().getUniqueId(NetworkNodeCustomFluidStorage.NBT_ID));
 	            }
             }
 
@@ -202,17 +202,17 @@ public class BlockCustomStorage extends NetworkNodeBlock
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world)
     {
-        return new TileEntityCustomStorage();
+        return new TileEntityCustomFluidStorage();
     }
-    
+
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
         if (!world.isRemote)
         {
-            return NetworkUtils.attemptModify(world, pos, hit.getFace(), player, () -> NetworkHooks.openGui((ServerPlayerEntity) player, new PositionalTileContainerProvider<TileEntityCustomStorage>(
-                ((TileEntityCustomStorage) world.getTileEntity(pos)).getNode().getTitle(),
-                (tile, windowId, inventory, p) -> new ContainerCustomStorage(tile, player, windowId),
+            return NetworkUtils.attemptModify(world, pos, hit.getFace(), player, () -> NetworkHooks.openGui((ServerPlayerEntity) player, new PositionalTileContainerProvider<TileEntityCustomFluidStorage>(
+                ((TileEntityCustomFluidStorage) world.getTileEntity(pos)).getNode().getTitle(),
+                (tile, windowId, inventory, p) -> new ContainerCustomFluidStorage(tile, player, windowId),
                 pos
             ), pos));
         }
@@ -225,9 +225,9 @@ public class BlockCustomStorage extends NetworkNodeBlock
     {
     	ItemStack stack = new ItemStack(this);
     	TileEntity te = worldIn.getTileEntity(pos);
-    	if(te instanceof TileEntityCustomStorage)
+    	if(te instanceof TileEntityCustomFluidStorage)
     	{
-    		((TileEntityCustomStorage)te).fillItemStackDrop(stack, false);
+    		((TileEntityCustomFluidStorage)te).fillItemStackDrop(stack, false);
     	}
     	return stack;
     }
@@ -240,9 +240,9 @@ public class BlockCustomStorage extends NetworkNodeBlock
         {
     		ItemStack stack = new ItemStack(this);
         	TileEntity te = worldIn.getTileEntity(pos);
-        	if(te instanceof TileEntityCustomStorage)
+        	if(te instanceof TileEntityCustomFluidStorage)
         	{
-        		((TileEntityCustomStorage)te).fillItemStackDrop(stack, true);
+        		((TileEntityCustomFluidStorage)te).fillItemStackDrop(stack, true);
         	}
             spawnAsEntity(worldIn, pos, stack);
         }
@@ -257,7 +257,7 @@ public class BlockCustomStorage extends NetworkNodeBlock
     
     public static ItemStack createItemBlock(int value)
     {
-    	ItemStack stack = new ItemStack(STBlocks.blockCustomStorage.getItem());
+    	ItemStack stack = new ItemStack(STBlocks.blockCustomFluidStorage.getItem());
     	if(!stack.hasTag())
     		stack.setTag(new CompoundNBT());
     	

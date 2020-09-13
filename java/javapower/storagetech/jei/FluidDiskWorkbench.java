@@ -25,7 +25,7 @@ public class FluidDiskWorkbench
 		
 		public Category(IGuiHelper guiHelper)
 		{
-			localizedName = I18n.format(StorageTech.MODID+".jei.category.diskfwb");
+			localizedName = I18n.format("jei."+StorageTech.MODID+".category.diskfwb");
 			background = guiHelper.createDrawable(ResourceLocationRegister.textrue_gui_jei_recipe, 0, 72, 28, 74);
 		}
 

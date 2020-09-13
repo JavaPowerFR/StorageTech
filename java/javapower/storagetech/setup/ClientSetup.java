@@ -1,4 +1,4 @@
-package javapower.storagetech.core;
+package javapower.storagetech.setup;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -9,17 +9,25 @@ import com.refinedmods.refinedstorage.render.BakedModelOverrideRegistry;
 import com.refinedmods.refinedstorage.render.model.FullbrightBakedModel;
 
 import javapower.storagetech.block.STBlocks;
+import javapower.storagetech.container.ContainerCustomFluidStorage;
+import javapower.storagetech.container.ContainerCustomStorage;
 import javapower.storagetech.container.ContainerDiskWorkbench;
 import javapower.storagetech.container.ContainerFluidDiskWorkbench;
 import javapower.storagetech.container.ContainerPOEDrive;
 import javapower.storagetech.container.ContainerPOEExporter;
 import javapower.storagetech.container.ContainerPOEImporter;
+import javapower.storagetech.core.ClientConfig;
+import javapower.storagetech.core.ResourceLocationRegister;
+import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.render.BakedModelPOEDrive;
+import javapower.storagetech.render.ClientDiskOverlay;
+import javapower.storagetech.screen.ScreenContainerDiskWorkbench;
+import javapower.storagetech.screen.ScreenContainerFluidDiskWorkbench;
+import javapower.storagetech.screen.ScreenCustomFluidStorageBlock;
+import javapower.storagetech.screen.ScreenCustomStorageBlock;
 import javapower.storagetech.screen.ScreenPOEDrive;
 import javapower.storagetech.screen.ScreenPOEExporter;
 import javapower.storagetech.screen.ScreenPOEImporter;
-import javapower.storagetech.screen.ScreenContainerDiskWorkbench;
-import javapower.storagetech.screen.ScreenContainerFluidDiskWorkbench;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -78,10 +86,11 @@ public class ClientSetup
 		ScreenManager.registerFactory(ContainerPOEImporter.CURRENT_CONTAINER, ScreenPOEImporter::new);
 		ScreenManager.registerFactory(ContainerPOEExporter.CURRENT_CONTAINER, ScreenPOEExporter::new);
 		
+		ScreenManager.registerFactory(ContainerCustomStorage.CURRENT_CONTAINER, ScreenCustomStorageBlock::new);
+		ScreenManager.registerFactory(ContainerCustomFluidStorage.CURRENT_CONTAINER, ScreenCustomFluidStorageBlock::new);
+		
 		RenderTypeLookup.setRenderLayer(STBlocks.blockPOEImporter, RenderType.getCutout());
 		RenderTypeLookup.setRenderLayer(STBlocks.blockPOEExporter, RenderType.getCutout());
-		
-		//ScreenManager.registerFactory(CustomStorageContainer.CURRENT_CONTAINER, CustomStorageBlockScreen::new);
 		
 	}
 	

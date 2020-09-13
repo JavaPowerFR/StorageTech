@@ -3,7 +3,7 @@ package javapower.storagetech.screen;
 import com.refinedmods.refinedstorage.screen.StorageScreen;
 
 import javapower.storagetech.container.ContainerCustomStorage;
-import javapower.storagetech.tileentity.CustomStorageTile;
+import javapower.storagetech.tileentity.TileEntityCustomStorage;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
 
@@ -17,13 +17,13 @@ public class ScreenCustomStorageBlock extends StorageScreen<ContainerCustomStora
             title,
             "gui/storage.png",
             null,
-            CustomStorageTile.REDSTONE_MODE,
-            CustomStorageTile.COMPARE,
-            CustomStorageTile.WHITELIST_BLACKLIST,
-            CustomStorageTile.PRIORITY,
-            CustomStorageTile.ACCESS_TYPE,
-            CustomStorageTile.STORED::getValue,
-            () -> (long) ((CustomStorageTile) container.getTile()).storageCapacity
+            TileEntityCustomStorage.REDSTONE_MODE,
+            TileEntityCustomStorage.COMPARE,
+            TileEntityCustomStorage.WHITELIST_BLACKLIST,
+            TileEntityCustomStorage.PRIORITY,
+            TileEntityCustomStorage.ACCESS_TYPE,
+            TileEntityCustomStorage.STORED::getValue,
+            TileEntityCustomStorage.CAPACITY::getValue
         );
     }
 }

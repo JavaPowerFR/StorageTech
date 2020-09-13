@@ -14,6 +14,7 @@ import com.refinedmods.refinedstorage.apiimpl.API;
 import com.refinedmods.refinedstorage.render.Styles;
 
 import javapower.storagetech.core.StorageTech;
+import javapower.storagetech.util.Tools;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -83,6 +84,15 @@ public class ItemDiskCustom extends Item implements IStorageDiskProvider
                 tooltip.add(new StringTextComponent(id.toString()).func_230530_a_(Styles.GRAY));
         }
     }
+	
+	@Override
+	public ITextComponent getDisplayName(ItemStack stack)
+	{
+		if(stack.hasTag() && stack.getTag().contains("st_cap"))
+			return new TranslationTextComponent("item.storagetech.customdisk.val", Tools.longFormatToString(stack.getTag().getInt("st_cap")));
+		
+		return super.getDisplayName(stack);
+	}
 	
 	@Override
     public int getEntityLifespan(ItemStack stack, World world)

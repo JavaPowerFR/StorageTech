@@ -20,13 +20,17 @@
 *		creation date: 04/08/2017 (dd/mm/yyyy)
 *		recreation date: 03/05/2020 (dd/mm/yyyy)
 *		creat at: Montigny Le Bretonneux France
-*		last modification: 11/09/2020 (dd/mm/yyyy)
+*		last modification: 13/09/2020 (dd/mm/yyyy)
 *		comment: Experimental B9.0
 *		
 ***************************************************/
 package javapower.storagetech.core;
 
 import javapower.storagetech.block.STBlocks;
+import javapower.storagetech.packet.PacketCreateDisk;
+import javapower.storagetech.setup.ClientSetup;
+import javapower.storagetech.setup.CommonSetup;
+import javapower.storagetech.setup.ServerSetup;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;

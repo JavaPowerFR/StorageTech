@@ -32,6 +32,8 @@ public class STItems
 	
 	public static final Item item_energy_storage_cell = new ItemEnergyCell();
 	
+	public static final Item item_structure_copier = new ItemStructureCopier();
+	
 	public static void registerItems(IForgeRegistry<Item> registry)
 	{
 		registry.register(item_diskcustom);
@@ -56,6 +58,7 @@ public class STItems
 		registry.register(item_energy_storage_housing);
 		
 		registry.register(item_energy_storage_cell);
+		registry.register(item_structure_copier);
 		
 	}
 

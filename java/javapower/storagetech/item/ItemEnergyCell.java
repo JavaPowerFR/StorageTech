@@ -1,28 +1,36 @@
 package javapower.storagetech.item;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.refinedmods.refinedstorage.apiimpl.API;
 import com.refinedmods.refinedstorage.render.Styles;
 
-import javapower.storagetech.api.IEnergyStorageCell;
+import javapower.storagetech.api.IItemEnergyStorageDisk;
+import javapower.storagetech.api.STAPI;
 import javapower.storagetech.core.StorageTech;
+import javapower.storagetech.data.EnergyDisk;
+import javapower.storagetech.data.StorageEnergyDiskSyncData;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
-public class ItemEnergyCell extends Item implements IEnergyStorageCell
+public class ItemEnergyCell extends Item implements IItemEnergyStorageDisk
 {
 	public ItemEnergyCell()
 	{
@@ -39,11 +47,27 @@ public class ItemEnergyCell extends Item implements IEnergyStorageCell
 	@Override
 	public ITextComponent getDisplayName(ItemStack stack)
 	{
-		return new StringTextComponent(I18n.format(
-				"item.storagetech.energy_storage_cell.advanced",
-				API.instance().getQuantityFormatter().formatWithUnits(getCapacity(stack)),
-				API.instance().getQuantityFormatter().formatWithUnits(getIOCapacity(stack))
-				));
+		UUID id = getId(stack);
+		STAPI.STORAGE_DISK_SYNC.sendRequest(id);
+		StorageEnergyDiskSyncData sedsy = STAPI.STORAGE_DISK_SYNC.getData(id);
+		if(sedsy != null)
+		{	
+			return new StringTextComponent(I18n.format(
+					"item.storagetech.energy_storage_cell.advanced",
+					API.instance().getQuantityFormatter().formatWithUnits(sedsy.getCapacity()),
+					API.instance().getQuantityFormatter().formatWithUnits(sedsy.getIoCapacity())
+					));
+		}
+		else if(stack.hasTag() && stack.getTag().contains("s"))
+		{
+			return new StringTextComponent(I18n.format(
+					"item.storagetech.energy_storage_cell.advanced",
+					API.instance().getQuantityFormatter().formatWithUnits(stack.getTag().getInt("s")),
+					API.instance().getQuantityFormatter().formatWithUnits(stack.getTag().getInt("i"))
+					));
+		}
+		
+		return super.getDisplayName(stack);
 	}
 	
 	@Override
@@ -51,105 +75,76 @@ public class ItemEnergyCell extends Item implements IEnergyStorageCell
 	{
 		if(stackIsValid(stack))
 		{
+			UUID id = getId(stack);
+			STAPI.STORAGE_DISK_SYNC.sendRequest(id);
+			StorageEnergyDiskSyncData sedsd = STAPI.STORAGE_DISK_SYNC.getData(id);
+			if(sedsd == null)
+				return;
+			
 			tooltip.add(new TranslationTextComponent(
 					"misc.storagetech.storage.energy.stored_capacity",
-					API.instance().getQuantityFormatter().format(getEnergyStored(stack)),
-					API.instance().getQuantityFormatter().format(getCapacity(stack))
+					API.instance().getQuantityFormatter().format(sedsd.getStored()),
+					API.instance().getQuantityFormatter().format(sedsd.getCapacity())
 					).func_230530_a_(Styles.GRAY));
 			tooltip.add(new TranslationTextComponent(
 					"misc.storagetech.storage.energy.io_capacity",
-					API.instance().getQuantityFormatter().format(getIOCapacity(stack))
+					API.instance().getQuantityFormatter().format(sedsd.getIoCapacity())
 					).func_230530_a_(Styles.GRAY));
-		}
-	}
-
-	@Override
-	public int getCapacity(ItemStack stack)
-	{
-		if(stack != null && stack.hasTag())
-			return stack.getTag().getInt("cap");
-		
-		return 0;
-	}
-
-	@Override
-	public int getIOCapacity(ItemStack stack)
-	{
-		if(stack != null && stack.hasTag())
-			return stack.getTag().getInt("iocap");
-		
-		return 0;
-	}
-
-	@Override
-	public int getEnergyStored(ItemStack stack)
-	{
-		if(stackIsValid(stack))
-			return stack.getTag().getInt("energy");
-		return 0;
-	}
-
-	@Override
-	public int receiveEnergy(ItemStack stack, int maxReceive, boolean simulate)
-	{
-		if(stackIsValid(stack))
-		{
-			int energy = stack.getTag().getInt("energy");
-			int capacity = getCapacity(stack);
-			int accepted = Math.min(Math.min(capacity - energy, maxReceive), getIOCapacity(stack));
-			if(!simulate)
-			{
-				energy += accepted;
-				stack.getTag().putInt("energy", energy);
-			}
-			return accepted;
-		}
-		return 0;
-	}
-
-	@Override
-	public int extractEnergy(ItemStack stack, int maxExtract, boolean simulate)
-	{
-		if(stackIsValid(stack))
-		{
-			int energy = stack.getTag().getInt("energy");
-			int energyExtracteble = Math.min(Math.min(energy, maxExtract), getIOCapacity(stack));
-			if(!simulate)
-			{
-				energy -= energyExtracteble;
-				stack.getTag().putInt("energy", energy);
-			}
 			
-			return energyExtracteble;
+			if (flagIn.isAdvanced())
+			{
+                tooltip.add(new StringTextComponent(id.toString()).func_230530_a_(Styles.GRAY));
+            }
 		}
-		return 0;
 	}
 	
 	public boolean stackIsValid(ItemStack stack)
 	{
 		if(stack != null)
 		{
-			if(!stack.hasTag())
-			{
-				stack.setTag(new CompoundNBT());
-			}
-			if(!stack.getTag().contains("energy"))
-				stack.getTag().putInt("energy", 0);
-			return true;
+			return stack.hasTag() && stack.getTag().hasUniqueId("Id");
 		}
 		return false;
 	}
 	
 	public static ItemStack createItem(int size, int iocap)
 	{
+		UUID id = UUID.randomUUID();
+		
 		ItemStack item = new ItemStack(STItems.item_energy_storage_cell, 1);
+		
 		CompoundNBT nbt = new CompoundNBT();
-		nbt.putInt("cap", size);
-		nbt.putInt("iocap", iocap);
-		nbt.putInt("energy", 0);
+		nbt.putUniqueId("Id", id);
+		nbt.putInt("s", size);
+		nbt.putInt("i", iocap);
+		
 		item.setTag(nbt);
 		
 		return item;
+	}
+	
+	@Override
+	public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
+	{
+		super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
+		if(!worldIn.isRemote && stack.hasTag() && stack.getTag().contains("s"))
+		{
+			STAPI.getNetworkManager((ServerWorld) worldIn).createEnergyDisk(stack.getTag().getUniqueId("Id"), stack.getTag().getInt("s"), stack.getTag().getInt("i"));
+			stack.getTag().remove("s");
+			stack.getTag().remove("i");
+		}
+	}
+	
+	@Override
+	public void onCreated(ItemStack stack, World worldIn, PlayerEntity playerIn)
+	{
+		super.onCreated(stack, worldIn, playerIn);
+		if(!worldIn.isRemote && stack.hasTag() && stack.getTag().contains("s"))
+		{
+			STAPI.getNetworkManager((ServerWorld) worldIn).createEnergyDisk(stack.getTag().getUniqueId("Id"), stack.getTag().getInt("s"), stack.getTag().getInt("i"));
+			stack.getTag().remove("s");
+			stack.getTag().remove("i");
+		}
 	}
 	
 	@Override
@@ -157,33 +152,33 @@ public class ItemEnergyCell extends Item implements IEnergyStorageCell
 	{
         ItemStack cellStack = player.getHeldItem(hand);
 
-        if (!world.isRemote && player.isCrouching() && cellStack.getItem() instanceof IEnergyStorageCell)
+        if (!world.isRemote && player.isCrouching() && cellStack.getItem() instanceof ItemEnergyCell)
         {
-            IEnergyStorageCell cell = (IEnergyStorageCell) cellStack.getItem();
-
-            if (cell.getEnergyStored(cellStack) == 0)
-            {
-                ItemStack storagePart[] = cell.getParts(cellStack);
-
-                for(ItemStack stack : storagePart)
-                if (!player.inventory.addItemStackToInventory(stack.copy()))
-                	InventoryHelper.spawnItemStack(world, player.getPosX(), player.getPosY(), player.getPosZ(), stack);
-
-                return new ActionResult<>(ActionResultType.SUCCESS, new ItemStack(STItems.item_energy_storage_housing));
-            }
+        	ItemEnergyCell cell = (ItemEnergyCell) cellStack.getItem();
+        	UUID id = cell.getId(cellStack);
+        	if(id != null)
+        	{
+	        	EnergyDisk disk = STAPI.getNetworkManager((ServerWorld) world).removeEnergyDisk(id);
+	            if (disk.getEnergyStored() == 0)
+	            {
+	                ItemStack storagePart[] = cell.getParts(disk.capacity, disk.io_capacity);
+	
+	                for(ItemStack stack : storagePart)
+	                if (!player.inventory.addItemStackToInventory(stack.copy()))
+	                	InventoryHelper.spawnItemStack(world, player.getPosX(), player.getPosY(), player.getPosZ(), stack);
+	
+	                return new ActionResult<>(ActionResultType.SUCCESS, new ItemStack(STItems.item_energy_storage_housing));
+	            }
+        	}
         }
 
         return new ActionResult<>(ActionResultType.PASS, cellStack);
     }
-
-	@Override
-	public ItemStack[] getParts(ItemStack stack)
+	
+	public ItemStack[] getParts(int capacity, int ioCapacity)
 	{
 		ItemStack part = ItemStack.EMPTY;
 		ItemStack io_iterface = ItemStack.EMPTY;
-		
-		int capacity = stack.getTag().getInt("cap");
-		int ioCapacity = stack.getTag().getInt("iocap");
 		
 		if(capacity == 100_000) part = new ItemStack(STItems.item_100k_energy_storage_part);
 		else if(capacity == 400_000) part = new ItemStack(STItems.item_400k_energy_storage_part);
@@ -198,6 +193,31 @@ public class ItemEnergyCell extends Item implements IEnergyStorageCell
 		else if(ioCapacity == 80) io_iterface = new ItemStack(STItems.item_80p_energy_io_interface);
 		
 		return new ItemStack[]{part, io_iterface};
+	}
+
+	@Override
+	public UUID getId(ItemStack stack)
+	{
+		if(stack.hasTag())
+			return stack.getTag().getUniqueId("Id");
+		return null;
+	}
+	
+	@Override
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items)
+	{
+		if(group != StorageTech.creativeTab)
+			return;
+		
+		int[] values = new int[] {100_000, 400_000, 1_600_000, 6_400_000, 25_600_000, 102_400_000};
+		int[] efficiencys = new int[] {10, 20, 40, 80};
+		for(int v : values)
+		{
+			for(int e : efficiencys)
+			{
+				items.add(ItemEnergyCell.createItem(v, (int)((v*((long)e))/100)));
+			}
+		}
 	}
 
 }

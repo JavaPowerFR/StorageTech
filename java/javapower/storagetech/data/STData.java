@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javapower.storagetech.api.IEnergyStorageNode;
+import javapower.storagetech.core.StorageTech;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -12,9 +13,12 @@ public class STData
 {
 	private World world;
 	private BlockPos controllerPos;
-	@SuppressWarnings("unused")
+	
 	private STNetworkManager parent;
+	
 	private List<IEnergyStorageNode> energyStorages;
+	
+	private javapower.storagetech.mekanism.data.STMKData mekanism_data;
 	
 	public STData(World _world, BlockPos _controllerPos, STNetworkManager _parent)
 	{
@@ -22,6 +26,19 @@ public class STData
 		controllerPos = _controllerPos;
 		parent = _parent;
 		energyStorages = new ArrayList<>();
+		
+		if(StorageTech.MOD_MEKANISM_IS_LOADED)
+			mekanism_data = new javapower.storagetech.mekanism.data.STMKData(this);
+	}
+	
+	public void markForSaving()
+	{
+		parent.markForSaving();
+	}
+	
+	public javapower.storagetech.mekanism.data.STMKData getMekanismData()
+	{
+		return mekanism_data;
 	}
 	
 	public World getWorld()

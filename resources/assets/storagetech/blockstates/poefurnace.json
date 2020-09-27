@@ -1,0 +1,43 @@
+{
+  "variants":
+  {
+    "direction=east,lit=false":
+    {
+      "model": "storagetech:block/poefurnace_off",
+      "y": 90
+    },
+    "direction=east,lit=true":
+    {
+      "model": "storagetech:block/poefurnace_on",
+      "y": 90
+    },
+    "direction=north,lit=false":
+    {
+      "model": "storagetech:block/poefurnace_off"
+    },
+    "direction=north,lit=true":
+    {
+      "model": "storagetech:block/poefurnace_on"
+    },
+    "direction=south,lit=false":
+    {
+      "model": "storagetech:block/poefurnace_off",
+      "y": 180
+    },
+    "direction=south,lit=true":
+    {
+      "model": "storagetech:block/poefurnace_on",
+      "y": 180
+    },
+    "direction=west,lit=false":
+    {
+      "model": "storagetech:block/poefurnace_off",
+      "y": 270
+    },
+    "direction=west,lit=true":
+    {
+      "model": "storagetech:block/poefurnace_on",
+      "y": 270
+    }
+  }
+}

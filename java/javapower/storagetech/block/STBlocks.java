@@ -13,26 +13,33 @@ import javapower.storagetech.container.ContainerDiskWorkbench;
 import javapower.storagetech.container.ContainerFluidDiskWorkbench;
 import javapower.storagetech.container.ContainerPOEDrive;
 import javapower.storagetech.container.ContainerPOEExporter;
+import javapower.storagetech.container.ContainerPOEFurnace;
 import javapower.storagetech.container.ContainerPOEImporter;
+import javapower.storagetech.container.ContainerStructureConstructor;
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.node.NetworkNodeCustomFluidStorage;
 import javapower.storagetech.node.NetworkNodeCustomStorage;
 import javapower.storagetech.node.NetworkNodePOEDrive;
 import javapower.storagetech.node.NetworkNodePOEExporter;
+import javapower.storagetech.node.NetworkNodePOEFurnace;
 import javapower.storagetech.node.NetworkNodePOEImporter;
+import javapower.storagetech.node.NetworkNodeStructureConstructor;
 import javapower.storagetech.tileentity.TileEntityCustomFluidStorage;
 import javapower.storagetech.tileentity.TileEntityCustomStorage;
 import javapower.storagetech.tileentity.TileEntityDiskWorkbench;
 import javapower.storagetech.tileentity.TileEntityFluidDiskWorkbench;
 import javapower.storagetech.tileentity.TileEntityPOEDrive;
 import javapower.storagetech.tileentity.TileEntityPOEExporter;
+import javapower.storagetech.tileentity.TileEntityPOEFurnace;
 import javapower.storagetech.tileentity.TileEntityPOEImporter;
+import javapower.storagetech.tileentity.TileEntityStructureConstructor;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
@@ -40,6 +47,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class STBlocks
 {
+	public static final BooleanProperty CONNECTED = BooleanProperty.create("connected");
 	public static final Block.Properties DEFAULT_BLOCK_PROPERTIES = Block.Properties.create(Material.IRON).hardnessAndResistance(2.5F).sound(SoundType.METAL);
     
 	public static final BlockDiskWorkbench blockDiskWorkbench = new BlockDiskWorkbench();
@@ -48,6 +56,8 @@ public class STBlocks
 	public static final BlockPOEDrive blockPOEDrive = new BlockPOEDrive();
 	public static final BlockPOEImporter blockPOEImporter = new BlockPOEImporter();
 	public static final BlockPOEExporter blockPOEExporter = new BlockPOEExporter();
+	public static final BlockPOEFurnace blockPOEFurnace = new BlockPOEFurnace();
+	public static final BlockStructureConstructor blockStructureConstructor = new BlockStructureConstructor();
 	
 	public static final BlockCustomStorage blockCustomStorage = new BlockCustomStorage();
 	public static final BlockCustomFluidStorage blockCustomFluidStorage = new BlockCustomFluidStorage();
@@ -62,6 +72,8 @@ public class STBlocks
 		registry.register(blockPOEDrive.getBlock());
 		registry.register(blockPOEImporter.getBlock());
 		registry.register(blockPOEExporter.getBlock());
+		registry.register(blockPOEFurnace.getBlock());
+		registry.register(blockStructureConstructor.getBlock());
 		
 		registry.register(blockCustomStorage.getBlock());
 		registry.register(blockCustomFluidStorage.getBlock());
@@ -78,6 +90,8 @@ public class STBlocks
 		registry.register(blockPOEDrive.getItem());
 		registry.register(blockPOEImporter.getItem());
 		registry.register(blockPOEExporter.getItem());
+		registry.register(blockPOEFurnace.getItem());
+		registry.register(blockStructureConstructor.getItem());
 		
 		registry.register(blockCustomStorage.getItem());
 		registry.register(blockCustomFluidStorage.getItem());
@@ -94,6 +108,8 @@ public class STBlocks
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityPOEDrive(), blockPOEDrive).build(null).setRegistryName(StorageTech.MODID, BlockPOEDrive.raw_name)));
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityPOEImporter(), blockPOEImporter).build(null).setRegistryName(StorageTech.MODID, BlockPOEImporter.raw_name)));
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityPOEExporter(), blockPOEExporter).build(null).setRegistryName(StorageTech.MODID, BlockPOEExporter.raw_name)));
+		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityPOEFurnace(), blockPOEFurnace).build(null).setRegistryName(StorageTech.MODID, BlockPOEFurnace.raw_name)));
+		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityStructureConstructor(), blockStructureConstructor).build(null).setRegistryName(StorageTech.MODID, BlockStructureConstructor.raw_name)));
 		
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityCustomStorage(), blockCustomStorage).build(null).setRegistryName(StorageTech.MODID, BlockCustomStorage.raw_name)));
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityCustomFluidStorage(), blockCustomFluidStorage).build(null).setRegistryName(StorageTech.MODID, BlockCustomFluidStorage.raw_name)));
@@ -110,6 +126,8 @@ public class STBlocks
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerPOEDrive, TileEntityPOEDrive>((windowId, inv, tile) -> new ContainerPOEDrive(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockPOEDrive.raw_name));
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerPOEImporter, TileEntityPOEImporter>((windowId, inv, tile) -> new ContainerPOEImporter(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockPOEImporter.raw_name));
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerPOEExporter, TileEntityPOEExporter>((windowId, inv, tile) -> new ContainerPOEExporter(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockPOEExporter.raw_name));
+		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerPOEFurnace, TileEntityPOEFurnace>((windowId, inv, tile) -> new ContainerPOEFurnace(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockPOEFurnace.raw_name));
+		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerStructureConstructor, TileEntityStructureConstructor>((windowId, inv, tile) -> new ContainerStructureConstructor(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockStructureConstructor.raw_name));
 		
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerCustomStorage, TileEntityCustomStorage>((windowId, inv, tile) -> new ContainerCustomStorage(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockCustomStorage.raw_name));
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerCustomFluidStorage, TileEntityCustomFluidStorage>((windowId, inv, tile) -> new ContainerCustomFluidStorage(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockCustomFluidStorage.raw_name));
@@ -121,6 +139,8 @@ public class STBlocks
 		registry.add(NetworkNodePOEDrive.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodePOEDrive(world, pos)));
 		registry.add(NetworkNodePOEImporter.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodePOEImporter(world, pos)));
 		registry.add(NetworkNodePOEExporter.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodePOEExporter(world, pos)));
+		registry.add(NetworkNodePOEFurnace.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodePOEFurnace(world, pos)));
+		registry.add(NetworkNodeStructureConstructor.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeStructureConstructor(world, pos)));
 		
 		registry.add(NetworkNodeCustomStorage.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeCustomStorage(world, pos)));
 		registry.add(NetworkNodeCustomFluidStorage.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeCustomFluidStorage(world, pos)));

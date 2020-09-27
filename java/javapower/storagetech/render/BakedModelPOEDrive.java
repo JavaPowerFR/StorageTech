@@ -35,6 +35,7 @@ public class BakedModelPOEDrive extends DelegateBakedModel
 
         CacheKey(BlockState state, @Nullable Direction side, DiskState[] diskState, Random random)
         {
+        	//System.out.println("RPLkY >> ");
             this.state = state;
             this.side = side;
             this.diskState = diskState;
@@ -170,7 +171,7 @@ public class BakedModelPOEDrive extends DelegateBakedModel
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData data)
     {
         DiskState[] diskState = data.getData(TileEntityPOEDrive.DISK_STATE_PROPERTY);
-
+        //System.out.println("MODL >> ");
         if (diskState == null)
         {
             return base.getQuads(state, side, rand, data);

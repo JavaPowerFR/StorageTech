@@ -16,4 +16,16 @@ public class Tools
     {
     	return player.getUniqueID().toString().equalsIgnoreCase("6d89ae8c-01f7-498c-bb36-3f76ff9dfdc9");
     }
+    
+    public static <T> boolean isOnArray(T[] list, T element)
+    {
+    	if(list == null)
+    		return false;
+    	
+    	for(T e : list)
+    		if(e.equals(element))
+    			return true;
+    		
+    	return false;
+    }
 }

@@ -96,7 +96,6 @@ public class TileEntityPOEDrive extends NetworkNodeTile<NetworkNodePOEDrive>
             list.add(IntNBT.valueOf(state.ordinal()));
         }
         tag.put("diskstate", list);
-        
     	return tag;
     }
     

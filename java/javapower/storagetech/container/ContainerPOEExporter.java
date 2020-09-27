@@ -24,6 +24,9 @@ public class ContainerPOEExporter extends BaseContainer
             addSlot(new SlotItemHandler(exporter.getNode().getUpgrades(), i, 53 + (i * 18), 39));
         
         addPlayerInventory(8, 108);
+        
+        transferManager.addBiTransfer(player.inventory, exporter.getNode().getUpgrades());
+        
     }
     
     

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RRR",
+    "RCR",
+    "RFR"
+  ],
+  "key":
+  {
+    "R":
+    {
+      "item": "storagetech:capacitive_redstone"
+    },
+    "C":
+    {
+      "item": "refinedstorage:crafter"
+    },
+    "F":
+    {
+      "item": "minecraft:furnace"
+    }
+  },
+  "result": {
+    "item": "storagetech:poefurnace"
+  }
+}

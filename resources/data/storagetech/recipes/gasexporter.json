@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "refinedstorage:cable"
+    },
+    {
+      "item": "refinedstorage:construction_core"
+    },
+    {
+      "item": "refinedstorage:improved_processor"
+    },
+    {
+      "item": "mekanism:ingot_osmium"
+    }
+  ],
+  "result": {
+    "item": "storagetech:gasexporter"
+  }
+}

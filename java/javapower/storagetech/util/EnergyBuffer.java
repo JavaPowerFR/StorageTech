@@ -34,6 +34,12 @@ public class EnergyBuffer implements IEnergyStorage
         this.maxExtract = maxExtract;
         this.energy = Math.max(0 , Math.min(capacity, energy));
     }
+    
+    public EnergyBuffer setEvent(IEventVoid _e)
+    {
+    	eventchange = _e;
+    	return this;
+    }
 
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate)
@@ -105,4 +111,14 @@ public class EnergyBuffer implements IEnergyStorage
     	}
     	return false;
     }
+
+	public boolean haveSpace()
+	{
+		return capacity - energy > 0;
+	}
+	
+	public boolean canExtractLevel(int amnt)
+	{
+		return energy >= amnt;
+	}
 }

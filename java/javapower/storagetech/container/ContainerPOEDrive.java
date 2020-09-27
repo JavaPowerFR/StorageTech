@@ -29,5 +29,7 @@ public class ContainerPOEDrive extends BaseContainer
         }
 
         addPlayerInventory(8, 125);
+        
+        transferManager.addBiTransfer(player.inventory, tileNode.getNode().getEnergyCells());
     }
 }

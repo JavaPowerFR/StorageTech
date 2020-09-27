@@ -9,6 +9,7 @@ import com.refinedmods.refinedstorage.block.ControllerBlock;
 
 import javapower.storagetech.block.STBlocks;
 import javapower.storagetech.core.CommonConfig;
+import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.event.ControllerLoadEvent;
 import javapower.storagetech.item.STItems;
 import javapower.storagetech.recipe.StorageTechRecipeCell;
@@ -39,6 +40,8 @@ public class CommonSetup
 		CommonConfig.loadConfig();
 		
 		STBlocks.registerNodes(API.instance().getNetworkNodeRegistry());
+		if(StorageTech.MOD_MEKANISM_IS_LOADED)
+			javapower.storagetech.mekanism.block.MKBlocks.registerNodes(API.instance().getNetworkNodeRegistry());
 		
 		List<PartValue> item_part = new ArrayList<PartValue>();
 		List<PartValue> fluid_part = new ArrayList<PartValue>();
@@ -71,7 +74,7 @@ public class CommonSetup
 					
 				}
 			}
-			else if(path.contains("_storage_part"))
+			else if(path.contains("_storage_part") && !path.contains("gas"))
 			{
 				String value = path.substring(0, path.indexOf('_'));
 				int sufix = "kKmMgG".indexOf(value.charAt(value.length()-1))/2;
@@ -106,11 +109,14 @@ public class CommonSetup
     {
     	register.getRegistry().register(CRAFTING_STORAGETECH_CELL);
     }
-
+    
     @SubscribeEvent
     public void onRegisterBlocks(RegistryEvent.Register<Block> register)
     {
     	STBlocks.registerBlocks(register.getRegistry());
+    	
+    	if(StorageTech.MOD_MEKANISM_IS_LOADED)
+    		javapower.storagetech.mekanism.block.MKBlocks.registerBlocks(register.getRegistry());
     }
     
     @SubscribeEvent
@@ -118,18 +124,31 @@ public class CommonSetup
     {
     	STBlocks.registerItems(register.getRegistry());
     	STItems.registerItems(register.getRegistry());
+    	
+    	if(StorageTech.MOD_MEKANISM_IS_LOADED)
+    	{
+    		javapower.storagetech.mekanism.block.MKBlocks.registerItems(register.getRegistry());
+    		javapower.storagetech.mekanism.item.MKItems.registerItems(register.getRegistry());
+    		
+    	}
     }
 
     @SubscribeEvent
     public void onRegisterTiles(RegistryEvent.Register<TileEntityType<?>> register)
     {
     	STBlocks.registerTiles(register.getRegistry());
+    	
+    	if(StorageTech.MOD_MEKANISM_IS_LOADED)
+    		javapower.storagetech.mekanism.block.MKBlocks.registerTiles(register.getRegistry());
     }
 
     @SubscribeEvent
     public void onRegisterContainers(RegistryEvent.Register<ContainerType<?>> register)
     {
     	STBlocks.registerContainers(register.getRegistry());
+    	
+    	if(StorageTech.MOD_MEKANISM_IS_LOADED)
+    		javapower.storagetech.mekanism.block.MKBlocks.registerContainers(register.getRegistry());
     }
     
     public static class Events

@@ -11,8 +11,8 @@ import com.refinedmods.refinedstorage.util.StackUtils;
 import com.refinedmods.refinedstorage.util.WorldUtils;
 
 import javapower.storagetech.api.IEnergyStorageNode;
+import javapower.storagetech.api.STAPI;
 import javapower.storagetech.block.BlockPOEImporter;
-import javapower.storagetech.core.STAPI;
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.data.STData;
 import net.minecraft.nbt.CompoundNBT;
@@ -131,7 +131,7 @@ public class NetworkNodePOEImporter extends NetworkNode
 	{
         super.write(tag);
 
-        StackUtils.writeItems(upgrades, 1, tag);
+        StackUtils.writeItems(upgrades, 0, tag);
         
         tag.putBoolean("energyRestE", energyRestrictionEnable);
         tag.putInt("energyRestV", energyRestrictionValue);
@@ -144,13 +144,19 @@ public class NetworkNodePOEImporter extends NetworkNode
 	{
         super.read(tag);
 
-        StackUtils.readItems(upgrades, 1, tag);
+        StackUtils.readItems(upgrades, 0, tag);
         
         if(tag.contains("energyRestE"))
         	energyRestrictionEnable = tag.getBoolean("energyRestE");
         
         if(tag.contains("energyRestV"))
         	energyRestrictionValue = tag.getInt("energyRestV");
+    }
+	
+	@Override
+    public IItemHandler getDrops()
+    {
+        return upgrades;
     }
 
 	public IItemHandler getUpgrades()

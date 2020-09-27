@@ -27,11 +27,13 @@
 package javapower.storagetech.core;
 
 import javapower.storagetech.block.STBlocks;
-import javapower.storagetech.packet.PacketCreateDisk;
+import javapower.storagetech.packet.RegisterPacket;
 import javapower.storagetech.setup.ClientSetup;
 import javapower.storagetech.setup.CommonSetup;
 import javapower.storagetech.setup.ServerSetup;
+import javapower.storagetech.util.IdDistributor;
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -41,11 +43,13 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
@@ -64,10 +68,10 @@ public class StorageTech
 
 	};
 	
-	private static final String PROTOCOL_VERSION = "1";
+	private static final String PROTOCOL_VERSION = "2";
 	public static final SimpleChannel INSTANCE_CHANNEL = NetworkRegistry.newSimpleChannel
 			(
-			new ResourceLocation(MODID, "createdisk"),
+			new ResourceLocation(MODID, "general"),
 			() -> PROTOCOL_VERSION,
 			PROTOCOL_VERSION::equals,
 		    PROTOCOL_VERSION::equals
@@ -75,6 +79,8 @@ public class StorageTech
 	
 	public static final CommonConfig COMMON_CONFIG = new CommonConfig();
     public static final ClientConfig CLIENT_CONFIG = new ClientConfig();
+    
+    public static boolean MOD_MEKANISM_IS_LOADED = false;
 	
     // ---------------- DEBUG ----------------
     public static final boolean DEBUG = false;
@@ -82,6 +88,13 @@ public class StorageTech
 	@SuppressWarnings("deprecation")
 	public StorageTech()
 	{
+		try
+		{
+			Class.forName("mekanism.common.Mekanism");
+			MOD_MEKANISM_IS_LOADED = true;
+		}
+		catch (ClassNotFoundException e){}
+		
 		DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientSetup::new);
 		
         MinecraftForge.EVENT_BUS.register(new ServerSetup());
@@ -101,8 +114,19 @@ public class StorageTech
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(IRecipeSerializer.class, commonSetup::onRegisterRecipeSerializers);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(ContainerType.class, commonSetup::onRegisterContainers);
         
-        INSTANCE_CHANNEL.registerMessage(0, PacketCreateDisk.class, PacketCreateDisk::encoder, PacketCreateDisk::decoder, PacketCreateDisk::handle);
-
+        IdDistributor id = new IdDistributor();
+        RegisterPacket.register(INSTANCE_CHANNEL, id);
+        
+        if(MOD_MEKANISM_IS_LOADED)
+        	javapower.storagetech.mekanism.packet.RegisterPacket.register(INSTANCE_CHANNEL, id);
 	}
+	
+	public static void sendTo(ServerPlayerEntity player, Object message)
+	{
+        if (!(player instanceof FakePlayer))
+        {
+            INSTANCE_CHANNEL.sendTo(message, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+        }
+    }
 	
 }

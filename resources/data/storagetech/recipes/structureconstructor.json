@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key":
+  {
+    "A":
+    {
+      "item": "refinedstorage:constructor"
+    },
+    "B":
+    {
+      "item": "minecraft:ender_pearl"
+    },
+    "C":
+    {
+      "item": "refinedstorage:construction_core"
+    },
+    "D":
+    {
+      "item": "refinedstorage:machine_casing"
+    },
+    "E":
+    {
+      "item": "refinedstorage:advanced_processor"
+    }
+  },
+  "result": {
+    "item": "storagetech:structureconstructor"
+  }
+}

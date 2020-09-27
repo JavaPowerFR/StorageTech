@@ -1,5 +1,8 @@
 package javapower.storagetech.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.refinedmods.refinedstorage.RS;
 import com.refinedmods.refinedstorage.api.network.INetwork;
 import com.refinedmods.refinedstorage.apiimpl.network.node.ConnectivityStateChangeCause;
@@ -10,11 +13,13 @@ import com.refinedmods.refinedstorage.inventory.listener.NetworkNodeInventoryLis
 import com.refinedmods.refinedstorage.util.StackUtils;
 import com.refinedmods.refinedstorage.util.WorldUtils;
 
-import javapower.storagetech.api.IEnergyStorageCell;
 import javapower.storagetech.api.IEnergyStorageNode;
+import javapower.storagetech.api.IItemEnergyStorageDisk;
+import javapower.storagetech.api.STAPI;
 import javapower.storagetech.block.BlockPOEDrive;
-import javapower.storagetech.core.STAPI;
 import javapower.storagetech.core.StorageTech;
+import javapower.storagetech.data.EnergyDisk;
+import javapower.storagetech.data.STNetworkManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -35,7 +40,7 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
     private long energyIOCapacity = 0l;
 	
 	private final BaseItemHandler cells = new BaseItemHandler(8)
-	        .addValidator((stack) -> stack != null && stack.getItem() instanceof IEnergyStorageCell)
+	        .addValidator((stack) -> stack != null && stack.getItem() instanceof IItemEnergyStorageDisk)
 	        .addListener(new NetworkNodeInventoryListener(this))
 	        .addListener((handler, slot, reading) ->
 	        {
@@ -48,6 +53,9 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 	            }
 	        });
 	
+	private List<EnergyDisk> disks = new ArrayList<EnergyDisk>();
+	private STNetworkManager stNetworkManager = null;
+	
 
 	public NetworkNodePOEDrive(World world, BlockPos pos)
 	{
@@ -56,25 +64,30 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 
 	private void updateContainer()
 	{
-		long capacity = 0;
-        for(int slotId = 0; slotId < cells.getSlots(); ++slotId)
-        {
-        	ItemStack stack = cells.getStackInSlot(slotId);
-        	if(stack != null && stack.getItem() instanceof IEnergyStorageCell)
-        		capacity += ((IEnergyStorageCell)stack.getItem()).getCapacity(stack);
-        }
-        
-        energyCapacity = capacity;
-        
-		long iocapacity = 0;
-        for(int slotId = 0; slotId < cells.getSlots(); ++slotId)
-        {
-        	ItemStack stack = cells.getStackInSlot(slotId);
-        	if(stack != null && stack.getItem() instanceof IEnergyStorageCell)
-        		iocapacity += ((IEnergyStorageCell)stack.getItem()).getIOCapacity(stack);
-        }
-        
-        energyIOCapacity = iocapacity;
+		if(!world.isRemote)
+		{
+			long capacity = 0;
+			long iocapacity = 0;	
+			disks.clear();
+			
+			for(int slotId = 0; slotId < cells.getSlots(); ++slotId)
+	        {
+				ItemStack stack = cells.getStackInSlot(slotId);
+				if(stack != null && stack.getItem() instanceof IItemEnergyStorageDisk)
+				{
+					EnergyDisk energydisk = STAPI.getNetworkManager((ServerWorld) world).getEnergyDisk(((IItemEnergyStorageDisk)stack.getItem()).getId(stack));
+					if(energydisk != null)
+					{
+						disks.add(energydisk);
+						capacity += energydisk.capacity;
+						iocapacity += energydisk.io_capacity;
+					}
+				}
+	        }
+			
+			energyCapacity = capacity;
+			energyIOCapacity = iocapacity;
+		}
 	}
 
 	@Override
@@ -143,11 +156,13 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 		{
 			//connect
 			STAPI.getNetworkManager((ServerWorld) world).getStData(network).putEnergyStorageListener(this);
+			stNetworkManager = STAPI.getNetworkManager((ServerWorld)world);
 		}
 		else
 		{
 			//disconnect
 			STAPI.getNetworkManager((ServerWorld) world).getStData(network).removeEnergyStorageListener(this);
+			stNetworkManager = null;
 		}
 		
 		super.onConnectedStateChange(network, state, cause);
@@ -171,18 +186,23 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 		{
             DiskState state = DiskState.NONE;
             ItemStack stack = cells.getStackInSlot(i);
-            if(stack != null && stack.getItem() instanceof IEnergyStorageCell)
+            
+            if(stack != null && stack.getItem() instanceof IItemEnergyStorageDisk)
             {
-	            if (!canUpdate())
+            	if (!canUpdate())
 	            {
 	                state = DiskState.DISCONNECTED;
 	            }
-	            else
-	            {
-	            	IEnergyStorageCell esc = ((IEnergyStorageCell)stack.getItem());
-	            	state = DiskState.get(esc.getEnergyStored(stack), esc.getCapacity(stack));
-	            }
+            	else
+            	{
+            		if(!world.isRemote)
+            		{
+            			EnergyDisk disk = STAPI.getNetworkManager((ServerWorld) world).getEnergyDisk(((IItemEnergyStorageDisk)stack.getItem()).getId(stack));
+            			state = DiskState.get(disk.getEnergyStored(), disk.getCapacity());
+            		}
+            	}
             }
+            
             diskStates[i] = state;
 		}
 		return diskStates;
@@ -204,11 +224,11 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 	public long getEnergyStored()
 	{
 		long stored = 0;
-        for(int slotId = 0; slotId < cells.getSlots(); ++slotId)
+		
+		for(int slotId = 0; slotId < disks.size(); ++slotId)
         {
-        	ItemStack stack = cells.getStackInSlot(slotId);
-        	if(stack != null && stack.getItem() instanceof IEnergyStorageCell)
-        		stored += ((IEnergyStorageCell)stack.getItem()).getEnergyStored(stack);
+			EnergyDisk disk = disks.get(slotId);
+			stored += disk.getEnergyStored();
         }
 		return stored;
 	}
@@ -220,21 +240,20 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 		
 		long limitedMaxReceive = Math.min(maxReceive, getIOCapacity());
 		
-		for(int slotId = 0; slotId < cells.getSlots(); ++slotId)
+		for(int slotId = 0; slotId < disks.size(); ++slotId)
         {
-        	ItemStack stack = cells.getStackInSlot(slotId);
-        	if(stack != null && stack.getItem() instanceof IEnergyStorageCell)
-        	{
-        		IEnergyStorageCell cell = (IEnergyStorageCell) stack.getItem();
-        		long energyInsertable = limitedMaxReceive - energyReceved;
-        		if(energyInsertable <= 0)
-        			break;
-        		energyReceved += cell.receiveEnergy(stack, (int) Math.min(energyInsertable, Integer.MAX_VALUE - 1) , simulate);
-        	}
+			EnergyDisk disk = disks.get(slotId);
+			
+			long energyInsertable = limitedMaxReceive - energyReceved;
+			if(energyInsertable <= 0)
+    			break;
+			
+			energyReceved += disk.receiveEnergy((int) Math.min(energyInsertable, Integer.MAX_VALUE - 1) , simulate);
         }
 		
 		if(energyReceved > 0 && !simulate)
 		{
+			stNetworkManager.markForSaving();
 			markDirty();
 			requestBlockUpdate();
 		}
@@ -248,26 +267,25 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 		long energyExtracted = 0l;
 		
 		long limitedMaxExtract = Math.min(maxExtract, getIOCapacity());
-		for(int slotId = 0; slotId < cells.getSlots(); ++slotId)
+		
+		for(int slotId = 0; slotId < disks.size(); ++slotId)
         {
-        	ItemStack stack = cells.getStackInSlot(slotId);
-        	if(stack != null && stack.getItem() instanceof IEnergyStorageCell)
-        	{
-        		IEnergyStorageCell cell = (IEnergyStorageCell) stack.getItem();
-        		long energyExtracteble = limitedMaxExtract - energyExtracted;
-        		if(energyExtracteble <= 0)
-        			break;
-        		energyExtracted += cell.extractEnergy(stack, (int) Math.min(energyExtracteble, Integer.MAX_VALUE - 1), simulate);
-        	}
+			EnergyDisk disk = disks.get(slotId);
+			
+			long energyExtracteble = limitedMaxExtract - energyExtracted;
+			if(energyExtracteble <= 0)
+    			break;
+			
+			energyExtracted += disk.extractEnergy((int) Math.min(energyExtracteble, Integer.MAX_VALUE - 1), simulate);
         }
 		
 		if(energyExtracted > 0 && !simulate)
 		{
+			stNetworkManager.markForSaving();
 			markDirty();
 			requestBlockUpdate();
 		}
 		
 		return energyExtracted;
 	}
-
 }

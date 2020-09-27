@@ -14,9 +14,11 @@ import com.refinedmods.refinedstorage.apiimpl.network.node.storage.StorageNetwor
 import com.refinedmods.refinedstorage.item.blockitem.FluidStorageBlockItem;
 import com.refinedmods.refinedstorage.item.blockitem.StorageBlockItem;
 
-import javapower.storagetech.api.IEnergyStorageCell;
+import javapower.storagetech.api.IItemEnergyStorageDisk;
+import javapower.storagetech.api.STAPI;
 import javapower.storagetech.core.ClientConfig;
 import javapower.storagetech.core.ResourceLocationRegister;
+import javapower.storagetech.data.StorageEnergyDiskSyncData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -57,6 +59,7 @@ public class ClientDiskOverlay
 		    		if(data != null)
 		    		{
 		    			RenderSystem.disableDepthTest();
+		    			GL11.glEnable(GL11.GL_BLEND);
 		    			
 		    			if(data.getCapacity() != -1)
 		    			{
@@ -88,11 +91,14 @@ public class ClientDiskOverlay
 			    			renderType.finish();
 		    			}
 		    			
+		    			GL11.glDisable(GL11.GL_BLEND);
 		    			RenderSystem.enableDepthTest();
 		    		}
 	    		}
 	    		else if(itemstack.getItem() instanceof BlockItem)
 	    		{
+	    			GL11.glEnable(GL11.GL_BLEND);
+	    			
 	    			if(itemstack.getItem() instanceof StorageBlockItem)
 	    			{
 	    				if(itemstack.hasTag() && itemstack.getTag().hasUniqueId(StorageNetworkNode.NBT_ID))
@@ -173,33 +179,40 @@ public class ClientDiskOverlay
 	    		    		}
 	    				}
 	    			}
+	    			
+	    			GL11.glDisable(GL11.GL_BLEND);
 	    		}
-	    		else if(itemstack.getItem() instanceof IEnergyStorageCell)
+	    		else if(itemstack.getItem() instanceof IItemEnergyStorageDisk)
 	    		{
-	    			
-	    			IEnergyStorageCell cell = ((IEnergyStorageCell)itemstack.getItem());
-	    			int capa = cell.getCapacity(itemstack);
-	    			
-	    			if(capa > 0)
+	    			IItemEnergyStorageDisk disk = ((IItemEnergyStorageDisk)itemstack.getItem());
+	    			StorageEnergyDiskSyncData sedsd = STAPI.STORAGE_DISK_SYNC.getData(disk.getId(itemstack));
+	    			if(sedsd != null)
 	    			{
-		    			RenderSystem.disableDepthTest();
+		    			int capa = sedsd.getCapacity();
 		    			
-		    			float size = cell.getEnergyStored(itemstack)/(float)capa;
-		    			int color = size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded;
-		    			minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
-		    			GuiUtils.drawTexturedModalRect(event.getX() - 4, event.getY() - 24, 0, 0, 93, 20, 0.1f);
-		    			drawRect(event.getX(), event.getY() - 18, event.getX() + 60, event.getY() - 10, 0xff444444);
-		    			if(size > 0)
-		    				drawRect(event.getX(), event.getY() - 18, event.getX() + (int)(60*size), event.getY() - 10, color);
-		    			
-		    			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-		    			MatrixStack textStack = new MatrixStack();
-		                textStack.translate(0.0D, 0.0D, 300D);
-		                Matrix4f textLocation = textStack.getLast().getMatrix();
-		    			minecraft.fontRenderer.renderString(((int) (size*100))+"%", event.getX() + 62, event.getY() - 17, color, false, textLocation, renderType, false, 0, 15728880);
-		    			renderType.finish();
-		    			
-		    			RenderSystem.enableDepthTest();
+		    			if(capa > 0)
+		    			{
+			    			RenderSystem.disableDepthTest();
+			    			GL11.glEnable(GL11.GL_BLEND);
+			    			
+			    			float size = sedsd.getStored()/(float)capa;
+			    			int color = size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded;
+			    			minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
+			    			GuiUtils.drawTexturedModalRect(event.getX() - 4, event.getY() - 24, 0, 0, 93, 20, 0.1f);
+			    			drawRect(event.getX(), event.getY() - 18, event.getX() + 60, event.getY() - 10, 0xff444444);
+			    			if(size > 0)
+			    				drawRect(event.getX(), event.getY() - 18, event.getX() + (int)(60*size), event.getY() - 10, color);
+			    			
+			    			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+			    			MatrixStack textStack = new MatrixStack();
+			                textStack.translate(0.0D, 0.0D, 300D);
+			                Matrix4f textLocation = textStack.getLast().getMatrix();
+			    			minecraft.fontRenderer.renderString(((int) (size*100))+"%", event.getX() + 62, event.getY() - 17, color, false, textLocation, renderType, false, 0, 15728880);
+			    			renderType.finish();
+			    			
+			    			GL11.glDisable(GL11.GL_BLEND);
+			    			RenderSystem.enableDepthTest();
+		    			}
 	    			}
 	    		}
 	    	}

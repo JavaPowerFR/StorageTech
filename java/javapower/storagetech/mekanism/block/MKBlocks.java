@@ -8,15 +8,18 @@ import com.refinedmods.refinedstorage.tile.BaseTile;
 import com.refinedmods.refinedstorage.tile.data.TileDataManager;
 
 import javapower.storagetech.core.StorageTech;
-import javapower.storagetech.mekanism.container.ContainerGasDrive;
-import javapower.storagetech.mekanism.container.ContainerGasExporter;
-import javapower.storagetech.mekanism.container.ContainerGasImporter;
-import javapower.storagetech.mekanism.node.NetworkNodeGasDrive;
-import javapower.storagetech.mekanism.node.NetworkNodeGasExporter;
-import javapower.storagetech.mekanism.node.NetworkNodeGasImporter;
-import javapower.storagetech.mekanism.tileentity.TileEntityGasDrive;
-import javapower.storagetech.mekanism.tileentity.TileEntityGasExporter;
-import javapower.storagetech.mekanism.tileentity.TileEntityGasImporter;
+import javapower.storagetech.mekanism.container.ContainerChemicalDrive;
+import javapower.storagetech.mekanism.container.ContainerChemicalExporter;
+import javapower.storagetech.mekanism.container.ContainerChemicalGrid;
+import javapower.storagetech.mekanism.container.ContainerChemicalImporter;
+import javapower.storagetech.mekanism.node.NetworkNodeChemicalDrive;
+import javapower.storagetech.mekanism.node.NetworkNodeChemicalExporter;
+import javapower.storagetech.mekanism.node.NetworkNodeChemicalGrid;
+import javapower.storagetech.mekanism.node.NetworkNodeChemicalImporter;
+import javapower.storagetech.mekanism.tileentity.TileEntityChemicalDrive;
+import javapower.storagetech.mekanism.tileentity.TileEntityChemicalExporter;
+import javapower.storagetech.mekanism.tileentity.TileEntityChemicalGrid;
+import javapower.storagetech.mekanism.tileentity.TileEntityChemicalImporter;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
@@ -28,47 +31,53 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class MKBlocks
 {
-	public static final BlockGasDrive blockGasDrive = new BlockGasDrive();
-	public static final BlockGasImporter blockGasImporter = new BlockGasImporter();
-	public static final BlockGasExporter blockGasExporter = new BlockGasExporter();
+	public static final BlockChemicalDrive blockChemicalDrive = new BlockChemicalDrive();
+	public static final BlockChemicalImporter blockChemicalImporter = new BlockChemicalImporter();
+	public static final BlockChemicalExporter blockChemicalExporter = new BlockChemicalExporter();
+	public static final BlockChemicalGrid blockChemicalGrid = new BlockChemicalGrid();
 	
 	public static void registerBlocks(IForgeRegistry<Block> registry)
 	{
-		registry.register(blockGasDrive.getBlock());
-		registry.register(blockGasImporter.getBlock());
-		registry.register(blockGasExporter.getBlock());
+		registry.register(blockChemicalDrive.getBlock());
+		registry.register(blockChemicalImporter.getBlock());
+		registry.register(blockChemicalExporter.getBlock());
+		registry.register(blockChemicalGrid.getBlock());
 		
 	}
 
 	public static void registerItems(IForgeRegistry<Item> registry)
 	{
-		registry.register(blockGasDrive.getItem());
-		registry.register(blockGasImporter.getItem());
-		registry.register(blockGasExporter.getItem());
+		registry.register(blockChemicalDrive.getItem());
+		registry.register(blockChemicalImporter.getItem());
+		registry.register(blockChemicalExporter.getItem());
+		registry.register(blockChemicalGrid.getItem());
 		
 	}
 
 	public static void registerTiles(IForgeRegistry<TileEntityType<?>> registry)
 	{
-		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityGasDrive(), blockGasDrive).build(null).setRegistryName(StorageTech.MODID, BlockGasDrive.raw_name)));
-		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityGasImporter(), blockGasImporter).build(null).setRegistryName(StorageTech.MODID, BlockGasImporter.raw_name)));
-		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityGasExporter(), blockGasExporter).build(null).setRegistryName(StorageTech.MODID, BlockGasExporter.raw_name)));
+		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityChemicalDrive(), blockChemicalDrive).build(null).setRegistryName(StorageTech.MODID, BlockChemicalDrive.raw_name)));
+		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityChemicalImporter(), blockChemicalImporter).build(null).setRegistryName(StorageTech.MODID, BlockChemicalImporter.raw_name)));
+		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityChemicalExporter(), blockChemicalExporter).build(null).setRegistryName(StorageTech.MODID, BlockChemicalExporter.raw_name)));
+		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityChemicalGrid(), blockChemicalGrid).build(null).setRegistryName(StorageTech.MODID, BlockChemicalGrid.raw_name)));
 		
 	}
 
 	public static void registerContainers(IForgeRegistry<ContainerType<?>> registry)
 	{
-		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerGasDrive, TileEntityGasDrive>((windowId, inv, tile) -> new ContainerGasDrive(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockGasDrive.raw_name));
-		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerGasImporter, TileEntityGasImporter>((windowId, inv, tile) -> new ContainerGasImporter(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockGasImporter.raw_name));
-		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerGasExporter, TileEntityGasExporter>((windowId, inv, tile) -> new ContainerGasExporter(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockGasExporter.raw_name));
+		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerChemicalDrive, TileEntityChemicalDrive>((windowId, inv, tile) -> new ContainerChemicalDrive(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockChemicalDrive.raw_name));
+		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerChemicalImporter, TileEntityChemicalImporter>((windowId, inv, tile) -> new ContainerChemicalImporter(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockChemicalImporter.raw_name));
+		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerChemicalExporter, TileEntityChemicalExporter>((windowId, inv, tile) -> new ContainerChemicalExporter(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockChemicalExporter.raw_name));
+		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerChemicalGrid, TileEntityChemicalGrid>((windowId, inv, tile) -> new ContainerChemicalGrid(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockChemicalGrid.raw_name));
 		
 	}
 
 	public static void registerNodes(INetworkNodeRegistry registry)
 	{
-		registry.add(NetworkNodeGasDrive.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeGasDrive(world, pos)));
-		registry.add(NetworkNodeGasImporter.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeGasImporter(world, pos)));
-		registry.add(NetworkNodeGasExporter.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeGasExporter(world, pos)));
+		registry.add(NetworkNodeChemicalDrive.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeChemicalDrive(world, pos)));
+		registry.add(NetworkNodeChemicalImporter.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeChemicalImporter(world, pos)));
+		registry.add(NetworkNodeChemicalExporter.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeChemicalExporter(world, pos)));
+		registry.add(NetworkNodeChemicalGrid.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeChemicalGrid(world, pos)));
 		
 	}
 	

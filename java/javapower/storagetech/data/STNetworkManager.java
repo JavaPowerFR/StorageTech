@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.refinedmods.refinedstorage.api.network.INetwork;
+import com.refinedmods.refinedstorage.apiimpl.API;
 
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.mekanism.data.MKNetworkManager;
@@ -12,6 +13,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
 
@@ -71,7 +73,7 @@ public class STNetworkManager extends WorldSavedData
                 
                 CompoundNBT data = stTag.getCompound("data");
                 BlockPos pos = BlockPos.fromLong(stTag.getLong("pos"));
-                STData stdata = new STData(world, pos, this);
+                STData stdata = new STData(world, API.instance().getNetworkManager((ServerWorld) world).getNetwork(pos), this);
                 stdata.readFromNbt(data);
                 
                 networks.put(pos, stdata);
@@ -144,7 +146,7 @@ public class STNetworkManager extends WorldSavedData
     	if(data != null)
     		return data;
     	
-    	data = new STData(world, nw.getPosition(), this);
+    	data = new STData(world, nw, this);
     	networks.put(nw.getPosition(), data);
     	markForSaving();
     	return data;

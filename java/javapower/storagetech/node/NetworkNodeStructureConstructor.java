@@ -124,7 +124,8 @@ public class NetworkNodeStructureConstructor extends NetworkNode
 	protected void onConnectedStateChange(INetwork network, boolean state, ConnectivityStateChangeCause cause)
 	{
 		super.onConnectedStateChange(network, state, cause);
-		world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(BlockStructureConstructor.CONNECTED, Boolean.valueOf(state)), 3);
+		if(!world.isRemote && !world.isAirBlock(pos))
+			world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(BlockStructureConstructor.CONNECTED, Boolean.valueOf(state)), 3);
 	}
 	
 	@Override

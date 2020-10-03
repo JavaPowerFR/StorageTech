@@ -1,0 +1,4 @@
+{
+  "parent": "item/generated",
+  "textures": {"layer0": "storagetech:items/64k_chemical_storage_part"}
+}

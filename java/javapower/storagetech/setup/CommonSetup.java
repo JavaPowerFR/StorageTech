@@ -74,7 +74,7 @@ public class CommonSetup
 					
 				}
 			}
-			else if(path.contains("_storage_part") && !path.contains("gas"))
+			else if(path.contains("_storage_part") && !path.contains("chemical"))
 			{
 				String value = path.substring(0, path.indexOf('_'));
 				int sufix = "kKmMgG".indexOf(value.charAt(value.length()-1))/2;

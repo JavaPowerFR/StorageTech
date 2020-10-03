@@ -3,6 +3,8 @@ package javapower.storagetech.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.refinedmods.refinedstorage.api.network.INetwork;
+
 import javapower.storagetech.api.IEnergyStorageNode;
 import javapower.storagetech.core.StorageTech;
 import net.minecraft.nbt.CompoundNBT;
@@ -20,15 +22,23 @@ public class STData
 	
 	private javapower.storagetech.mekanism.data.STMKData mekanism_data;
 	
-	public STData(World _world, BlockPos _controllerPos, STNetworkManager _parent)
+	private final INetwork rs_network;
+	
+	public STData(World _world, INetwork nw, STNetworkManager _parent)
 	{
+		rs_network = nw;
 		world = _world;
-		controllerPos = _controllerPos;
+		controllerPos = nw.getPosition();
 		parent = _parent;
 		energyStorages = new ArrayList<>();
 		
 		if(StorageTech.MOD_MEKANISM_IS_LOADED)
 			mekanism_data = new javapower.storagetech.mekanism.data.STMKData(this);
+	}
+	
+	public INetwork getRsNetwork()
+	{
+		return rs_network;
 	}
 	
 	public void markForSaving()

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "storagetech:blocks/chemicalgrid/side",
+    "east": "storagetech:blocks/chemicalgrid/left",
+    "south": "storagetech:blocks/chemicalgrid/back",
+    "west": "storagetech:blocks/chemicalgrid/right",
+    "up": "storagetech:blocks/chemicalgrid/top",
+    "down": "storagetech:blocks/chemicalgrid/bottom",
+    "north": "storagetech:blocks/chemicalgrid/front_on"
+  }
+}

@@ -10,7 +10,7 @@ import net.minecraftforge.common.util.Constants;
 
 public class MKNetworkManager
 {
-	private final ConcurrentHashMap<UUID, GasDisk> gasDisks = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<UUID, ChemicalDisk> chemicalDisks = new ConcurrentHashMap<>();
 	private STNetworkManager stNetworkManager;
 	
 	public MKNetworkManager(STNetworkManager _stNetworkManager)
@@ -20,18 +20,18 @@ public class MKNetworkManager
 	
 	public void read(CompoundNBT nbt)
 	{
-		if(nbt.contains("gasdisks"))
+		if(nbt.contains("chemicaldisks"))
 		{
-			ListNBT disksTag = nbt.getList("gasdisks", Constants.NBT.TAG_COMPOUND);
+			ListNBT disksTag = nbt.getList("chemicaldisks", Constants.NBT.TAG_COMPOUND);
 			
-			gasDisks.clear();
+			chemicalDisks.clear();
 			
 			for (int i = 0; i < disksTag.size(); ++i)
 			{
-				GasDisk disk = GasDisk.readFromNBT(disksTag.getCompound(i));
+				ChemicalDisk disk = ChemicalDisk.readFromNBT(disksTag.getCompound(i));
 				if(disk != null)
 				{
-					gasDisks.put(disk.id, disk);
+					chemicalDisks.put(disk.id, disk);
 				}
 			}
 		}
@@ -39,39 +39,39 @@ public class MKNetworkManager
 	
 	public void write(CompoundNBT nbt)
 	{
-		ListNBT list_gasDisks = new ListNBT();
+		ListNBT list_chemicalDisks = new ListNBT();
 		
-		for(GasDisk disk : gasDisks.values())
+		for(ChemicalDisk disk : chemicalDisks.values())
 		{
 			if(disk != null)
 			{
 				CompoundNBT stTag = new CompoundNBT();
 				disk.writeToNBT(stTag);
-				list_gasDisks.add(stTag);
+				list_chemicalDisks.add(stTag);
 			}
 		}
 		
-		nbt.put("gasdisks", list_gasDisks);
+		nbt.put("chemicaldisks", list_chemicalDisks);
 	}
 
-	public GasDisk getGasDisk(UUID id)
+	public ChemicalDisk getChemicalDisk(UUID id)
 	{
 		if(id == null)
 			return null;
-		return gasDisks.get(id);
+		return chemicalDisks.get(id);
 	}
 	
-	public GasDisk createEnergyDisk(UUID uuid, long _capacity)
+	public ChemicalDisk createEnergyDisk(UUID uuid, long _capacity)
     {
-		GasDisk disk = new GasDisk(uuid, _capacity);
-    	gasDisks.put(disk.id, disk);
+		ChemicalDisk disk = new ChemicalDisk(uuid, _capacity);
+		chemicalDisks.put(disk.id, disk);
     	stNetworkManager.markForSaving();
     	return disk;
     }
 
-	public GasDisk removeGasDisk(UUID id)
+	public ChemicalDisk removeChemicalDisk(UUID id)
 	{
 		stNetworkManager.markForSaving();
-		return gasDisks.remove(id);
+		return chemicalDisks.remove(id);
 	}
 }

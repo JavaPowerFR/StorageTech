@@ -148,7 +148,10 @@ public class CommonSetup
     	STBlocks.registerContainers(register.getRegistry());
     	
     	if(StorageTech.MOD_MEKANISM_IS_LOADED)
+    	{
     		javapower.storagetech.mekanism.block.MKBlocks.registerContainers(register.getRegistry());
+    		javapower.storagetech.mekanism.item.MKItems.registerContainers(register.getRegistry());
+    	}
     }
     
     public static class Events

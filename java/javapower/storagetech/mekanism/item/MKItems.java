@@ -1,7 +1,11 @@
 package javapower.storagetech.mekanism.item;
 
+import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.mekanism.api.ChemicalStorageType;
+import javapower.storagetech.mekanism.container.ContainerChemicalFilter;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
+import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class MKItems
@@ -33,6 +37,11 @@ public class MKItems
 		registry.register(item_chemical_storage_disk_creative);
 		
 		registry.register(item_chemical_filter);
+	}
+	
+	public static void registerContainers(IForgeRegistry<ContainerType<?>> registry)
+	{
+		registry.register(IForgeContainerType.create((windowId, inv, data) -> new ContainerChemicalFilter(inv.player, inv.getCurrentItem(), windowId)).setRegistryName(StorageTech.MODID, "chemicalfilter"));
 	}
 	
 	public static Item getItemGasPart(ChemicalStorageType type)

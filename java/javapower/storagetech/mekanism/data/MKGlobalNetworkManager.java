@@ -3,19 +3,19 @@ package javapower.storagetech.mekanism.data;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javapower.storagetech.data.STNetworkManager;
+import javapower.storagetech.data.STGlobalNetworkManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
 
-public class MKNetworkManager
+public class MKGlobalNetworkManager
 {
 	private final ConcurrentHashMap<UUID, ChemicalDisk> chemicalDisks = new ConcurrentHashMap<>();
-	private STNetworkManager stNetworkManager;
+	private STGlobalNetworkManager stGlobalNetworkManager;
 	
-	public MKNetworkManager(STNetworkManager _stNetworkManager)
+	public MKGlobalNetworkManager(STGlobalNetworkManager _stGlobalNetworkManager)
 	{
-		stNetworkManager = _stNetworkManager;
+		stGlobalNetworkManager = _stGlobalNetworkManager;
 	}
 	
 	public void read(CompoundNBT nbt)
@@ -65,13 +65,13 @@ public class MKNetworkManager
     {
 		ChemicalDisk disk = new ChemicalDisk(uuid, _capacity);
 		chemicalDisks.put(disk.id, disk);
-    	stNetworkManager.markForSaving();
+		stGlobalNetworkManager.markForSaving();
     	return disk;
     }
 
 	public ChemicalDisk removeChemicalDisk(UUID id)
 	{
-		stNetworkManager.markForSaving();
+		stGlobalNetworkManager.markForSaving();
 		return chemicalDisks.remove(id);
 	}
 }

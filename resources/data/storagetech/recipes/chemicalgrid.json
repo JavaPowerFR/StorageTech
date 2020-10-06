@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "refinedstorage:grid"
+    },
+    {
+      "item": "refinedstorage:advanced_processor"
+    },
+    {
+      "item": "mekanism:basic_chemical_tank"
+    }
+  ],
+  "result": {
+    "item": "storagetech:chemicalgrid"
+  }
+}

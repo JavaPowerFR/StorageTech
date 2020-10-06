@@ -87,4 +87,9 @@ public class STData
 	{
 		return energyStorages;
 	}
+
+	public void updateView()
+	{
+		
+	}
 }

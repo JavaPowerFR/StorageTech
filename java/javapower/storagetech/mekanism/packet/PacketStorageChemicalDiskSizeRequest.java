@@ -33,7 +33,7 @@ public class PacketStorageChemicalDiskSizeRequest
 	{
 		 ctx.get().enqueueWork(() ->
 		 {
-			 ChemicalDisk disk = STAPI.getNetworkManager(ctx.get().getSender().getServerWorld()).getMekanisumManager().getChemicalDisk(msg.id);
+			 ChemicalDisk disk = STAPI.getGlobalNetworkManager(ctx.get().getSender().getServerWorld()).getGlobalMekanisumManager().getChemicalDisk(msg.id);
 			 if(disk != null)
 			 {
 				 StorageTech.INSTANCE_CHANNEL.sendTo(new PacketStorageChemicalDiskSizeResponse(

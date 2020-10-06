@@ -33,7 +33,7 @@ public class PacketStorageEnergyDiskSizeRequest
 	{
 		 ctx.get().enqueueWork(() ->
 		 {
-			 EnergyDisk disk = STAPI.getNetworkManager(ctx.get().getSender().getServerWorld()).getEnergyDisk(msg.id);
+			 EnergyDisk disk = STAPI.getGlobalNetworkManager(ctx.get().getSender().getServerWorld()).getEnergyDisk(msg.id);
 			 if(disk != null)
 			 {
 				 StorageTech.INSTANCE_CHANNEL.sendTo(new PacketStorageEnergyDiskSizeResponse(

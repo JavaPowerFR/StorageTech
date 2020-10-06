@@ -24,6 +24,6 @@ public interface IItemChemicalStorageDisk extends IItemProgressBarOverlay
 			if(capa > 0)
 				return scdsd.getStored()/(float)capa;
 		}
-		return -1;
+		return -0.1f;
 	}
 }

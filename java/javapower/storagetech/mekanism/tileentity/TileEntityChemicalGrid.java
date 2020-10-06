@@ -43,7 +43,7 @@ public class TileEntityChemicalGrid extends NetworkNodeTile<NetworkNodeChemicalG
     public static final TileDataParameter<Integer, TileEntityChemicalGrid> SEARCH_BOX_MODE = new TileDataParameter<>(DataSerializers.VARINT, 0,
     		t -> t.getNode().getSearchBoxMode(),
     		(t, v) -> t.getNode().setSearchBoxMode(v),
-    		(initial, p) -> BaseScreen.executeLater(ScreenChemicalGrid.class, (screen) -> screen.getGrid().searchUpdate()));
+    		(initial, p) -> BaseScreen.executeLater(ScreenChemicalGrid.class, (screen) -> screen.getGrid().filter()));
     
     public static final TileDataParameter<Integer, TileEntityChemicalGrid> SIZE = new TileDataParameter<>(DataSerializers.VARINT, 0,
     		t -> t.getNode().getSize(),
@@ -55,6 +55,11 @@ public class TileEntityChemicalGrid extends NetworkNodeTile<NetworkNodeChemicalG
     		(t, v) -> t.getNode().setSearch(v),
     		(initial, p) -> BaseScreen.executeLater(ScreenChemicalGrid.class, (screen) -> screen.getGrid().setSearch(p)));
     
+    public static final TileDataParameter<Integer, TileEntityChemicalGrid> TAB_ID = new TileDataParameter<>(DataSerializers.VARINT, 0,
+    		t -> t.getNode().getTab(),
+    		(t, v) -> t.getNode().setTab(v),
+    		(initial, p) -> BaseScreen.executeLater(ScreenChemicalGrid.class, (screen) -> screen.getGrid().setTab()));
+    
 	
     public TileEntityChemicalGrid()
     {
@@ -65,6 +70,8 @@ public class TileEntityChemicalGrid extends NetworkNodeTile<NetworkNodeChemicalG
         dataManager.addWatchedParameter(SORTING_TYPE);
         dataManager.addWatchedParameter(SEARCH_BOX_MODE);
         dataManager.addWatchedParameter(SIZE);
+        dataManager.addWatchedParameter(SEARCH_STRING);
+        dataManager.addWatchedParameter(TAB_ID); 
     }
 
 	@Override

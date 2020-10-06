@@ -2,7 +2,6 @@ package javapower.storagetech.mekanism.api;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,7 +35,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -45,8 +43,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
 
 public class MekanismUtils
 {
@@ -176,7 +172,6 @@ public class MekanismUtils
     		Gas gas = stack.getType();
     		int tint = gas.getChemical().getTint();
     		
-    		//float alpha = (float)(tint >> 24 & 255) / 255.0F;
     	    float red = (float)(tint >> 16 & 255) / 255.0F;
     	    float green = (float)(tint >> 8 & 255) / 255.0F;
     	    float blue = (float)(tint & 255) / 255.0F;
@@ -185,23 +180,6 @@ public class MekanismUtils
     		RenderSystem.color4f(red, green, blue, 1);
     		Screen.blit(matrixStack, x, y, 0, ((System.currentTimeMillis()/100)%32)*16, 16, 16, 16, 512);
 		}
-    }
-    
-    private static IForgeRegistry<Gas> gasRegistry = null;
-    
-    public static int getGasId(Gas gas)
-    {
-    	if(gasRegistry == null)
-    	gasRegistry = RegistryManager.ACTIVE.getRegistry(Gas.class);
-    	
-    	int id = 0;
-    	for(Entry<ResourceLocation, Gas> element : gasRegistry.getEntries())
-    	{
-    		if(gas == element.getValue())
-    			return id;
-    		++id;
-    	}
-    	return 0;
     }
     
     public static byte getChemicalTypeId(Chemical<?> chemical)

@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.refinedmods.refinedstorage.RS;
 import com.refinedmods.refinedstorage.api.network.grid.IGrid;
 import com.refinedmods.refinedstorage.apiimpl.API;
 import com.refinedmods.refinedstorage.render.RenderSettings;
+import com.refinedmods.refinedstorage.tile.data.TileDataManager;
 import com.refinedmods.refinedstorage.util.RenderUtils;
 
+import javapower.storagetech.api.TooltipRenderer;
 import javapower.storagetech.core.ResourceLocationRegister;
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.mekanism.api.MekanismUtils;
@@ -29,21 +31,25 @@ import mekanism.api.chemical.slurry.SlurryStack;
 import mekanism.api.text.EnumColor;
 import mekanism.api.text.ILangEntry;
 import mekanism.common.MekanismLang;
-import mezz.jei.Internal;
-import mezz.jei.api.helpers.IModIdHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class ClientChemicalGrid
 {
 	List<ChemicalStack<?>> chemicals = new ArrayList<>();
-	/*TreeMap<Chemical<?>, Long>*/List<ChemicalStack<?>> view = new ArrayList<>();
+	List<ChemicalStack<?>> view = new ArrayList<>();
 	
-	String search = "";
+	FilterTab[] filters = new FilterTab[4];
+	int tabId = 0;
+	
+	TextFieldWidget searchField;
 	
 	ScreenChemicalGrid parent;
 	Slider slider;
@@ -52,11 +58,17 @@ public class ClientChemicalGrid
 	{
 		this.parent = parent;
 		slider = new Slider(1, 1, 174, 19);
+		searchField = new TextFieldWidget(Minecraft.getInstance().fontRenderer, 80, 6, 88, 10, new StringTextComponent(""));
+		searchField.setEnableBackgroundDrawing(false);
+		searchField.setResponder((s) ->
+		{
+			TileDataManager.setParameter(TileEntityChemicalGrid.SEARCH_STRING, s);
+		});
+		searchField.setFocused2(TileEntityChemicalGrid.SEARCH_BOX_MODE.getValue() == IGrid.SEARCH_BOX_MODE_NORMAL_AUTOSELECTED);
 	}
 
 	public void sortGrid()
 	{
-		System.out.println(chemicals);
 		chemicals.removeIf((a) -> a == null || a.isEmpty());
 		
 		int sorting_type = TileEntityChemicalGrid.SORTING_TYPE.getValue();
@@ -112,60 +124,99 @@ public class ClientChemicalGrid
 
 	public void initalize(List<ChemicalStack<?>> _chemicals, String _search)
 	{
+		filters = parent.getContainer().getFilter();
 		chemicals = _chemicals;
-		search = _search;
+		searchField.setText(_search);
 		sortGrid();
 	}
 
 	public void filter()
 	{
-		int view_filter = TileEntityChemicalGrid.VIEW_CHEMICAL_TYPE.getValue();
-		
-		view.clear();
-		chemicals.forEach((v) ->
+		if(tabId == -1)
 		{
-			if(view_filter == -1)
-				view.add(v);
-			else if(view_filter+1 == MekanismUtils.getChemicalTypeId(v.getType()))
+			int view_filter = TileEntityChemicalGrid.VIEW_CHEMICAL_TYPE.getValue();
+			
+			view.clear();
+			chemicals.forEach((v) ->
+			{
+				if(view_filter == -1)
 					view.add(v);
-		});
-		
-		searchUpdate();
+				else if(view_filter+1 == MekanismUtils.getChemicalTypeId(v.getType()))
+						view.add(v);
+			});
+			
+			searchUpdate(false);
+		}
+		else
+		{
+			FilterTab tab = filters[tabId];
+			if(tab != null)
+			{
+				view.clear();
+				chemicals.forEach((v) ->
+				{
+					if(tab.whiteList)
+					{
+						if(tabContain(tab, v.getType()))
+							view.add(v);
+					}
+					else
+					{
+						if(!tabContain(tab, v.getType()))
+							view.add(v);
+					}
+				});
+			}
+			
+			searchUpdate(true);
+		}
+	}
+	
+	private boolean tabContain(FilterTab tab, Chemical<?> ch)
+	{
+		for(Chemical<?> c : tab.filters)
+			if(c.equals(ch))
+				return true;
+		return false;
 	}
 
-	public void searchUpdate()
+	public void searchUpdate(boolean byPass)
 	{
-		//int search_box_mode = TileEntityChemicalGrid.SEARCH_BOX_MODE.getValue();
-		if(search != null && search.length() > 0)
+		if(!byPass)
 		{
-			if(search.startsWith("@"))
+			String search = searchField.getText();
+			if(search != null && search.length() > 0)
 			{
-				if(search.length() > 1)
+				if(search.startsWith("@"))
 				{
-					String modname = search.substring(1);
-					/*TreeMap<Chemical<?>, Long>*/List<ChemicalStack<?>> tempView = new ArrayList<>();
-					
+					if(search.length() > 1)
+					{
+						String modname = search.substring(1);
+						List<ChemicalStack<?>> tempView = new ArrayList<>();
+						
+						view.forEach((v) ->
+						{
+							if(StringUtils.containsIgnoreCase(v.getTypeRegistryName().getNamespace(), modname))
+								tempView.add(v);
+						});
+						
+						view = tempView;
+					}
+				}
+				else
+				{
+					List<ChemicalStack<?>> tempView = new ArrayList<>();
 					view.forEach((v) ->
 					{
-						if(StringUtils.containsIgnoreCase(v.getTypeRegistryName().getNamespace(), modname))
+						if(StringUtils.containsIgnoreCase(v.getTextComponent().getString(), search))
 							tempView.add(v);
 					});
 					
 					view = tempView;
 				}
 			}
-			else
-			{
-				/*TreeMap<Chemical<?>, Long>*/List<ChemicalStack<?>> tempView = new ArrayList<>();
-				view.forEach((v) ->
-				{
-					if(StringUtils.containsIgnoreCase(v.getTextComponent().getString(), search))
-						tempView.add(v);
-				});
-				
-				view = tempView;
-			}
 		}
+		
 		float viewElements = view.size()/9f;
 		if(viewElements > ((int)viewElements))
 			++viewElements;
@@ -225,8 +276,9 @@ public class ClientChemicalGrid
 
 	public void setSearch(String v)
 	{
-		search = v;
-		searchUpdate();
+		//System.out.println("txt: "+v);
+		searchField.setText(v);
+		filter();
 	}
 
 	public int getVisibleRows()
@@ -261,17 +313,35 @@ public class ClientChemicalGrid
 		slider.recalculate((int) viewElements, false);
 	}
 	
+	public void tick()
+	{
+		searchField.tick();
+	}
+	
 	public void renderBackground(MatrixStack matrixStack, int x, int y, int mouseX, int mouseY)
 	{
+		Minecraft minecraft = Minecraft.getInstance();
+		
 		int index = (int)slider.index;
 		int YVR = getVisibleRows();
 		
 		renderGrid(matrixStack, x, y, mouseX, mouseY, YVR, index);
+		
+		int offset = 0;
+		for(FilterTab filter : filters)
+		{
+			if(filter != null)
+			{
+				filter.drawTab(minecraft, parent, matrixStack, x + offset*30 + 4, y - 28, mouseX, mouseY, offset == tabId);
+			}
+			++offset;
+		}
 	}
 
 	public void renderForeground(MatrixStack matrixStack, int mouseX, int mouseY)
 	{
 		slider.render(parent, matrixStack);
+		searchField.render(matrixStack, mouseX, mouseY, 1);
 		
 		int index = (int)slider.index;
 		int YVR = getVisibleRows();
@@ -313,21 +383,21 @@ public class ClientChemicalGrid
 			            }
 						
 						textLines.add(type.translateColored(EnumColor.YELLOW, EnumColor.ORANGE, stack.getTextComponent()));
-						//textLines.add(new StringTextComponent(stack.getAmount()+" mB total").func_230530_a_(Styles.GRAY));
 						textLinesSmall.add(stack.getAmount()+" mB total");
 						
-						IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
-						if (modIdHelper.isDisplayingModNameEnabled())
-						{
-							String modName = modIdHelper.getFormattedModNameForModId(stack.getTypeRegistryName().getNamespace());
-							textLinesSmall.add(modName);
-						}
-						
-						//TooltipRenderer.drawHoveringText(textLines, mouseX, mouseY, matrixStack);
 						RenderUtils.drawTooltipWithSmallText(matrixStack, textLines, textLinesSmall, true, ItemStack.EMPTY, mouseX, mouseY, parent.width, parent.height, parent.getMinecraft().fontRenderer);
 					}
 				}
 			}
+		}
+		
+		if(StorageTech.isShowInformation())
+		{
+			List<ITextProperties> textLines = new ArrayList<>();
+			textLines .add(new TranslationTextComponent("info.storagetech.chemicalgrid.l0"));
+			textLines.add(new TranslationTextComponent("info.storagetech.chemicalgrid.l1"));
+			textLines.add(new TranslationTextComponent("info.storagetech.chemicalgrid.l2"));
+			TooltipRenderer.drawHoveringText(textLines, -20, 35, 227, matrixStack);
 		}
 		
 	}
@@ -353,7 +423,6 @@ public class ClientChemicalGrid
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	public static void drawStack(MatrixStack matrixStack, int x, int y, ChemicalStack<?> stack)
     {
     	if(stack != null && !stack.isEmpty())
@@ -365,7 +434,7 @@ public class ClientChemicalGrid
     	    float blue = (float)(tint & 255) / 255.0F;
     	    
     		Minecraft.getInstance().getTextureManager().bindTexture(ResourceLocationRegister.mekanism_gas_texture);
-    		RenderSystem.color4f(red, green, blue, 1);
+    		GL11.glColor4f(red, green, blue, 1);
     		Screen.blit(matrixStack, x, y, 0, ((System.currentTimeMillis()/100)%32)*16, 16, 16, 16, 512);
 		}
     }
@@ -378,16 +447,91 @@ public class ClientChemicalGrid
 	public void mouseReleased(double x2, double y2, int button)
 	{
 		slider.mouseReleased(x2 - parent.getGuiLeft(), y2 - parent.getGuiTop(), button);
+		
+		searchField.mouseReleased(x2 - parent.getGuiLeft(), y2 - parent.getGuiTop(), button);
+		
+		if(TileEntityChemicalGrid.SEARCH_BOX_MODE.getValue() == IGrid.SEARCH_BOX_MODE_NORMAL_AUTOSELECTED)
+			searchField.setFocused2(true);
 	}
 
 	public void mouseClicked(double xm, double ym, int button)
 	{
+		if(button == 0)
+		{
+			int _tabId = 0;
+			for(FilterTab tab : filters)
+			{
+				if(tab != null)
+				{
+					if(tab.isOnTab(parent.getGuiLeft() + _tabId*30 + 4, parent.getGuiTop() - 26, (int)xm, (int)ym))
+					{
+						if(_tabId == tabId)
+							TileDataManager.setParameter(TileEntityChemicalGrid.TAB_ID, -1);
+						else
+							TileDataManager.setParameter(TileEntityChemicalGrid.TAB_ID, _tabId);
+					}
+				}
+				++_tabId;
+			}
+		}
+		
 		slider.mouseClicked(xm - parent.getGuiLeft(), ym - parent.getGuiTop(), button);
+		
+		searchField.mouseClicked(xm - parent.getGuiLeft(), ym - parent.getGuiTop(), button);
+		
+		if(TileEntityChemicalGrid.SEARCH_BOX_MODE.getValue() == IGrid.SEARCH_BOX_MODE_NORMAL_AUTOSELECTED)
+			searchField.setFocused2(true);
 	}
 
 	public void mouseScrolled(double xm, double ym, double value)
 	{
 		slider.mouseScrolled(xm - parent.getGuiLeft(), ym - parent.getGuiTop(), value);
+	}
+	
+	public void charTyped(char c, int id)
+	{
+		searchField.charTyped(c, id);
+	}
+	
+	public void keyPressed(int a, int b, int c)
+	{
+		searchField.keyPressed(a, b, c);
+	}
+	
+	public void slotClick(int id, int dragType, ClickType clickType, PlayerEntity player, VirtualSlot slotTarget, ItemStack stackHeld)
+	{
+		if(stackHeld != null)
+		{
+			boolean shift = clickType == ClickType.QUICK_MOVE;
+			int index = slotTarget.getSlotIndex() + ((int)slider.index)*9;
+			
+			if(index < view.size())
+			{
+				if(dragType == 2)
+					return;
+				
+				boolean putInGrid = dragType == 0;
+				StorageTech.INSTANCE_CHANNEL.sendToServer(new PacketChemicalGridHeldStack(view.get(index).getType(), putInGrid, shift));
+			}
+			else
+			{
+				StorageTech.INSTANCE_CHANNEL.sendToServer(new PacketChemicalGridHeldStack(null, true, shift));
+			}
+		}
+	}
+
+	public void updateSlotFilter()
+	{
+		filters = parent.getContainer().getFilter();
+		setTab();
+	}
+	
+	public void setTab()
+	{
+		tabId = TileEntityChemicalGrid.TAB_ID.getValue();
+		if(tabId != -1 && filters[tabId] == null)
+			TileDataManager.setParameter(TileEntityChemicalGrid.TAB_ID, -1);
+		filter();
 	}
 	
 	public static class Slider
@@ -467,29 +611,4 @@ public class ClientChemicalGrid
 				step = 0;
 		}
 	}
-
-	public void slotClick(int id, int dragType, ClickType clickType, PlayerEntity player, VirtualSlot slotTarget, ItemStack stackHeld)
-	{
-		// dragtype 0 = put , 1 = take
-		if(stackHeld != null)
-		{
-			boolean shift = clickType == ClickType.QUICK_MOVE;
-			int index = slotTarget.getSlotIndex() + ((int)slider.index)*9;
-			
-			if(index < view.size())
-			{
-				if(dragType == 2)
-					return;
-				
-				boolean putInGrid = dragType == 0;
-				StorageTech.INSTANCE_CHANNEL.sendToServer(new PacketChemicalGridHeldStack(view.get(index).getType(), putInGrid, shift));
-			}
-			else
-			{
-				StorageTech.INSTANCE_CHANNEL.sendToServer(new PacketChemicalGridHeldStack(null, true, shift));
-			}
-		}
-		//System.out.println("\n***********************************\nId: "+id+"\nDragType: "+ dragType+ "\nClickType: "+clickType+"\nPlayer: "+player+ "\nMouse Stack: "+stackHeld +"\nSlot Target: "+ slotTarget.getSlotIndex()+"\n***********************************");
-	}
-
 }

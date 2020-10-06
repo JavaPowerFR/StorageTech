@@ -75,7 +75,7 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 				ItemStack stack = cells.getStackInSlot(slotId);
 				if(stack != null && stack.getItem() instanceof IItemEnergyStorageDisk)
 				{
-					EnergyDisk energydisk = STAPI.getNetworkManager((ServerWorld) world).getEnergyDisk(((IItemEnergyStorageDisk)stack.getItem()).getId(stack));
+					EnergyDisk energydisk = STAPI.getGlobalNetworkManager((ServerWorld) world).getEnergyDisk(((IItemEnergyStorageDisk)stack.getItem()).getId(stack));
 					if(energydisk != null)
 					{
 						disks.add(energydisk);
@@ -87,6 +87,14 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 			
 			energyCapacity = capacity;
 			energyIOCapacity = iocapacity;
+			
+			if(network != null)
+			{
+				if(stNetworkManager == null)
+					stNetworkManager = STAPI.getNetworkManager((ServerWorld) world);
+				
+				stNetworkManager.getStData(network).updateView();
+			}
 		}
 	}
 
@@ -197,8 +205,9 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
             	{
             		if(!world.isRemote)
             		{
-            			EnergyDisk disk = STAPI.getNetworkManager((ServerWorld) world).getEnergyDisk(((IItemEnergyStorageDisk)stack.getItem()).getId(stack));
-            			state = DiskState.get(disk.getEnergyStored(), disk.getCapacity());
+            			EnergyDisk disk = STAPI.getGlobalNetworkManager((ServerWorld) world).getEnergyDisk(((IItemEnergyStorageDisk)stack.getItem()).getId(stack));
+            			if(disk != null)
+            				state = DiskState.get(disk.getEnergyStored(), disk.getCapacity());
             		}
             	}
             }
@@ -254,6 +263,7 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 		if(energyReceved > 0 && !simulate)
 		{
 			stNetworkManager.markForSaving();
+			stNetworkManager.getGlobal().markForSaving();
 			markDirty();
 			requestBlockUpdate();
 		}
@@ -282,6 +292,7 @@ public class NetworkNodePOEDrive extends NetworkNode implements IEnergyStorageNo
 		if(energyExtracted > 0 && !simulate)
 		{
 			stNetworkManager.markForSaving();
+			stNetworkManager.getGlobal().markForSaving();
 			markDirty();
 			requestBlockUpdate();
 		}

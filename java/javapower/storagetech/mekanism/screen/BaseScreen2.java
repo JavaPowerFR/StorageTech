@@ -7,6 +7,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.refinedmods.refinedstorage.screen.BaseScreen;
 
+import javapower.storagetech.api.TooltipRenderer;
 import javapower.storagetech.core.ResourceLocationRegister;
 import javapower.storagetech.mekanism.inventory.ChemicalFilterSlot;
 import mekanism.api.chemical.ChemicalStack;
@@ -17,15 +18,11 @@ import mekanism.api.chemical.slurry.SlurryStack;
 import mekanism.api.text.EnumColor;
 import mekanism.api.text.ILangEntry;
 import mekanism.common.MekanismLang;
-import mezz.jei.Internal;
-import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.gui.TooltipRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.StringTextComponent;
 /**
  * 
  * Allow GasStack implementation 
@@ -98,14 +95,6 @@ public abstract class BaseScreen2<T extends Container> extends BaseScreen<T>
 	            }
 				
 	            textLines.add(type.translateColored(EnumColor.YELLOW, EnumColor.ORANGE, stack.getTextComponent()));
-				//textLines.add(new StringTextComponent(stack.getAmount()+" mB total").func_230530_a_(Styles.GRAY));
-				
-				IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
-				if (modIdHelper.isDisplayingModNameEnabled())
-				{
-					String modName = modIdHelper.getFormattedModNameForModId(stack.getTypeRegistryName().getNamespace());
-					textLines.add(new StringTextComponent(modName));
-				}
 				
 				TooltipRenderer.drawHoveringText(textLines, mouseX, mouseY, matrixStack);
     		}

@@ -14,25 +14,27 @@ import javapower.storagetech.mekanism.screen.widget.ChemicalGridSortingTypeSideB
 import javapower.storagetech.mekanism.screen.widget.ChemicalSearchBoxModeSideButton;
 import javapower.storagetech.mekanism.screen.widget.GridViewChemicalTypeSideButton;
 import javapower.storagetech.mekanism.tileentity.TileEntityChemicalGrid;
+import javapower.storagetech.packet.IGenericMessage;
+import javapower.storagetech.screen.widget.InfoSideButton;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-public class ScreenChemicalGrid extends BaseScreen<ContainerChemicalGrid>
+public class ScreenChemicalGrid extends BaseScreen<ContainerChemicalGrid> implements IGenericMessage
 {
 	public static final ResourceLocation GUI_SPRITE = ResourceLocationRegister.resource("textures/guis/grid.png");
 	
 	private ClientChemicalGrid client = new ClientChemicalGrid(this);
-    //private final String texture;
 
     public ScreenChemicalGrid(ContainerChemicalGrid container, PlayerInventory inventory, ITextComponent title)
     {
         super(container, 227, 0, inventory, title);
-        //this.texture = "guis/gas_importer.png";
     }
     @Override
     protected void onPreInit()
@@ -47,13 +49,13 @@ public class ScreenChemicalGrid extends BaseScreen<ContainerChemicalGrid>
 	public void onPostInit(int x, int y)
 	{
 		container.initSlot(this);
-		
 		addSideButton(new RedstoneModeSideButton(this, TileEntityChemicalGrid.REDSTONE_MODE));
 		addSideButton(new GridViewChemicalTypeSideButton(this, TileEntityChemicalGrid.VIEW_CHEMICAL_TYPE));
 		addSideButton(new ChemicalGridSortingDirectionSideButton(this, TileEntityChemicalGrid.SORTING_DIRECTION));
 		addSideButton(new ChemicalGridSortingTypeSideButton(this, TileEntityChemicalGrid.SORTING_TYPE));
 		addSideButton(new ChemicalSearchBoxModeSideButton(this, TileEntityChemicalGrid.SEARCH_BOX_MODE));
 		addSideButton(new ChemicalGridSizeSideButton(this, TileEntityChemicalGrid.SIZE));
+		addSideButton(new InfoSideButton(this));
 		
 	}
 
@@ -128,7 +130,21 @@ public class ScreenChemicalGrid extends BaseScreen<ContainerChemicalGrid>
 	@Override
 	public void tick(int x, int y)
 	{
-		
+		client.tick();
+	}
+	
+	@Override
+	public boolean charTyped(char c, int id)
+	{
+		client.charTyped(c, id);
+		return super.charTyped(c, id);
+	}
+	
+	@Override
+	public boolean keyPressed(int a, int b, int c)
+	{
+		client.keyPressed(a, b, c);
+		return super.keyPressed(a, b, c);
 	}
 	
 	public ClientChemicalGrid getGrid()
@@ -150,5 +166,18 @@ public class ScreenChemicalGrid extends BaseScreen<ContainerChemicalGrid>
 	{
 		if(slotTarget instanceof VirtualSlot)
 			client.slotClick(id, dragType, clickType, player, ((VirtualSlot)slotTarget), player.inventory.getItemStack());
+	}
+	
+	@Override
+	public void recivePacket(CompoundNBT nbt)
+	{
+		if(nbt.contains("updateFilters"))
+		{
+			client.updateSlotFilter();
+		}
+		else if(nbt.contains("heldItem"))
+		{
+			container.getPlayer().inventory.setItemStack(ItemStack.read(nbt.getCompound("heldItem")));
+		}
 	}
 }

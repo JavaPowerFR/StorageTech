@@ -50,6 +50,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class ClientSetup
 {
+	public static boolean ShowInfo = false;
 	
 	public static DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
 	public static DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();

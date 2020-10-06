@@ -52,13 +52,13 @@ public class NetworkNodeChemicalDrive extends NetworkNode implements IChemicalSt
 	            {
 	                if (!reading)
 	                    WorldUtils.updateBlock(world, pos);
+	                //markDirty();
 	            }
 	        });
 	
 	private List<ChemicalDisk> disks = new ArrayList<ChemicalDisk>();
 	private STNetworkManager stNetworkManager = null;
 	
-
 	public NetworkNodeChemicalDrive(World world, BlockPos pos)
 	{
 		super(world, pos);
@@ -76,7 +76,7 @@ public class NetworkNodeChemicalDrive extends NetworkNode implements IChemicalSt
 				ItemStack stack = disksHandler.getStackInSlot(slotId);
 				if(stack != null && stack.getItem() instanceof IItemChemicalStorageDisk)
 				{
-					ChemicalDisk chemicalDisk = STAPI.getNetworkManager((ServerWorld) world).getMekanisumManager().getChemicalDisk(((IItemChemicalStorageDisk)stack.getItem()).getId(stack));
+					ChemicalDisk chemicalDisk = STAPI.getGlobalNetworkManager((ServerWorld) world).getGlobalMekanisumManager().getChemicalDisk(((IItemChemicalStorageDisk)stack.getItem()).getId(stack));
 					if(chemicalDisk != null)
 					{
 						disks.add(chemicalDisk);
@@ -86,6 +86,14 @@ public class NetworkNodeChemicalDrive extends NetworkNode implements IChemicalSt
 	        }
 			
 			capacity = _capacity;
+			
+			if(network != null)
+			{
+				if(stNetworkManager == null)
+					stNetworkManager = STAPI.getNetworkManager((ServerWorld) world);
+				
+				stNetworkManager.getStData(network).getMekanismData().updateView();
+			}
 		}
 	}
 
@@ -143,7 +151,6 @@ public class NetworkNodeChemicalDrive extends NetworkNode implements IChemicalSt
 		super.write(tag);
 		
 		StackUtils.writeItems(disksHandler, 0, tag);
-		
 		return tag;
 	}
 	
@@ -196,8 +203,9 @@ public class NetworkNodeChemicalDrive extends NetworkNode implements IChemicalSt
             	{
             		if(!world.isRemote)
             		{
-            			ChemicalDisk disk = STAPI.getNetworkManager((ServerWorld) world).getMekanisumManager().getChemicalDisk(((IItemChemicalStorageDisk)stack.getItem()).getId(stack));
-            			state = getDiskState(disk.getAmount(), disk.getCapacity());
+            			ChemicalDisk disk = STAPI.getGlobalNetworkManager((ServerWorld) world).getGlobalMekanisumManager().getChemicalDisk(((IItemChemicalStorageDisk)stack.getItem()).getId(stack));
+            			if(disk != null)
+            				state = getDiskState(disk.getAmount(), disk.getCapacity());
             		}
             	}
             }
@@ -242,6 +250,7 @@ public class NetworkNodeChemicalDrive extends NetworkNode implements IChemicalSt
 		if(action == Action.EXECUTE)
 		{
 			stNetworkManager.markForSaving();
+			stNetworkManager.getGlobal().markForSaving();
 			markDirty();
 			requestBlockUpdate();
 		}
@@ -258,6 +267,13 @@ public class NetworkNodeChemicalDrive extends NetworkNode implements IChemicalSt
 			ChemicalStack<?> chemicalStack = disk.extractChemical(stack, action);
 			if(!chemicalStack.isEmpty())
 			{
+				if(action == Action.EXECUTE)
+				{
+					stNetworkManager.markForSaving();
+					stNetworkManager.getGlobal().markForSaving();
+					markDirty();
+					requestBlockUpdate();
+				}
 				return chemicalStack;
 			}
         }

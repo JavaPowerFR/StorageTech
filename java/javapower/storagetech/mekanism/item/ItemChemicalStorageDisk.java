@@ -103,7 +103,7 @@ public class ItemChemicalStorageDisk extends Item implements IItemChemicalStorag
         	
         	if(id != null)
         	{
-	        	ChemicalDisk disk = STAPI.getNetworkManager((ServerWorld) world).getMekanisumManager().removeChemicalDisk(id);
+	        	ChemicalDisk disk = STAPI.getGlobalNetworkManager((ServerWorld) world).getGlobalMekanisumManager().removeChemicalDisk(id);
 	            if (disk.getAmount() == 0)
 	            {
 	                Item itemIn = MKItems.getItemGasPart(type);
@@ -133,7 +133,7 @@ public class ItemChemicalStorageDisk extends Item implements IItemChemicalStorag
 			if(!stack.getTag().hasUniqueId("Id"))
 			{
 				UUID id = UUID.randomUUID();
-				STAPI.getNetworkManager((ServerWorld) worldIn).getMekanisumManager().createEnergyDisk(id, type.getCapacity());
+				STAPI.getGlobalNetworkManager((ServerWorld) worldIn).getGlobalMekanisumManager().createEnergyDisk(id, type.getCapacity());
 				stack.getTag().putUniqueId("Id", id);
 			}
 		}
@@ -151,7 +151,7 @@ public class ItemChemicalStorageDisk extends Item implements IItemChemicalStorag
 			if(!stack.getTag().hasUniqueId("Id"))
 			{
 				UUID id = UUID.randomUUID();
-				STAPI.getNetworkManager((ServerWorld) worldIn).getMekanisumManager().createEnergyDisk(id, type.getCapacity());
+				STAPI.getGlobalNetworkManager((ServerWorld) worldIn).getGlobalMekanisumManager().createEnergyDisk(id, type.getCapacity());
 				stack.getTag().putUniqueId("Id", id);
 			}
 		}

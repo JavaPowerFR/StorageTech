@@ -20,8 +20,8 @@
 *		creation date: 04/08/2017 (dd/mm/yyyy)
 *		recreation date: 03/05/2020 (dd/mm/yyyy)
 *		creat at: Montigny Le Bretonneux France
-*		last modification: 13/09/2020 (dd/mm/yyyy)
-*		comment: Experimental B9.0
+*		last modification: 06/10/2020 (dd/mm/yyyy)
+*		comment: Experimental B9.2
 *		
 ***************************************************/
 package javapower.storagetech.core;
@@ -42,6 +42,7 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.DistExecutor;
@@ -128,5 +129,11 @@ public class StorageTech
             INSTANCE_CHANNEL.sendTo(message, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
         }
     }
+	
+	@OnlyIn(Dist.CLIENT)
+	public static boolean isShowInformation()
+	{
+		return ClientSetup.ShowInfo;
+	}
 	
 }

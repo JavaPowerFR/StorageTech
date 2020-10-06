@@ -23,6 +23,7 @@ public interface IItemEnergyStorageDisk extends IItemProgressBarOverlay
 			if(capa > 0)
 				return sedsd.getStored()/(float)capa;
 		}
-		return -1;
+		
+		return -0.1f;
 	}
 }

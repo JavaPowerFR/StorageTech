@@ -6,7 +6,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.refinedmods.refinedstorage.RS;
 import com.refinedmods.refinedstorage.api.util.IFilter;
 import com.refinedmods.refinedstorage.render.RenderSettings;
-import com.refinedmods.refinedstorage.screen.widget.CheckboxWidget;
 
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.mekanism.container.ContainerChemicalFilter;
@@ -24,12 +23,12 @@ public class ScreenChemicalFilter extends BaseScreen2<ContainerChemicalFilter>
 {
 	//private final ItemStack stack;
 
-    private int compare;
+    //private int compare;
     private int mode;
-    private boolean modFilter;
+    //private boolean modFilter;
     private final String name;
 
-    private CheckboxWidget modFilterCheckBox;
+    //private CheckboxWidget modFilterCheckBox;
     private Button modeButton;
     private TextFieldWidget nameField;
     
@@ -39,9 +38,9 @@ public class ScreenChemicalFilter extends BaseScreen2<ContainerChemicalFilter>
 		
 		//this.stack = container.getStack();
 
-        this.compare = ItemChemicalFilter.getCompare(container.getStack());
+        //this.compare = ItemChemicalFilter.getCompare(container.getStack());
         this.mode = ItemChemicalFilter.getMode(container.getStack());
-        this.modFilter = ItemChemicalFilter.isModFilter(container.getStack());
+        //this.modFilter = ItemChemicalFilter.isModFilter(container.getStack());
         this.name = ItemChemicalFilter.getName(container.getStack());	
 	}
 	
@@ -54,12 +53,12 @@ public class ScreenChemicalFilter extends BaseScreen2<ContainerChemicalFilter>
             sendUpdate();
         });*/
 
-        modFilterCheckBox = addCheckBox(0, y + 71 + 25, new TranslationTextComponent("gui.refinedstorage.filter.mod_filter"), modFilter, btn ->
+        /*modFilterCheckBox = addCheckBox(0, y + 71 + 25, new TranslationTextComponent("gui.refinedstorage.filter.mod_filter"), modFilter, btn ->
         {
             modFilter = !modFilter;
 
             sendUpdate();
-        });
+        });*/
 
         modeButton = addButton(x + 7, y + 71 + 21, 0, 20, new StringTextComponent(""), true, true, btn ->
         {
@@ -94,7 +93,7 @@ public class ScreenChemicalFilter extends BaseScreen2<ContainerChemicalFilter>
 
         modeButton.setWidth(font.getStringWidth(text.getString()) + 12);
         modeButton.setMessage(text);
-        modFilterCheckBox.x = modeButton.x + modeButton.getWidth() + 4;
+        //modFilterCheckBox.x = modeButton.x + modeButton.getWidth() + 4;
     }
 
     @Override
@@ -140,7 +139,7 @@ public class ScreenChemicalFilter extends BaseScreen2<ContainerChemicalFilter>
 
     public void sendUpdate()
     {
-    	StorageTech.INSTANCE_CHANNEL.sendToServer(new PacketChemicalFilterUpdateMessage(compare, mode, modFilter, name));
+    	StorageTech.INSTANCE_CHANNEL.sendToServer(new PacketChemicalFilterUpdateMessage(mode, nameField.getText()));
     }
 
 }

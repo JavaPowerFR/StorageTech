@@ -26,18 +26,7 @@ public class NetworkNodeChemicalGrid extends NetworkNode
 {
 	public static final ResourceLocation NETWORK_NODE_ID = new ResourceLocation(StorageTech.MODID, BlockChemicalGrid.raw_name);
 	
-	//public static final String NBT_VIEW_TYPE = "ViewType";
-    //public static final String NBT_SORTING_DIRECTION = "SortingDirection";
-    //public static final String NBT_SORTING_TYPE = "SortingType";
-    //public static final String NBT_SEARCH_BOX_MODE = "SearchBoxMode";
-    //private static final String NBT_EXACT_MODE = "Exact";
     //public static final String NBT_TAB_SELECTED = "TabSelected";
-    //public static final String NBT_TAB_PAGE = "TabPage";
-    //public static final String NBT_SIZE = "Size";
-    //private static final String NBT_PROCESSING_PATTERN = "ProcessingPattern";
-    //private static final String NBT_PROCESSING_TYPE = "ProcessingType";
-    //private static final String NBT_PROCESSING_MATRIX_FLUIDS = "ProcessingMatrixFluids";
-    //private static final String NBT_ALLOWED_TAGS = "AllowedTags";
 	
 	private final BaseItemHandler filters = new BaseItemHandler(4)
 	        .addValidator((stack) -> stack != null && stack.getItem() instanceof ItemChemicalFilter)
@@ -222,5 +211,16 @@ public class NetworkNodeChemicalGrid extends NetworkNode
 	public STData getStData()
 	{
 		return stData;
+	}
+
+	public int getTab()
+	{
+		return grid.getTabId();
+	}
+
+	public void setTab(int v)
+	{
+		grid.setTabId(v);
+		markDirty();
 	}
 }

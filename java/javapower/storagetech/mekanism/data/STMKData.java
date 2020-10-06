@@ -151,11 +151,7 @@ public class STMKData
 			for(IChemicalStorageNode inode : chemicalStorages)
 				for(ChemicalDisk disk : inode.getDisks())
 					for(ChemicalStack<?> chemicalStack : disk.getChemicals())
-					{
 						growChemical(chemicalStack.getType(), chemicalStack.getAmount());
-						//long old = getChemicalValue(chemicalStack.getType());
-						//chemicalView.put(chemicalStack.getType(), old + chemicalStack.getAmount());
-					}
 			
 			for(IChemicalViewNode viewNode : chemicalViews)
 				viewNode.updateChemical(chemicalView);
@@ -174,6 +170,19 @@ public class STMKData
 		}
 		chemicalView.add(ch.getStack(deltaNetwork));
 		return deltaNetwork;
+	}
+
+	public void updateView()
+	{
+		chemicalView.clear();
+		
+		for(IChemicalStorageNode inode : chemicalStorages)
+			for(ChemicalDisk disk : inode.getDisks())
+				for(ChemicalStack<?> chemicalStack : disk.getChemicals())
+					growChemical(chemicalStack.getType(), chemicalStack.getAmount());
+		
+		for(IChemicalViewNode viewNode : chemicalViews)
+			viewNode.updateChemical(chemicalView);
 	}
 
 	/*public long getChemicalValue(Chemical<?> ch)

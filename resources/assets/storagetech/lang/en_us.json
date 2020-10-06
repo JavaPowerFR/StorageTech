@@ -31,6 +31,7 @@
 "item.storagetech.1024k_chemical_storage_disk":"1024k Chemical Storage Disk",
 "item.storagetech.4096k_chemical_storage_disk":"4096k Chemical Storage Disk",
 "item.storagetech.creative_chemical_storage_disk":"Creative Chemical Storage Disk",
+"item.storagetech.chemical_filter":"Chemical Filter",
 
 "_comment": "block",
 "block.storagetech.diskworkbench": "Disk Workbench",
@@ -60,6 +61,7 @@
 "gui.storagetech.chemical_importer":"Chemical Importer",
 "gui.storagetech.chemical_exporter":"Chemical Exporter",
 "gui.storagetech.chemical_grid":"Chemical Grid",
+"gui.storagetech.chemical_filter":"Chemical Filter",
 
 "_comment": "jei",
 "jei.storagetech.category.diskiwb": "Disk Workbench",
@@ -102,6 +104,9 @@
 "sidebutton.storagetech.sortingtype.0" : "Quantity",
 "sidebutton.storagetech.sortingtype.1" : "Name",
 "sidebutton.storagetech.sortingtype.2" : "Type",
+"sidebutton.storagetech.info" : "Info",
+"sidebutton.storagetech.info.false" : "Hide",
+"sidebutton.storagetech.info.true" : "Show",
 
 "_comment": "widget",
 "widget.storagetech.save" : "Save",
@@ -126,5 +131,10 @@
 "misc.storagetech.storage.energy.stored_capacity": "Stored: %s / %s FE",
 "misc.storagetech.storage.energy.stored": "%s / %s FE",
 "misc.storagetech.energylimiter":"FE Limiter",
-"misc.storagetech.step":"Current step %d/%d"
+"misc.storagetech.step":"Current step %d/%d",
+
+"info.storagetech.chemicalgrid.l0":"You can put and pickup chemical stack from your mouse stack.",
+"info.storagetech.chemicalgrid.l1":"Left click put chemical in grid and Right click on chemical stack fill the mouse stack if is possible.",
+"info.storagetech.chemicalgrid.l2":"The limits is without shift key is 1 000 mB and 64 000 mB with shift key in the limit of your container."
+
 }

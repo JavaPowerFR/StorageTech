@@ -2,7 +2,6 @@ package javapower.storagetech.mekanism.screen.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.refinedmods.refinedstorage.api.network.grid.IGrid;
-import com.refinedmods.refinedstorage.integration.jei.JeiIntegration;
 import com.refinedmods.refinedstorage.screen.BaseScreen;
 import com.refinedmods.refinedstorage.screen.widget.sidebutton.SideButton;
 import com.refinedmods.refinedstorage.tile.data.TileDataManager;
@@ -41,7 +40,7 @@ public class ChemicalSearchBoxModeSideButton extends SideButton
     	int mode = parameter.getValue();
     	
 
-        if (mode == IGrid.SEARCH_BOX_MODE_NORMAL)
+        /*if (mode == IGrid.SEARCH_BOX_MODE_NORMAL)
         {
             mode = IGrid.SEARCH_BOX_MODE_NORMAL_AUTOSELECTED;
         }
@@ -62,8 +61,8 @@ public class ChemicalSearchBoxModeSideButton extends SideButton
         else if (mode == IGrid.SEARCH_BOX_MODE_JEI_SYNCHRONIZED_AUTOSELECTED)
         {
             mode = IGrid.SEARCH_BOX_MODE_NORMAL;
-        }
+        }*/
         
-        TileDataManager.setParameter(parameter, mode);
+        TileDataManager.setParameter(parameter, mode == 0 ? 1 : 0);
     }
 }

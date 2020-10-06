@@ -129,7 +129,7 @@ public class ItemEnergyCell extends Item implements IItemEnergyStorageDisk
 		super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
 		if(!worldIn.isRemote && stack.hasTag() && stack.getTag().contains("s"))
 		{
-			STAPI.getNetworkManager((ServerWorld) worldIn).createEnergyDisk(stack.getTag().getUniqueId("Id"), stack.getTag().getInt("s"), stack.getTag().getInt("i"));
+			STAPI.getGlobalNetworkManager((ServerWorld) worldIn).createEnergyDisk(stack.getTag().getUniqueId("Id"), stack.getTag().getInt("s"), stack.getTag().getInt("i"));
 			stack.getTag().remove("s");
 			stack.getTag().remove("i");
 		}
@@ -141,7 +141,7 @@ public class ItemEnergyCell extends Item implements IItemEnergyStorageDisk
 		super.onCreated(stack, worldIn, playerIn);
 		if(!worldIn.isRemote && stack.hasTag() && stack.getTag().contains("s"))
 		{
-			STAPI.getNetworkManager((ServerWorld) worldIn).createEnergyDisk(stack.getTag().getUniqueId("Id"), stack.getTag().getInt("s"), stack.getTag().getInt("i"));
+			STAPI.getGlobalNetworkManager((ServerWorld) worldIn).createEnergyDisk(stack.getTag().getUniqueId("Id"), stack.getTag().getInt("s"), stack.getTag().getInt("i"));
 			stack.getTag().remove("s");
 			stack.getTag().remove("i");
 		}
@@ -158,7 +158,7 @@ public class ItemEnergyCell extends Item implements IItemEnergyStorageDisk
         	UUID id = cell.getId(cellStack);
         	if(id != null)
         	{
-	        	EnergyDisk disk = STAPI.getNetworkManager((ServerWorld) world).removeEnergyDisk(id);
+	        	EnergyDisk disk = STAPI.getGlobalNetworkManager((ServerWorld) world).removeEnergyDisk(id);
 	            if (disk.getEnergyStored() == 0)
 	            {
 	                ItemStack storagePart[] = cell.getParts(disk.capacity, disk.io_capacity);

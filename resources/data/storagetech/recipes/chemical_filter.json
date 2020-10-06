@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "refinedstorage:filter"
+    },
+    {
+      "item": "mekanism:ingot_osmium"
+    }
+  ],
+  "result": {
+    "item": "storagetech:chemical_filter"
+  }
+}

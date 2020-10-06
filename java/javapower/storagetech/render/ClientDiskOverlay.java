@@ -37,7 +37,6 @@ public class ClientDiskOverlay
 {
 	public static Minecraft minecraft = Minecraft.getInstance();
 	
-	@SuppressWarnings("deprecation")
 	@SubscribeEvent
 	@OnlyIn(Dist.CLIENT)
     public static void drawTooltip(RenderTooltipEvent.PostBackground event)
@@ -51,102 +50,33 @@ public class ClientDiskOverlay
 	    		{
 		    		if(!((IStorageDiskProvider)itemstack.getItem()).isValid(itemstack))
 		    			return;
+		    		
 		    		UUID uuid = ((IStorageDiskProvider)itemstack.getItem()).getId(itemstack);
 		    		if(uuid == null)
 		    			return;
+		    		
 		    		StorageDiskSyncData data = API.instance().getStorageDiskSync().getData(uuid);
 		    		if(data != null)
 		    		{
-		    			RenderSystem.disableDepthTest();
-		    			GL11.glEnable(GL11.GL_BLEND);
-		    			
-		    			if(data.getCapacity() != -1)
-		    			{
-			    			float size = data.getStored()/(float)data.getCapacity();
-			    			int color = size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded;
-			    			minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
-			    			GuiUtils.drawTexturedModalRect(event.getX() - 4, event.getY() - 24, 0, 0, 93, 20, 0.1f);
-			    			GuiUtils.drawTexturedModalRect(event.getX(), event.getY() - 18, 0, 28, 60, 8, 0.1f);
-			    			//drawRect(event.getX(), event.getY() - 18, event.getX() + 60, event.getY() - 10, 0xff444444);
-			    			if(size > 0)
-			    			{
-			    				float red = (float)(color >> 16 & 255) / 255.0F;
-			    	    	    float green = (float)(color >> 8 & 255) / 255.0F;
-			    	    	    float blue = (float)(color & 255) / 255.0F;
-			    				RenderSystem.color3f(red, green, blue);
-			    				GuiUtils.drawTexturedModalRect(event.getX(), event.getY() - 18, 0, 20, (int)(60*size), 8, 0.1f);
-			    			}
-			    			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-			    			MatrixStack textStack = new MatrixStack();
-			                textStack.translate(0.0D, 0.0D, 300D);
-			                Matrix4f textLocation = textStack.getLast().getMatrix();
-			    			minecraft.fontRenderer.renderString(((int) (size*100))+"%", event.getX() + 62, event.getY() - 17, color, false, textLocation, renderType, false, 0, 15728880);
-			    			renderType.finish();
-		    			}
-		    			else
-		    			{
-		    				minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
-		    				GuiUtils.drawTexturedModalRect(event.getX() - 4, event.getY() - 24, 0, 0, 93, 20, 0.1f);
-			    			//minecraft.fontRenderer.drawString("Infinite", event.getX() + 25, event.getY() - 17, 0xff00eded);
-			    			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-			    			MatrixStack textStack = new MatrixStack();
-			                textStack.translate(0.0D, 0.0D, 300D);
-			                Matrix4f textLocation = textStack.getLast().getMatrix();
-			    			minecraft.fontRenderer.renderString("Infinite", event.getX() + 25, event.getY() - 17, 0xff00eded, false, textLocation, renderType, false, 0, 15728880);
-			    			renderType.finish();
-		    			}
-		    			
-		    			GL11.glDisable(GL11.GL_BLEND);
-		    			RenderSystem.enableDepthTest();
+		    			int capacity = data.getCapacity();
+		    			float size = data.getStored()/(float)data.getCapacity();
+		    			drawOverlay(event.getX(), event.getY(), capacity == -1 ? -1 : size, size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded);
 		    		}
 	    		}
 	    		else if(itemstack.getItem() instanceof BlockItem)
 	    		{
-	    			GL11.glEnable(GL11.GL_BLEND);
-	    			
 	    			if(itemstack.getItem() instanceof StorageBlockItem)
 	    			{
 	    				if(itemstack.hasTag() && itemstack.getTag().hasUniqueId(StorageNetworkNode.NBT_ID))
 	    				{
 	    					UUID uuid = itemstack.getTag().getUniqueId(StorageNetworkNode.NBT_ID);
 	    					StorageDiskSyncData data = API.instance().getStorageDiskSync().getData(uuid);
-	    		    		if(data != null)
+	    					
+	    					if(data != null)
 	    		    		{
-	    		    			if(data.getCapacity() != -1)
-	    		    			{
-	    			    			float size = data.getStored()/(float)data.getCapacity();
-	    			    			int color = size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded;
-	    			    			minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
-	    			    			GuiUtils.drawTexturedModalRect(event.getX() - 4, event.getY() - 24, 0, 0, 93, 20, 0.1f);
-	    			    			GuiUtils.drawTexturedModalRect(event.getX(), event.getY() - 18, 0, 28, 60, 8, 0.1f);
-	    			    			//drawRect(event.getX(), event.getY() - 18, event.getX() + 60, event.getY() - 10, 0xff444444);
-	    			    			if(size > 0)
-	    			    			{
-	    			    				float red = (float)(color >> 16 & 255) / 255.0F;
-	    			    	    	    float green = (float)(color >> 8 & 255) / 255.0F;
-	    			    	    	    float blue = (float)(color & 255) / 255.0F;
-	    			    				RenderSystem.color3f(red, green, blue);
-	    			    				GuiUtils.drawTexturedModalRect(event.getX(), event.getY() - 18, 0, 20, (int)(60*size), 8, 0.1f);
-	    			    			}
-	    			    			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-	    			    			MatrixStack textStack = new MatrixStack();
-	    			                textStack.translate(0.0D, 0.0D, 300D);
-	    			                Matrix4f textLocation = textStack.getLast().getMatrix();
-	    			    			minecraft.fontRenderer.renderString(((int) (size*100))+"%", event.getX() + 62, event.getY() - 17, color, false, textLocation, renderType, false, 0, 15728880);
-	    			    			renderType.finish();
-	    		    			}
-	    		    			else
-	    		    			{
-	    		    				minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
-	    		    				GuiUtils.drawTexturedModalRect(event.getX() - 4, event.getY() - 24, 0, 0, 93, 20, 0.1f);
-	    			    			//minecraft.fontRenderer.drawString("Infinite", event.getX() + 25, event.getY() - 17, 0xff00eded);
-	    			    			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-	    			    			MatrixStack textStack = new MatrixStack();
-	    			                textStack.translate(0.0D, 0.0D, 300D);
-	    			                Matrix4f textLocation = textStack.getLast().getMatrix();
-	    			    			minecraft.fontRenderer.renderString("Infinite", event.getX() + 25, event.getY() - 17, 0xff00eded, false, textLocation, renderType, false, 0, 15728880);
-	    			    			renderType.finish();
-	    		    			}
+	    		    			int capacity = data.getCapacity();
+	    		    			float size = data.getStored()/(float)data.getCapacity();
+	    		    			drawOverlay(event.getX(), event.getY(), capacity == -1 ? -1 : size, size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded);
 	    		    		}
 	    				}
 	    			}
@@ -156,86 +86,78 @@ public class ClientDiskOverlay
 	    				{
 	    					UUID uuid = itemstack.getTag().getUniqueId(FluidStorageNetworkNode.NBT_ID);
 	    					StorageDiskSyncData data = API.instance().getStorageDiskSync().getData(uuid);
-	    		    		if(data != null)
+	    					
+	    					if(data != null)
 	    		    		{
-	    		    			if(data.getCapacity() != -1)
-	    		    			{
-	    			    			float size = data.getStored()/(float)data.getCapacity();
-	    			    			int color = size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded;
-	    			    			minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
-	    			    			GuiUtils.drawTexturedModalRect(event.getX() - 4, event.getY() - 24, 0, 0, 93, 20, 0.1f);
-	    			    			GuiUtils.drawTexturedModalRect(event.getX(), event.getY() - 18, 0, 28, 60, 8, 0.1f);
-	    			    			//drawRect(event.getX(), event.getY() - 18, event.getX() + 60, event.getY() - 10, 0xff444444);
-	    			    			if(size > 0)
-	    			    			{
-	    			    				float red = (float)(color >> 16 & 255) / 255.0F;
-	    			    	    	    float green = (float)(color >> 8 & 255) / 255.0F;
-	    			    	    	    float blue = (float)(color & 255) / 255.0F;
-	    			    				RenderSystem.color3f(red, green, blue);
-	    			    				GuiUtils.drawTexturedModalRect(event.getX(), event.getY() - 18, 0, 20, (int)(60*size), 8, 0.1f);
-	    			    			}
-	    			    			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-	    			    			MatrixStack textStack = new MatrixStack();
-	    			                textStack.translate(0.0D, 0.0D, 300D);
-	    			                Matrix4f textLocation = textStack.getLast().getMatrix();
-	    			    			minecraft.fontRenderer.renderString(((int) (size*100))+"%", event.getX() + 62, event.getY() - 17, color, false, textLocation, renderType, false, 0, 15728880);
-	    			    			renderType.finish();
-	    		    			}
-	    		    			else
-	    		    			{
-	    		    				minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
-	    		    				GuiUtils.drawTexturedModalRect(event.getX() - 4, event.getY() - 24, 0, 0, 93, 20, 0.1f);
-	    			    			//minecraft.fontRenderer.drawString("Infinite", event.getX() + 25, event.getY() - 17, 0xff00eded);
-	    			    			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-	    			    			MatrixStack textStack = new MatrixStack();
-	    			                textStack.translate(0.0D, 0.0D, 300D);
-	    			                Matrix4f textLocation = textStack.getLast().getMatrix();
-	    			    			minecraft.fontRenderer.renderString("Infinite", event.getX() + 25, event.getY() - 17, 0xff00eded, false, textLocation, renderType, false, 0, 15728880);
-	    			    			renderType.finish();
-	    		    			}
+	    		    			int capacity = data.getCapacity();
+	    		    			float size = data.getStored()/(float)data.getCapacity();
+	    		    			drawOverlay(event.getX(), event.getY(), capacity == -1 ? -1 : size, size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded);
 	    		    		}
 	    				}
 	    			}
-	    			
-	    			GL11.glDisable(GL11.GL_BLEND);
 	    		}
 	    		else if(itemstack.getItem() instanceof IItemProgressBarOverlay)
 	    		{
 	    			IItemProgressBarOverlay itemOverlay = (IItemProgressBarOverlay) itemstack.getItem();
 	    			float size = itemOverlay.getOverlayBarValue(itemstack);
-	    			if(size >= 0)
+	    			
+	    			if(size >= 0 || size == -1)
 	    			{
-	    				RenderSystem.disableDepthTest();
-		    			GL11.glEnable(GL11.GL_BLEND);
-		    			
-		    			int color = itemOverlay.getOverlayBarColor(itemstack, size);
-		    			minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
-		    			GuiUtils.drawTexturedModalRect(event.getX() - 4, event.getY() - 24, 0, 0, 93, 20, 0.1f);
-		    			GuiUtils.drawTexturedModalRect(event.getX(), event.getY() - 18, 0, 28, 60, 8, 0.1f);
-		    			//GuiUtils.drawTexturedModalRect(x, y, u, v, width, height, zLevel);
-		    			//drawRect(event.getX(), event.getY() - 18, event.getX() + 60, event.getY() - 10, 0xff444444);
-		    			if(size > 0)
-		    			{
-		    				float red = (float)(color >> 16 & 255) / 255.0F;
-		    	    	    float green = (float)(color >> 8 & 255) / 255.0F;
-		    	    	    float blue = (float)(color & 255) / 255.0F;
-		    				RenderSystem.color3f(red, green, blue);
-		    				GuiUtils.drawTexturedModalRect(event.getX(), event.getY() - 18, 0, 20, (int)(60*size), 8, 0.1f);
-		    			}
-		    			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-		    			MatrixStack textStack = new MatrixStack();
-		                textStack.translate(0.0D, 0.0D, 300D);
-		                Matrix4f textLocation = textStack.getLast().getMatrix();
-		    			minecraft.fontRenderer.renderString(((int) (size*100))+"%", event.getX() + 62, event.getY() - 17, color, false, textLocation, renderType, false, 0, 15728880);
-		    			renderType.finish();
-		    			
-		    			GL11.glDisable(GL11.GL_BLEND);
-		    			RenderSystem.enableDepthTest();
+			    		drawOverlay(event.getX(), event.getY(), size, itemOverlay.getOverlayBarColor(itemstack, size));
 	    			}
 	    		}
 	    	}
 		}
     }
+	
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @param size (-1 infinite show if size >= 0)
+	 * @param color (0xff00eded)
+	 */
+	@SuppressWarnings("deprecation")
+	private static void drawOverlay(int x, int y, float size, int color)
+	{
+		RenderSystem.disableDepthTest();
+		GL11.glEnable(GL11.GL_BLEND);
+		
+		if(size >= 0)
+		{
+			minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
+			GuiUtils.drawTexturedModalRect(x - 4, y - 24, 0, 0, 93, 20, 0.1f);
+			GuiUtils.drawTexturedModalRect(x, y - 18, 0, 28, 60, 8, 0.1f);
+			if(size > 0)
+			{
+				float red = (float)(color >> 16 & 255) / 255.0F;
+	    	    float green = (float)(color >> 8 & 255) / 255.0F;
+	    	    float blue = (float)(color & 255) / 255.0F;
+				RenderSystem.color3f(red, green, blue);
+				GuiUtils.drawTexturedModalRect(x, y - 18, 0, 20, (int)(60*size), 8, 0.1f);
+			}
+			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+			MatrixStack textStack = new MatrixStack();
+            textStack.translate(0.0D, 0.0D, 300D);
+            Matrix4f textLocation = textStack.getLast().getMatrix();
+			minecraft.fontRenderer.renderString(((int) (size*100))+"%", x + 62, y - 17, color, false, textLocation, renderType, false, 0, 15728880);
+			renderType.finish();
+		}
+		else if(size == -1)
+		{
+			minecraft.textureManager.bindTexture(ResourceLocationRegister.overlay);
+			GuiUtils.drawTexturedModalRect(x - 4, y - 24, 0, 0, 93, 20, 0.1f);
+			IRenderTypeBuffer.Impl renderType = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+			MatrixStack textStack = new MatrixStack();
+            textStack.translate(0.0D, 0.0D, 300D);
+            Matrix4f textLocation = textStack.getLast().getMatrix();
+			minecraft.fontRenderer.renderString("Infinite", x + 25, y - 17, color, false, textLocation, renderType, false, 0, 15728880);
+			renderType.finish();
+		}
+		
+		GL11.glDisable(GL11.GL_BLEND);
+		RenderSystem.enableDepthTest();
+	}
 	
 	@SuppressWarnings("deprecation")
 	public static void drawRect(int left, int top, int right, int bottom, int color)

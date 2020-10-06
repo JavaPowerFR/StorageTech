@@ -27,11 +27,11 @@ public class ChemicalGrid implements IChemicalViewNode
 	/** Size (0 = Stretch, Small (3), 1 = Medium (5), 2 = Large (8)) */
 	protected int size = 0;
 	
+	protected int tabId = -1;
+	
 	protected String search = "";
 	
-	//protected TreeMap<Chemical<?>, Long> chemicals = new TreeMap<>();
 	protected List<ChemicalStack<?>> chemicals = new ArrayList<>();
-	//private ClientChemicalGrid client;
 	
 	private List<ServerPlayerEntity> playerListener = new ArrayList<>();
 	
@@ -41,7 +41,7 @@ public class ChemicalGrid implements IChemicalViewNode
 	}
 	
 	@Override
-	public void updateChemical(List<ChemicalStack<?>> chemicalView /*TreeMap<Chemical<?>, Long> chemicalView*/)
+	public void updateChemical(List<ChemicalStack<?>> chemicalView)
 	{
 		chemicals.clear();
 		
@@ -99,7 +99,6 @@ public class ChemicalGrid implements IChemicalViewNode
 			
 			sendToListeners(chemical, newValue);
 		}
-			//chemicals.(chemical, newValue);
 		
 		sendToListeners(chemical, newValue);
 	}
@@ -122,6 +121,7 @@ public class ChemicalGrid implements IChemicalViewNode
 		tag.putInt("SearchBoxMode", search_box_mode);
 		tag.putInt("GridSize", size);
 		tag.putString("Search", search);
+		tag.putInt("TabId", tabId);
 		
 	}
 	
@@ -144,6 +144,9 @@ public class ChemicalGrid implements IChemicalViewNode
 		
 		if(tag.contains("Search"))
 			search = tag.getString("Search");
+		
+		if(tag.contains("TabId"))
+			tabId = tag.getInt("TabId");
 		
 	}
 	
@@ -195,6 +198,16 @@ public class ChemicalGrid implements IChemicalViewNode
 	public void setSize(int v)
 	{
 		size = v;
+	}
+	
+	public int getTabId()
+	{
+		return tabId;
+	}
+	
+	public void setTabId(int v)
+	{
+		tabId = v;
 	}
 
 	public void addPlayerListener(ServerPlayerEntity player)

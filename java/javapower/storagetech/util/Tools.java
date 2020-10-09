@@ -1,6 +1,11 @@
 package javapower.storagetech.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IItemProvider;
 
 public class Tools
 {
@@ -27,5 +32,22 @@ public class Tools
     			return true;
     		
     	return false;
+    }
+    
+    @SafeVarargs
+    public static <T> List<T> toList(T... args)
+    {
+    	List<T> list = new ArrayList<T>();
+    	for(T a : args)
+    		list.add(a);
+    	return list;
+    }
+    
+    public static List<ItemStack> ItemStackListFromItems(IItemProvider... args)
+    {
+    	List<ItemStack> list = new ArrayList<ItemStack>();
+    	for(IItemProvider a : args)
+    		list.add(new ItemStack(a));
+    	return list;
     }
 }

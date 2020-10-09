@@ -64,7 +64,7 @@ public class StorageTech
 		@Override
 		public ItemStack createIcon()
 		{
-			return new ItemStack(STBlocks.blockDiskWorkbench);
+			return new ItemStack(STBlocks.blockPartsCombiner);
 		}
 
 	};

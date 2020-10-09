@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "particle": "storagetech:blocks/partscombiner_sides",
+        "down": "storagetech:blocks/partscombiner_down",
+        "up": "storagetech:blocks/partscombiner_top",
+        "north": "storagetech:blocks/partscombiner_sides",
+        "east": "storagetech:blocks/partscombiner_sides",
+        "south": "storagetech:blocks/partscombiner_sides",
+        "west": "storagetech:blocks/partscombiner_sides"
+    }
+}

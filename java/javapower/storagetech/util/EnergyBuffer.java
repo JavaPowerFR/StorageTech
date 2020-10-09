@@ -2,10 +2,13 @@ package javapower.storagetech.util;
 
 import javapower.storagetech.eventio.IEventVoid;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 
 public class EnergyBuffer implements IEnergyStorage
 {
+	private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> this);
+	
 	public int energy;
     public int capacity;
     public int maxReceive;
@@ -120,5 +123,10 @@ public class EnergyBuffer implements IEnergyStorage
 	public boolean canExtractLevel(int amnt)
 	{
 		return energy >= amnt;
+	}
+	
+	public LazyOptional<IEnergyStorage> getEnergyCapability()
+	{
+		return energyCapability;
 	}
 }

@@ -20,7 +20,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
@@ -49,13 +48,15 @@ public class ItemFluidDiskCustom extends Item implements IStorageDiskProvider
 	{
         super.inventoryTick(stack, world, entityIn, itemSlot, isSelected);
 
-        if (!world.isRemote && !stack.hasTag())
-        {
+        if(!world.isRemote && stack.hasTag() && stack.getTag().contains("s"))
+		{
+        	stack.getTag().putInt("st_cap", stack.getTag().getInt("s"));
             UUID id = UUID.randomUUID();
             
             API.instance().getStorageDiskManager((ServerWorld) world).set(id, API.instance().createDefaultFluidDisk((ServerWorld) world, getCapacity(stack)));
             API.instance().getStorageDiskManager((ServerWorld) world).markForSaving();
 
+            stack.getTag().remove("s");
             setId(stack, id);
         }
     }
@@ -130,7 +131,6 @@ public class ItemFluidDiskCustom extends Item implements IStorageDiskProvider
 	@Override
     public void setId(ItemStack disk, UUID id)
 	{
-        disk.setTag(new CompoundNBT());
         disk.getTag().putUniqueId("Id", id);
     }
 	
@@ -149,7 +149,7 @@ public class ItemFluidDiskCustom extends Item implements IStorageDiskProvider
 				if (disk != null && disk.getStored() == 0)
 				{
 					int cap = itemStack.getTag().getInt("st_cap");
-	            	ItemStack memory_item = ItemMemoryFluid.createItem(cap);
+	            	ItemStack memory_item = ItemCustomFluidStoragePart.createItem(cap);
 	            	playerIn.setHeldItem(handIn, new ItemStack(RSItems.STORAGE_HOUSING, 1));
 	            	if(cap > 0)
 	            		playerIn.dropItem(memory_item, true);

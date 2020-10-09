@@ -9,14 +9,11 @@ import com.refinedmods.refinedstorage.render.BakedModelOverrideRegistry;
 import com.refinedmods.refinedstorage.render.model.FullbrightBakedModel;
 
 import javapower.storagetech.block.STBlocks;
-import javapower.storagetech.container.ContainerCustomFluidStorage;
-import javapower.storagetech.container.ContainerCustomStorage;
-import javapower.storagetech.container.ContainerDiskWorkbench;
-import javapower.storagetech.container.ContainerFluidDiskWorkbench;
 import javapower.storagetech.container.ContainerPOEDrive;
 import javapower.storagetech.container.ContainerPOEExporter;
 import javapower.storagetech.container.ContainerPOEFurnace;
 import javapower.storagetech.container.ContainerPOEImporter;
+import javapower.storagetech.container.ContainerPartsCombiner;
 import javapower.storagetech.container.ContainerStructureConstructor;
 import javapower.storagetech.core.ClientConfig;
 import javapower.storagetech.core.ResourceLocationRegister;
@@ -24,14 +21,11 @@ import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.render.BakedModelPOEDrive;
 import javapower.storagetech.render.ClientDiskOverlay;
 import javapower.storagetech.render.TESRStructureConstructor;
-import javapower.storagetech.screen.ScreenContainerDiskWorkbench;
-import javapower.storagetech.screen.ScreenContainerFluidDiskWorkbench;
-import javapower.storagetech.screen.ScreenCustomFluidStorageBlock;
-import javapower.storagetech.screen.ScreenCustomStorageBlock;
 import javapower.storagetech.screen.ScreenPOEDrive;
 import javapower.storagetech.screen.ScreenPOEExporter;
 import javapower.storagetech.screen.ScreenPOEFurnace;
 import javapower.storagetech.screen.ScreenPOEImporter;
+import javapower.storagetech.screen.ScreenPartsCombiner;
 import javapower.storagetech.screen.ScreenStructureConstructor;
 import javapower.storagetech.tileentity.TileEntityStructureConstructor;
 import net.minecraft.client.gui.ScreenManager;
@@ -92,17 +86,13 @@ public class ClientSetup
 		
 		ClientRegistry.bindTileEntityRenderer(TileEntityStructureConstructor.CURRENT_TILE, TESRStructureConstructor::new);
 		
-		ScreenManager.registerFactory(ContainerDiskWorkbench.CURRENT_CONTAINER, ScreenContainerDiskWorkbench::new);
-		ScreenManager.registerFactory(ContainerFluidDiskWorkbench.CURRENT_CONTAINER, ScreenContainerFluidDiskWorkbench::new);
+		ScreenManager.registerFactory(ContainerPartsCombiner.CURRENT_CONTAINER, ScreenPartsCombiner::new);
 		
 		ScreenManager.registerFactory(ContainerPOEDrive.CURRENT_CONTAINER, ScreenPOEDrive::new);
 		ScreenManager.registerFactory(ContainerPOEImporter.CURRENT_CONTAINER, ScreenPOEImporter::new);
 		ScreenManager.registerFactory(ContainerPOEExporter.CURRENT_CONTAINER, ScreenPOEExporter::new);
 		ScreenManager.registerFactory(ContainerPOEFurnace.CURRENT_CONTAINER, ScreenPOEFurnace::new);
 		ScreenManager.registerFactory(ContainerStructureConstructor.CURRENT_CONTAINER, ScreenStructureConstructor::new);
-		
-		ScreenManager.registerFactory(ContainerCustomStorage.CURRENT_CONTAINER, ScreenCustomStorageBlock::new);
-		ScreenManager.registerFactory(ContainerCustomFluidStorage.CURRENT_CONTAINER, ScreenCustomFluidStorageBlock::new);
 		
 		RenderTypeLookup.setRenderLayer(STBlocks.blockPOEImporter, RenderType.getCutout());
 		RenderTypeLookup.setRenderLayer(STBlocks.blockPOEExporter, RenderType.getCutout());

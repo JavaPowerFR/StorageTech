@@ -11,8 +11,9 @@ public class STItems
 	public static final Item item_diskcustom = new ItemDiskCustom();
 	public static final Item item_fluiddiskcustom = new ItemFluidDiskCustom();
 	
-	public static final Item item_memory = new ItemMemoryItem();
-	public static final Item item_memory_fluid = new ItemMemoryFluid();
+	public static final Item item_custom_storage_part = new ItemCustomStoragePart();
+	public static final Item item_custom_fluid_storage_part = new ItemCustomFluidStoragePart();
+	public static final Item item_custom_energy_storage_part = new ItemCustomEnergyStoragePart();
 	
 	public static final Item item_capacitive_redstone = new Item(DEFAULT_PROPERTIES).setRegistryName(StorageTech.MODID, "capacitive_redstone");
 	
@@ -38,8 +39,10 @@ public class STItems
 	{
 		registry.register(item_diskcustom);
 		registry.register(item_fluiddiskcustom);
-		registry.register(item_memory);
-		registry.register(item_memory_fluid);
+		
+		registry.register(item_custom_storage_part);
+		registry.register(item_custom_fluid_storage_part);
+		registry.register(item_custom_energy_storage_part);
 		
 		registry.register(item_capacitive_redstone);
 		

@@ -102,9 +102,9 @@ public class STGlobalNetworkManager extends WorldSavedData
     	return energyDisks.remove(uuid);
     }
     
-    public EnergyDisk createEnergyDisk(UUID _uuid, int _capacity, int _io_capacity)
+    public EnergyDisk createEnergyDisk(UUID _uuid, int size, int _io_capacity)
     {
-    	EnergyDisk disk = new EnergyDisk(_uuid, _capacity, _io_capacity);
+    	EnergyDisk disk = new EnergyDisk(_uuid, size, _io_capacity);
     	energyDisks.put(disk.id, disk);
     	markForSaving();
     	return disk;

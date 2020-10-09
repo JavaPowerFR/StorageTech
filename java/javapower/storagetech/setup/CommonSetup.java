@@ -1,8 +1,5 @@
 package javapower.storagetech.setup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.refinedmods.refinedstorage.api.network.INetwork;
 import com.refinedmods.refinedstorage.apiimpl.API;
 import com.refinedmods.refinedstorage.block.ControllerBlock;
@@ -13,7 +10,9 @@ import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.event.ControllerLoadEvent;
 import javapower.storagetech.item.STItems;
 import javapower.storagetech.recipe.StorageTechRecipeCell;
+import javapower.storagetech.recipe.StorageTechRecipeCustomDisk;
 import javapower.storagetech.util.DiskUtils;
+import javapower.storagetech.util.EPartType;
 import javapower.storagetech.util.PartValue;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -33,6 +32,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class CommonSetup
 {
 	public static final SpecialRecipeSerializer<StorageTechRecipeCell> CRAFTING_STORAGETECH_CELL = IRecipeSerializer.register("storagetech:recipe_cell", new SpecialRecipeSerializer<>(StorageTechRecipeCell::new));
+	public static final SpecialRecipeSerializer<StorageTechRecipeCustomDisk> CRAFTING_CUSTOM_DISK = IRecipeSerializer.register("storagetech:recipe_custom_disk", new SpecialRecipeSerializer<>(StorageTechRecipeCustomDisk::new));
 	
 	@SubscribeEvent
 	public void onCommonSetup(FMLCommonSetupEvent e)
@@ -43,42 +43,60 @@ public class CommonSetup
 		if(StorageTech.MOD_MEKANISM_IS_LOADED)
 			javapower.storagetech.mekanism.block.MKBlocks.registerNodes(API.instance().getNetworkNodeRegistry());
 		
-		List<PartValue> item_part = new ArrayList<PartValue>();
-		List<PartValue> fluid_part = new ArrayList<PartValue>();
+		DiskUtils.getParts().clear();
+		
+		DiskUtils.getParts().add(new PartValueCustom(STItems.item_custom_storage_part, EPartType.ITEM));
+		DiskUtils.getParts().add(new PartValueCustom(STItems.item_custom_fluid_storage_part, EPartType.FLUID));
+		DiskUtils.getParts().add(new PartValueCustom(STItems.item_custom_energy_storage_part, EPartType.ENERGY));
+		if(StorageTech.MOD_MEKANISM_IS_LOADED)
+			DiskUtils.getParts().add(new PartValueCustom(javapower.storagetech.mekanism.item.MKItems.item_custom_chemical_storage_part, EPartType.CHEMICAL));
 		
 		for(Item item : ForgeRegistries.ITEMS.getValues())
 		{
 			String path = item.getRegistryName().getPath();
-			if(path.contains("_fluid_storage_part"))
+			if(path.contains("_storage_part"))
 			{
-				String value = path.substring(0, path.indexOf('_'));
-				int sufix = "kKmMgG".indexOf(value.charAt(value.length()-1))/2;
-				long multi = 0;
-				if(sufix != -1)
+				String[] args = path.split("_");
+				if(args.length == 3)
 				{
-					if(sufix == 0)
-						multi = 1000;
-					else if(sufix == 1)
-						multi = 1000_000;
-					else if(sufix == 2)
-						multi = 1000_000_000;
-				}
-				
-				try
-				{
-					long part_value = Integer.parseInt(value.substring(0, value.length()-1)) * multi;
-					fluid_part.add(new PartValue(item, part_value));
-				}
-				catch (Exception e2)
-				{
+					int value = valueExtractor(args[0]);
+					if(value > 0)
+						DiskUtils.getParts().add(new PartValue(item, value, EPartType.ITEM));
 					
+				}
+				else if(args.length == 4)
+				{
+					int value = valueExtractor(args[0]);
+					if(value > 0)
+					{
+						DiskUtils.getParts().add(new PartValue(item, value, valueType(args[1])));
+					}
 				}
 			}
-			else if(path.contains("_storage_part") && !path.contains("chemical"))
+		}
+	}
+	
+	private int valueExtractor(String value)
+	{
+		int prevalue = 0;
+		int multi = 0;
+		int aftervalue = 0;
+				
+		for(int index = 0; index < value.length(); ++index)
+		{
+			char c = value.charAt(index);
+			
+			int value_char = "0123456789".indexOf(c);
+			if(value_char != -1)
 			{
-				String value = path.substring(0, path.indexOf('_'));
+				if(multi == 0)
+					prevalue = prevalue*10 + value_char;
+				else
+					aftervalue = aftervalue*10 + value_char;
+			}
+			else
+			{
 				int sufix = "kKmMgG".indexOf(value.charAt(value.length()-1))/2;
-				long multi = 0;
 				if(sufix != -1)
 				{
 					if(sufix == 0)
@@ -87,27 +105,41 @@ public class CommonSetup
 						multi = 1000_000;
 					else if(sufix == 2)
 						multi = 1000_000_000;
-				}
-				
-				try
-				{
-					long part_value = Integer.parseInt(value.substring(0, value.length()-1)) * multi;
-					item_part.add(new PartValue(item, part_value));
-				}
-				catch (Exception e2)
-				{
-					
 				}
 			}
 		}
 		
-		DiskUtils.updateValidParts(item_part, fluid_part);
+		int composed = prevalue * multi;
+		
+		int cntZo = (""+multi).length()-1;
+		cntZo -= (""+aftervalue).length();
+		int afterMulti = 1;
+		
+		for(int z0 = 0; z0 < cntZo; ++z0)
+			afterMulti *= 10;
+		
+		composed += aftervalue*afterMulti;
+		
+		return composed;
+	}
+	
+	private EPartType valueType(String value)
+	{
+		if(value.equalsIgnoreCase("fluid"))
+			return EPartType.FLUID;
+		if(value.equalsIgnoreCase("energy"))
+			return EPartType.ENERGY;
+		if(value.equalsIgnoreCase("chemical"))
+			return EPartType.CHEMICAL;
+		
+		return EPartType.ITEM;
 	}
 
     @SubscribeEvent
     public void onRegisterRecipeSerializers(RegistryEvent.Register<IRecipeSerializer<?>> register)
     {
     	register.getRegistry().register(CRAFTING_STORAGETECH_CELL);
+    	register.getRegistry().register(CRAFTING_CUSTOM_DISK);
     }
     
     @SubscribeEvent

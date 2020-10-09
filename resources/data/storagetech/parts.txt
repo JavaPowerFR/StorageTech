@@ -1,0 +1,8 @@
+refinedstorage:64k_fluid_storage_part FLUID 64000
+refinedstorage:256k_fluid_storage_part FLUID 256000
+refinedstorage:1024k_fluid_storage_part FLUID 1024000
+refinedstorage:4096k_fluid_storage_part FLUID 4096000
+refinedstorage:1k_storage_part ITEM 1000
+refinedstorage:4k_storage_part ITEM 4000
+refinedstorage:16k_storage_part ITEM 16000
+refinedstorage:64k_storage_part ITEM 64000

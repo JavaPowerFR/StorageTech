@@ -180,12 +180,13 @@ public class ItemEnergyCell extends Item implements IItemEnergyStorageDisk
 		ItemStack part = ItemStack.EMPTY;
 		ItemStack io_iterface = ItemStack.EMPTY;
 		
-		if(capacity == 100_000) part = new ItemStack(STItems.item_100k_energy_storage_part);
-		else if(capacity == 400_000) part = new ItemStack(STItems.item_400k_energy_storage_part);
-		else if(capacity == 1_600_000) part = new ItemStack(STItems.item_1M6_energy_storage_part);
-		else if(capacity == 6_400_000) part = new ItemStack(STItems.item_6M4_energy_storage_part);
-		else if(capacity == 25_600_000) part = new ItemStack(STItems.item_25M6_energy_storage_part);
-		else if(capacity == 102_400_000) part = new ItemStack(STItems.item_102M4_energy_storage_part);
+		if(capacity == 100_000l) part = new ItemStack(STItems.item_100k_energy_storage_part);
+		else if(capacity == 400_000l) part = new ItemStack(STItems.item_400k_energy_storage_part);
+		else if(capacity == 1_600_000l) part = new ItemStack(STItems.item_1M6_energy_storage_part);
+		else if(capacity == 6_400_000l) part = new ItemStack(STItems.item_6M4_energy_storage_part);
+		else if(capacity == 25_600_000l) part = new ItemStack(STItems.item_25M6_energy_storage_part);
+		else if(capacity == 102_400_000l) part = new ItemStack(STItems.item_102M4_energy_storage_part);
+		else part = ItemCustomEnergyStoragePart.createItem(capacity);
 		
 		if(ioCapacity == 10) io_iterface = new ItemStack(STItems.item_10p_energy_io_interface);
 		else if(ioCapacity == 20) io_iterface = new ItemStack(STItems.item_20p_energy_io_interface);

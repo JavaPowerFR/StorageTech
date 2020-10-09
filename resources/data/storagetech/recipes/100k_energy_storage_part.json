@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SES",
+    "GRG",
+    "SGS"
+  ],
+  "key": {
+    "S": {
+      "tag": "refinedstorage:silicon"
+    },
+    "E": {
+      "item": "refinedstorage:quartz_enriched_iron"
+    },
+    "G": {
+      "tag": "forge:glass"
+    },
+    "R": {
+      "item": "storagetech:capacitive_redstone"
+    }
+  },
+  "result": {
+    "item": "storagetech:100k_energy_storage_part"
+  }
+}

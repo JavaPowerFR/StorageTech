@@ -20,8 +20,8 @@
 *		creation date: 04/08/2017 (dd/mm/yyyy)
 *		recreation date: 03/05/2020 (dd/mm/yyyy)
 *		creat at: Montigny Le Bretonneux France
-*		last modification: 06/10/2020 (dd/mm/yyyy)
-*		comment: Experimental B9.2
+*		last modification: 09/10/2020 (dd/mm/yyyy)
+*		comment: Experimental B9.3.2
 *		
 ***************************************************/
 package javapower.storagetech.core;

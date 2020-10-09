@@ -71,7 +71,7 @@ public class StorageTechRecipeCustomDisk extends SpecialRecipe
 		
 		}
 		
-		if(matcher == 7 && part != null)
+		if(matcher == 3 && part != null)
 		{
 			return part.createDisk(partStack);
 		}

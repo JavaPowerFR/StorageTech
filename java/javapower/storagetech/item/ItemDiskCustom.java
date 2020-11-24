@@ -53,7 +53,7 @@ public class ItemDiskCustom extends Item implements IStorageDiskProvider
         	stack.getTag().putInt("st_cap", stack.getTag().getInt("s"));
             UUID id = UUID.randomUUID();
             
-            API.instance().getStorageDiskManager((ServerWorld) world).set(id, API.instance().createDefaultItemDisk((ServerWorld) world, getCapacity(stack)));
+            API.instance().getStorageDiskManager((ServerWorld) world).set(id, API.instance().createDefaultItemDisk((ServerWorld) world, getCapacity(stack), (PlayerEntity) entityIn));
             API.instance().getStorageDiskManager((ServerWorld) world).markForSaving();
             
             stack.getTag().remove("s");
@@ -76,13 +76,13 @@ public class ItemDiskCustom extends Item implements IStorageDiskProvider
             if (data != null)
             {
                 if (data.getCapacity() == -1)
-                    tooltip.add(new TranslationTextComponent("misc.refinedstorage.storage.stored", API.instance().getQuantityFormatter().format(data.getStored())).func_230530_a_(Styles.GRAY));
+                    tooltip.add(new TranslationTextComponent("misc.refinedstorage.storage.stored", API.instance().getQuantityFormatter().format(data.getStored())).setStyle(Styles.GRAY));
                 else
-                    tooltip.add(new TranslationTextComponent("misc.refinedstorage.storage.stored_capacity", API.instance().getQuantityFormatter().format(data.getStored()), API.instance().getQuantityFormatter().format(data.getCapacity())).func_230530_a_(Styles.GRAY));
+                    tooltip.add(new TranslationTextComponent("misc.refinedstorage.storage.stored_capacity", API.instance().getQuantityFormatter().format(data.getStored()), API.instance().getQuantityFormatter().format(data.getCapacity())).setStyle(Styles.GRAY));
             }
 
             if (flag.isAdvanced())
-                tooltip.add(new StringTextComponent(id.toString()).func_230530_a_(Styles.GRAY));
+                tooltip.add(new StringTextComponent(id.toString()).setStyle(Styles.GRAY));
         }
     }
 	
@@ -150,7 +150,7 @@ public class ItemDiskCustom extends Item implements IStorageDiskProvider
 				{
 					int cap = itemStack.getTag().getInt("st_cap");
 	            	ItemStack memory_item = ItemCustomStoragePart.createItem(cap);
-	            	playerIn.setHeldItem(handIn, new ItemStack(RSItems.STORAGE_HOUSING, 1));
+	            	playerIn.setHeldItem(handIn, new ItemStack(RSItems.STORAGE_HOUSING.get(), 1));
 	            	if(cap > 0)
 	            		playerIn.dropItem(memory_item, true);
 				}

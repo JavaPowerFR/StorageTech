@@ -18,10 +18,10 @@
 *		author: Cyril GENIN (Java_Power)
 *		email: cyrilgenintravail@gmail.com
 *		creation date: 04/08/2017 (dd/mm/yyyy)
-*		recreation date: 03/05/2020 (dd/mm/yyyy)
+*		recreation date: 09/10/2020 (dd/mm/yyyy)
 *		creat at: Montigny Le Bretonneux France
 *		last modification: 09/10/2020 (dd/mm/yyyy)
-*		comment: Experimental B9.3.2
+*		comment: 16.1.3-R1.1
 *		
 ***************************************************/
 package javapower.storagetech.core;
@@ -107,13 +107,15 @@ public class StorageTech
 
         CommonSetup commonSetup = new CommonSetup();
 
+        //STBlocks.register();
+        
         FMLJavaModLoadingContext.get().getModEventBus().addListener(commonSetup::onCommonSetup);
         
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, commonSetup::onRegisterBlocks);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(TileEntityType.class, commonSetup::onRegisterTiles);
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(TileEntityType.class, commonSetup::onRegisterTiles);//
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, commonSetup::onRegisterItems);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(IRecipeSerializer.class, commonSetup::onRegisterRecipeSerializers);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(ContainerType.class, commonSetup::onRegisterContainers);
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(IRecipeSerializer.class, commonSetup::onRegisterRecipeSerializers);//
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(ContainerType.class, commonSetup::onRegisterContainers);//
         
         IdDistributor id = new IdDistributor();
         RegisterPacket.register(INSTANCE_CHANNEL, id);

@@ -35,10 +35,15 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class STBlocks
 {
+	private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, StorageTech.MODID);
+	
 	public static final BooleanProperty CONNECTED = BooleanProperty.create("connected");
 	public static final Block.Properties DEFAULT_BLOCK_PROPERTIES = Block.Properties.create(Material.IRON).hardnessAndResistance(2.5F).sound(SoundType.METAL);
 	
@@ -54,6 +59,7 @@ public class STBlocks
 	
 	public static void registerBlocks(IForgeRegistry<Block> registry)
 	{
+		//BLOCKS.register(name, sup)
 		registry.register(blockPartsCombiner.getBlock());
 		
 		registry.register(blockPOEDrive.getBlock());
@@ -128,4 +134,10 @@ public class STBlocks
         tile.getDataManager().getParameters().forEach(TileDataManager::registerParameter);
         return t;
     }
+
+	public static void register()
+	{
+		//registerBlocks();
+		BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+	}
 }

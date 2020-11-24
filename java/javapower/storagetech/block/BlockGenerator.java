@@ -8,6 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.world.IBlockReader;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -67,6 +68,55 @@ public class BlockGenerator extends BBaseContainer
 					}
 				}
 			}
+		}
+		
+		public final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> new IEnergyStorage()
+				{
+
+					@Override
+					public int receiveEnergy(int maxReceive, boolean simulate)
+					{
+						return maxReceive;
+					}
+
+					@Override
+					public int extractEnergy(int maxExtract, boolean simulate)
+					{
+						return maxExtract;
+					}
+
+					@Override
+					public int getEnergyStored()
+					{
+						return 1000;
+					}
+
+					@Override
+					public int getMaxEnergyStored()
+					{
+						return 2000;
+					}
+
+					@Override
+					public boolean canExtract()
+					{
+						return true;
+					}
+
+					@Override
+					public boolean canReceive()
+					{
+						return true;
+					}
+			
+				});
+		
+		@Override
+		public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
+		{
+			if(cap == CapabilityEnergy.ENERGY)
+				return energyCapability.cast();
+			return super.getCapability(cap, side);
 		}
 		
 	}

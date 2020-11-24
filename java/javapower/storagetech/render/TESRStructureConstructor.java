@@ -24,9 +24,8 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 
@@ -58,8 +57,7 @@ public class TESRStructureConstructor extends TileEntityRenderer<TileEntityStruc
 			BlockPos bp_strt = bpl_strt.getBlockPos(blockpos, dir);
 			BlockPos bp_end = bpl_end.getBlockPos(blockpos, dir);
 			
-			@SuppressWarnings("static-access")
-			VoxelShape shape = new VoxelShapes().create(
+			AxisAlignedBB shape = new AxisAlignedBB(
 					bp_strt.getX() > bp_end.getX() ? bp_strt.getX() + 1 : bp_strt.getX(),
 					bp_strt.getY() > bp_end.getY() ? bp_strt.getY() + 1 : bp_strt.getY(),
 					bp_strt.getZ() > bp_end.getZ() ? bp_strt.getZ() + 1 : bp_strt.getZ(),
@@ -82,7 +80,7 @@ public class TESRStructureConstructor extends TileEntityRenderer<TileEntityStruc
 	        RenderSystem.depthMask(true);
 	        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getLines());
 	        
-	        WorldRenderer.drawBoundingBox(matrixStackIn, builder, shape.getBoundingBox().offset((double) -blockpos.getX(), (double) -blockpos.getY(), (double) -blockpos.getZ()), (float) color.getRed() / 255f, (float) color.getGreen() / 255f, (float) color.getBlue() / 255f, 0.5F);
+	        WorldRenderer.drawBoundingBox(matrixStackIn, builder, shape.offset((double) -blockpos.getX(), (double) -blockpos.getY(), (double) -blockpos.getZ()), (float) color.getRed() / 255f, (float) color.getGreen() / 255f, (float) color.getBlue() / 255f, 0.5F);
 	        
 	        Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
 	        

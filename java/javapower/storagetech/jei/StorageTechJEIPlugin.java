@@ -77,8 +77,8 @@ public class StorageTechJEIPlugin implements IModPlugin
 		recipesPartsCombiner.add(new PartsCombiner.Wrapper(partsFluid, partsFluid, new ItemStack(STItems.item_custom_fluid_storage_part)));
 		recipesPartsCombiner.add(new PartsCombiner.Wrapper(partsEnergy, partsEnergy, new ItemStack(STItems.item_custom_energy_storage_part)));
 		
-		if(StorageTech.MOD_MEKANISM_IS_LOADED)
-			recipesPartsCombiner.add(new PartsCombiner.Wrapper(partsChemical, partsChemical, new ItemStack(javapower.storagetech.mekanism.item.MKItems.item_custom_chemical_storage_part)));
+		/*if(StorageTech.MOD_MEKANISM_IS_LOADED)
+			recipesPartsCombiner.add(new PartsCombiner.Wrapper(partsChemical, partsChemical, new ItemStack(javapower.storagetech.mekanism.item.MKItems.item_custom_chemical_storage_part)));*/
 		
 		registry.addRecipes(recipesPartsCombiner, PartsCombiner.Category.UID);
 		
@@ -114,7 +114,7 @@ public class StorageTechJEIPlugin implements IModPlugin
 		
 		//custom disk recipe
 		NonNullList<Ingredient> ing_diskA = NonNullList.create();
-		ing_diskA.add(Ingredient.fromItems(RSItems.STORAGE_HOUSING));
+		ing_diskA.add(Ingredient.fromItems(RSItems.STORAGE_HOUSING.get()));
 		ing_diskA.add(Ingredient.fromItems(STItems.item_custom_storage_part));
 		
 		recipes_builder.add(new SimpleShaplessCrafting(ing_diskA,
@@ -123,7 +123,7 @@ public class StorageTechJEIPlugin implements IModPlugin
 				CommonSetup.CRAFTING_CUSTOM_DISK));
 		
 		NonNullList<Ingredient> ing_diskB = NonNullList.create();
-		ing_diskB.add(Ingredient.fromItems(RSItems.STORAGE_HOUSING));
+		ing_diskB.add(Ingredient.fromItems(RSItems.STORAGE_HOUSING.get()));
 		ing_diskB.add(Ingredient.fromItems(STItems.item_custom_fluid_storage_part));
 		
 		recipes_builder.add(new SimpleShaplessCrafting(ing_diskB,
@@ -131,7 +131,7 @@ public class StorageTechJEIPlugin implements IModPlugin
 				CommonSetup.CRAFTING_CUSTOM_DISK.getRegistryName(),
 				CommonSetup.CRAFTING_CUSTOM_DISK));
 		
-		if(StorageTech.MOD_MEKANISM_IS_LOADED)
+		/*if(StorageTech.MOD_MEKANISM_IS_LOADED)
 		{
 			NonNullList<Ingredient> ing_diskC = NonNullList.create();
 			ing_diskC.add(Ingredient.fromItems(RSItems.STORAGE_HOUSING));
@@ -141,7 +141,7 @@ public class StorageTechJEIPlugin implements IModPlugin
 					new ItemStack(javapower.storagetech.mekanism.item.MKItems.item_custom_chemical_disk),
 					CommonSetup.CRAFTING_CUSTOM_DISK.getRegistryName(),
 					CommonSetup.CRAFTING_CUSTOM_DISK));
-		}
+		}*/
 		
 		registry.addRecipes(recipes_builder, VanillaRecipeCategoryUid.CRAFTING);
 		// ----------------

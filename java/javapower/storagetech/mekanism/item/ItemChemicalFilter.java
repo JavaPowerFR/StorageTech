@@ -93,7 +93,7 @@ public class ItemChemicalFilter extends Item
 	{
 		super.addInformation(stack, world, tooltip, flag);
         
-        tooltip.add(new TranslationTextComponent("sidebutton.refinedstorage.mode." + (getMode(stack) == IFilter.MODE_WHITELIST ? "whitelist" : "blacklist")).func_230530_a_(Styles.YELLOW));
+        tooltip.add(new TranslationTextComponent("sidebutton.refinedstorage.mode." + (getMode(stack) == IFilter.MODE_WHITELIST ? "whitelist" : "blacklist")).setStyle(Styles.YELLOW));
         if(stack.hasTag() && stack.getTag().contains(NBT_CHEMICAL_FILTERS))
         {
         	ChemicalInventory ch = new ChemicalInventory(27);

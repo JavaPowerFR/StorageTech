@@ -35,10 +35,10 @@ public class ScreenPartsCombiner extends ContainerScreen<ContainerPartsCombiner>
 	    this.ySize = 178;
 		super.init();
 		
-		field_238745_s_ = ySize - 94;
+		playerInventoryTitleY = ySize - 94;
 	}
 	
-	protected void func_230450_a_(MatrixStack matrix, float partialTicks, int mouseX, int mouseY)
+	protected void drawGuiContainerBackgroundLayer(MatrixStack matrix, float partialTicks, int mouseX, int mouseY)
 	{
 	    minecraft.getTextureManager().bindTexture(ResourceLocationRegister.parts_combiner);
 	    blit(matrix, guiLeft, guiTop, 0, 0, xSize, ySize);
@@ -70,9 +70,9 @@ public class ScreenPartsCombiner extends ContainerScreen<ContainerPartsCombiner>
 	}
 	
 	@Override
-	protected void func_230451_b_(MatrixStack matrix, int x, int y)
+	protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y)
 	{
-		super.func_230451_b_(matrix, x, y);
+		super.drawGuiContainerForegroundLayer(matrixStack, x, y);
 	}
 	
 	@Override
@@ -80,7 +80,8 @@ public class ScreenPartsCombiner extends ContainerScreen<ContainerPartsCombiner>
 	{
 		this.renderBackground(matrix);
 	    super.render(matrix, mouseX, mouseY, partialTicks);
-	    this.func_230459_a_(matrix, mouseX, mouseY);
+	    this.renderHoveredTooltip(matrix, mouseX, mouseY);
+	    //this.func_230459_a_(matrix, mouseX, mouseY);
 	}
 	
 	private boolean isOnAera(int x, int y, int mouseX, int mouseY, int width, int height)

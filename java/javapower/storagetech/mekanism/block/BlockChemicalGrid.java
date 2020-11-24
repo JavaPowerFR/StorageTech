@@ -104,11 +104,15 @@ public class BlockChemicalGrid extends NetworkNodeBlock
     {
         if (!world.isRemote)
         {
-           return NetworkUtils.attemptModify(world, pos, hit.getFace(), player, () -> NetworkHooks.openGui((ServerPlayerEntity) player, new PositionalTileContainerProvider<TileEntityChemicalGrid>(
-        		   new TranslationTextComponent("gui.storagetech.chemical_grid"),
-                (tile, windowId, inventory, p) -> new ContainerChemicalGrid(tile, player, windowId),
-                pos
-            ), pos));
+           return NetworkUtils.attemptModify(world, pos, player, () -> NetworkHooks.openGui(
+                   (ServerPlayerEntity) player,
+                   new PositionalTileContainerProvider<TileEntityChemicalGrid>(
+                       new TranslationTextComponent("gui.storagetech.chemical_grid"),
+                       (tile, windowId, inventory, p) -> new ContainerChemicalGrid(tile, player, windowId),
+                       pos
+                   ),
+                   pos
+               ));
         }
 
         return ActionResultType.SUCCESS;

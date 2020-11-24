@@ -1,6 +1,10 @@
 package javapower.storagetech.render;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
@@ -18,16 +22,22 @@ import javapower.storagetech.api.IItemProgressBarOverlay;
 import javapower.storagetech.core.ClientConfig;
 import javapower.storagetech.core.ResourceLocationRegister;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.Style;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.client.event.GuiContainerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraftforge.fml.common.Mod;
@@ -37,14 +47,30 @@ public class ClientDiskOverlay
 {
 	public static Minecraft minecraft = Minecraft.getInstance();
 	
+	private static int tooltipX = 0;
+	private static int tooltipY = 0;
+	
+	
 	@SubscribeEvent
 	@OnlyIn(Dist.CLIENT)
-    public static void drawTooltip(RenderTooltipEvent.PostBackground event)
+	public static void drawTooltip(GuiContainerEvent.DrawForeground event)
     {
 		if(ClientConfig.Value_overlayEnable)
 		{
-	    	ItemStack itemstack = event.getStack();
-	    	if(itemstack != null)
+	    	
+			Slot slot = event.getGuiContainer().getSlotUnderMouse();
+			if(slot == null)
+				return;
+	    	ItemStack itemstack = slot.getStack();
+	    	
+	    	//tool tips pos
+	    	initToolTipsPos(itemstack, getTooltipFromItem(itemstack), event.getMouseX(), event.getMouseY(),  event.getGuiContainer().width,  event.getGuiContainer().height, minecraft.fontRenderer);
+	    	//end tool tips pos
+	    	
+	    	int xTB = - event.getGuiContainer().getGuiLeft() + tooltipX;
+	    	int yTB = - event.getGuiContainer().getGuiTop() + tooltipY;
+	    	
+	    	if(itemstack != null && !itemstack.isEmpty())
 	    	{
 	    		if(itemstack.getItem() instanceof IStorageDiskProvider)
 	    		{
@@ -60,7 +86,7 @@ public class ClientDiskOverlay
 		    		{
 		    			int capacity = data.getCapacity();
 		    			float size = data.getStored()/(float)data.getCapacity();
-		    			drawOverlay(event.getX(), event.getY(), capacity == -1 ? -1 : size, size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded);
+		    			drawOverlay(xTB, yTB, capacity == -1 ? -1 : size, size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded);
 		    		}
 	    		}
 	    		else if(itemstack.getItem() instanceof BlockItem)
@@ -76,7 +102,7 @@ public class ClientDiskOverlay
 	    		    		{
 	    		    			int capacity = data.getCapacity();
 	    		    			float size = data.getStored()/(float)data.getCapacity();
-	    		    			drawOverlay(event.getX(), event.getY(), capacity == -1 ? -1 : size, size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded);
+	    		    			drawOverlay(xTB, yTB, capacity == -1 ? -1 : size, size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded);
 	    		    		}
 	    				}
 	    			}
@@ -91,7 +117,7 @@ public class ClientDiskOverlay
 	    		    		{
 	    		    			int capacity = data.getCapacity();
 	    		    			float size = data.getStored()/(float)data.getCapacity();
-	    		    			drawOverlay(event.getX(), event.getY(), capacity == -1 ? -1 : size, size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded);
+	    		    			drawOverlay(xTB, yTB, capacity == -1 ? -1 : size, size >= 0.75f ? size >= 1 ? 0xffff0000 : 0xffffd800 : 0xff00eded);
 	    		    		}
 	    				}
 	    			}
@@ -103,13 +129,13 @@ public class ClientDiskOverlay
 	    			
 	    			if(size >= 0 || size == -1)
 	    			{
-			    		drawOverlay(event.getX(), event.getY(), size, itemOverlay.getOverlayBarColor(itemstack, size));
+			    		drawOverlay(xTB, yTB, size, itemOverlay.getOverlayBarColor(itemstack, size));
 	    			}
 	    		}
 	    	}
 		}
     }
-	
+
 	/**
 	 * 
 	 * @param x
@@ -187,4 +213,81 @@ public class ClientDiskOverlay
         RenderSystem.enableAlphaTest();
         RenderSystem.enableTexture();
     }
+	
+	public static List<ITextComponent> getTooltipFromItem(ItemStack itemStack)
+	{
+	      return itemStack.getTooltip(minecraft.player, minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+	}
+	
+	public static void initToolTipsPos(@Nonnull final ItemStack stack, List<? extends ITextProperties> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, FontRenderer font)
+	{
+		int tooltipTextWidth = 0;
+
+        for (ITextProperties textLine : textLines)
+        {
+            int textLineWidth = font.getStringPropertyWidth(textLine);//TODO
+            if (textLineWidth > tooltipTextWidth)
+                tooltipTextWidth = textLineWidth;
+        }
+        
+        boolean needsWrap = false;
+        int titleLinesCount = 1;
+        
+		tooltipX = mouseX + 12;
+        if (tooltipX + tooltipTextWidth + 4 > screenWidth)
+        {
+            tooltipX = mouseX - 16 - tooltipTextWidth;
+            if (tooltipX < 4) // if the tooltip doesn't fit on the screen
+            {
+                if (mouseX > screenWidth / 2)
+                    tooltipTextWidth = mouseX - 12 - 8;
+                else
+                    tooltipTextWidth = screenWidth - 16 - mouseX;
+                needsWrap = true;
+            }
+        }
+        
+        if (needsWrap)
+        {
+            int wrappedTooltipWidth = 0;
+            List<ITextProperties> wrappedTextLines = new ArrayList<>();
+            for (int i = 0; i < textLines.size(); i++)
+            {
+                ITextProperties textLine = textLines.get(i);
+                List<ITextProperties> wrappedLine = font.getCharacterManager().func_238362_b_(textLine, tooltipTextWidth, Style.EMPTY);
+                if (i == 0)
+                    titleLinesCount = wrappedLine.size();
+
+                for (ITextProperties line : wrappedLine)
+                {
+                    int lineWidth = font.getStringPropertyWidth(line);//TODO
+                    if (lineWidth > wrappedTooltipWidth)
+                        wrappedTooltipWidth = lineWidth;
+                    wrappedTextLines.add(line);
+                }
+            }
+            tooltipTextWidth = wrappedTooltipWidth;
+            textLines = wrappedTextLines;
+
+            if (mouseX > screenWidth / 2)
+                tooltipX = mouseX - 16 - tooltipTextWidth;
+            else
+                tooltipX = mouseX + 12;
+        }
+        
+        tooltipY = mouseY - 12;
+        int tooltipHeight = 8;
+
+        if (textLines.size() > 1)
+        {
+            tooltipHeight += (textLines.size() - 1) * 10;
+            if (textLines.size() > titleLinesCount)
+                tooltipHeight += 2;
+        }
+
+        if (tooltipY < 4)
+            tooltipY = 4;
+        else if (tooltipY + tooltipHeight + 4 > screenHeight)
+            tooltipY = screenHeight - tooltipHeight - 4;
+	}
 }

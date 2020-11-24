@@ -38,9 +38,9 @@ public abstract class BaseScreen2<T extends Container> extends BaseScreen<T>
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	protected void func_230450_a_(MatrixStack matrixStack, float renderPartialTicks, int mouseX, int mouseY)
+	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float renderPartialTicks, int mouseX, int mouseY)
 	{
-		super.func_230450_a_(matrixStack, renderPartialTicks, mouseX, mouseY);
+		super.drawGuiContainerBackgroundLayer(matrixStack, renderPartialTicks, mouseX, mouseY);
 		
 		for(Slot slot : container.inventorySlots)
         {

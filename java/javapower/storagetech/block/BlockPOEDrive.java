@@ -98,11 +98,15 @@ public class BlockPOEDrive extends NetworkNodeBlock
     {
         if (!world.isRemote)
         {
-           return NetworkUtils.attemptModify(world, pos, hit.getFace(), player, () -> NetworkHooks.openGui((ServerPlayerEntity) player, new PositionalTileContainerProvider<TileEntityPOEDrive>(
-        		   new TranslationTextComponent("gui.storagetech.poe_drive"),
-                (tile, windowId, inventory, p) -> new ContainerPOEDrive(tile, player, windowId),
+            return NetworkUtils.attemptModify(world, pos, player, () -> NetworkHooks.openGui(
+                (ServerPlayerEntity) player,
+                new PositionalTileContainerProvider<TileEntityPOEDrive>(
+                    new TranslationTextComponent("gui.storagetech.poe_drive"),
+                    (tile, windowId, inventory, p) -> new ContainerPOEDrive(tile, player, windowId),
+                    pos
+                ),
                 pos
-            ), pos));
+            ));
         }
 
         return ActionResultType.SUCCESS;

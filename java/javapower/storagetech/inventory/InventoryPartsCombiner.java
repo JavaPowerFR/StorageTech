@@ -2,9 +2,8 @@ package javapower.storagetech.inventory;
 
 import java.util.function.Function;
 
-import org.lwjgl.system.CallbackI.S;
-
 import com.refinedmods.refinedstorage.RSItems;
+import com.refinedmods.refinedstorage.item.UpgradeItem;
 import com.refinedmods.refinedstorage.util.StackUtils;
 
 import javapower.storagetech.eventio.IEventVoid;
@@ -36,10 +35,9 @@ public class InventoryPartsCombiner
 	
 	private ItemStackHandler upgrades = new ItemStackHandler(4)
 	{
-
 		public boolean isItemValid(int slot, ItemStack stack)
 		{
-			return stack.getItem().equals(RSItems.SPEED_UPGRADE);
+			return stack.getItem().equals(RSItems.UPGRADE_ITEMS.get(UpgradeItem.Type.SPEED).get());
 		};
 		
 		protected void onContentsChanged(int slot)

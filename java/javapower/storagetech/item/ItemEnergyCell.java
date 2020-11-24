@@ -85,15 +85,15 @@ public class ItemEnergyCell extends Item implements IItemEnergyStorageDisk
 					"misc.storagetech.storage.energy.stored_capacity",
 					API.instance().getQuantityFormatter().format(sedsd.getStored()),
 					API.instance().getQuantityFormatter().format(sedsd.getCapacity())
-					).func_230530_a_(Styles.GRAY));
+					).setStyle(Styles.GRAY));
 			tooltip.add(new TranslationTextComponent(
 					"misc.storagetech.storage.energy.io_capacity",
 					API.instance().getQuantityFormatter().format(sedsd.getIoCapacity())
-					).func_230530_a_(Styles.GRAY));
+					).setStyle(Styles.GRAY));
 			
 			if (flagIn.isAdvanced())
 			{
-                tooltip.add(new StringTextComponent(id.toString()).func_230530_a_(Styles.GRAY));
+                tooltip.add(new StringTextComponent(id.toString()).setStyle(Styles.GRAY));
             }
 		}
 	}

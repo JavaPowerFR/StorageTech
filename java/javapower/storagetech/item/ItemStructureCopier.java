@@ -42,7 +42,7 @@ public class ItemStructureCopier extends Item
 		super.addInformation(stack, world, tooltip, flag);
 		if(stack != null && stack.hasTag())
 		{
-			tooltip.add(new TranslationTextComponent("tooltip.storagetech.structurecopier.paste").func_230530_a_(Styles.GRAY));
+			tooltip.add(new TranslationTextComponent("tooltip.storagetech.structurecopier.paste").setStyle(Styles.GRAY));
 			
 			ListNBT list_elements = stack.getTag().getList("Elements", Constants.NBT.TAG_COMPOUND);
 	        for (int i = 0; i < list_elements.size(); ++i)
@@ -53,11 +53,11 @@ public class ItemStructureCopier extends Item
 	        	{
 	        		if(element.drop)
 	        		{
-	        			tooltip.add(new TranslationTextComponent("tooltip.storagetech.structurecopier.drop", element.stack.getDisplayName(), element.localPos.getI(), element.localPos.getJ(), element.localPos.getK()).func_230530_a_(Styles.YELLOW));
+	        			tooltip.add(new TranslationTextComponent("tooltip.storagetech.structurecopier.drop", element.stack.getDisplayName(), element.localPos.getI(), element.localPos.getJ(), element.localPos.getK()).setStyle(Styles.YELLOW));
 	        		}
 	        		else
 	        		{
-	        			tooltip.add(new TranslationTextComponent("tooltip.storagetech.structurecopier.place", element.stack.getDisplayName(), element.localPos.getI(), element.localPos.getJ(), element.localPos.getK()).func_230530_a_(Styles.YELLOW));
+	        			tooltip.add(new TranslationTextComponent("tooltip.storagetech.structurecopier.place", element.stack.getDisplayName(), element.localPos.getI(), element.localPos.getJ(), element.localPos.getK()).setStyle(Styles.YELLOW));
 	        		}
 	        	}
 	        		
@@ -65,7 +65,7 @@ public class ItemStructureCopier extends Item
 		}
 		else
 		{
-			tooltip.add(new TranslationTextComponent("tooltip.storagetech.structurecopier.blank").func_230530_a_(Styles.GRAY));
+			tooltip.add(new TranslationTextComponent("tooltip.storagetech.structurecopier.blank").setStyle(Styles.GRAY));
 		}
 	}
 	

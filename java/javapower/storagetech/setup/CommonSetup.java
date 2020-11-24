@@ -9,8 +9,10 @@ import javapower.storagetech.core.CommonConfig;
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.event.ControllerLoadEvent;
 import javapower.storagetech.item.STItems;
-import javapower.storagetech.recipe.StorageTechRecipeCell;
-import javapower.storagetech.recipe.StorageTechRecipeCustomDisk;
+import javapower.storagetech.recipe.RecipeCell;
+import javapower.storagetech.recipe.RecipeCustomDisk;
+import javapower.storagetech.recipe.RecipeSerializerCell;
+import javapower.storagetech.recipe.RecipeSerializerCustomDisk;
 import javapower.storagetech.util.DiskUtils;
 import javapower.storagetech.util.EPartType;
 import javapower.storagetech.util.PartValue;
@@ -31,8 +33,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class CommonSetup
 {
-	public static final SpecialRecipeSerializer<StorageTechRecipeCell> CRAFTING_STORAGETECH_CELL = IRecipeSerializer.register("storagetech:recipe_cell", new SpecialRecipeSerializer<>(StorageTechRecipeCell::new));
-	public static final SpecialRecipeSerializer<StorageTechRecipeCustomDisk> CRAFTING_CUSTOM_DISK = IRecipeSerializer.register("storagetech:recipe_custom_disk", new SpecialRecipeSerializer<>(StorageTechRecipeCustomDisk::new));
+	//public static final SpecialRecipeSerializer<StorageTechRecipeCell> CRAFTING_STORAGETECH_CELL = IRecipeSerializer.register("storagetech:recipe_cell", new SpecialRecipeSerializer<>(StorageTechRecipeCell::new));
+	//public static final SpecialRecipeSerializer<StorageTechRecipeCustomDisk> CRAFTING_CUSTOM_DISK = IRecipeSerializer.register("storagetech:recipe_custom_disk", new SpecialRecipeSerializer<>(StorageTechRecipeCustomDisk::new));
 	
 	@SubscribeEvent
 	public void onCommonSetup(FMLCommonSetupEvent e)
@@ -40,6 +42,7 @@ public class CommonSetup
 		CommonConfig.loadConfig();
 		
 		STBlocks.registerNodes(API.instance().getNetworkNodeRegistry());
+		
 		if(StorageTech.MOD_MEKANISM_IS_LOADED)
 			javapower.storagetech.mekanism.block.MKBlocks.registerNodes(API.instance().getNetworkNodeRegistry());
 		
@@ -48,6 +51,7 @@ public class CommonSetup
 		DiskUtils.getParts().add(new PartValueCustom(STItems.item_custom_storage_part, EPartType.ITEM));
 		DiskUtils.getParts().add(new PartValueCustom(STItems.item_custom_fluid_storage_part, EPartType.FLUID));
 		DiskUtils.getParts().add(new PartValueCustom(STItems.item_custom_energy_storage_part, EPartType.ENERGY));
+		
 		if(StorageTech.MOD_MEKANISM_IS_LOADED)
 			DiskUtils.getParts().add(new PartValueCustom(javapower.storagetech.mekanism.item.MKItems.item_custom_chemical_storage_part, EPartType.CHEMICAL));
 		
@@ -135,11 +139,21 @@ public class CommonSetup
 		return EPartType.ITEM;
 	}
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public void onRegisterRecipeSerializers(RegistryEvent.Register<IRecipeSerializer<?>> register)
     {
     	register.getRegistry().register(CRAFTING_STORAGETECH_CELL);
     	register.getRegistry().register(CRAFTING_CUSTOM_DISK);
+    }*/
+	
+	public static SpecialRecipeSerializer<RecipeCell> CRAFTING_STORAGETECH_CELL = new SpecialRecipeSerializer<>(RecipeCell::new);
+	public static SpecialRecipeSerializer<RecipeCustomDisk> CRAFTING_CUSTOM_DISK =  new SpecialRecipeSerializer<>(RecipeCustomDisk::new);	
+
+    @SubscribeEvent
+    public void onRegisterRecipeSerializers(RegistryEvent.Register<IRecipeSerializer<?>> register)
+    {
+    	register.getRegistry().register(new RecipeSerializerCell().setRegistryName(StorageTech.MODID, "recipe_cell"));
+    	register.getRegistry().register(new RecipeSerializerCustomDisk().setRegistryName(StorageTech.MODID, "recipe_custom_disk"));
     }
     
     @SubscribeEvent

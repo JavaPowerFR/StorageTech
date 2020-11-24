@@ -103,11 +103,15 @@ public class BlockStructureConstructor extends NetworkNodeBlock
     {
         if (!world.isRemote)
         {
-           return NetworkUtils.attemptModify(world, pos, hit.getFace(), player, () -> NetworkHooks.openGui((ServerPlayerEntity) player, new PositionalTileContainerProvider<TileEntityStructureConstructor>(
-        		   new TranslationTextComponent("gui.storagetech.structure_constructor"),
-                (tile, windowId, inventory, p) -> new ContainerStructureConstructor(tile, player, windowId),
-                pos
-            ), pos));
+        	return NetworkUtils.attemptModify(world, pos, player, () -> NetworkHooks.openGui(
+                    (ServerPlayerEntity) player,
+                    new PositionalTileContainerProvider<TileEntityStructureConstructor>(
+                        new TranslationTextComponent("gui.storagetech.structure_constructor"),
+                        (tile, windowId, inventory, p) -> new ContainerStructureConstructor(tile, player, windowId),
+                        pos
+                    ),
+                    pos
+                ));
         }
 
         return ActionResultType.SUCCESS;

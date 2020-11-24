@@ -163,15 +163,15 @@ public class BlockPOEExporter extends CableBlock
     {
         if (!world.isRemote && CollisionUtils.isInBounds(getLineShape(state), pos, hit.getHitVec()))
         {
-            return NetworkUtils.attemptModify(world, pos, hit.getFace(), player, () -> NetworkHooks.openGui(
-                (ServerPlayerEntity) player,
-                new PositionalTileContainerProvider<TileEntityPOEExporter>(
-                    new TranslationTextComponent("gui.storagetech.poe_exporter"),
-                    (tile, windowId, inventory, p) -> new ContainerPOEExporter(tile, player, windowId),
+            return NetworkUtils.attemptModify(world, pos, player, () -> NetworkHooks.openGui(
+                    (ServerPlayerEntity) player,
+                    new PositionalTileContainerProvider<TileEntityPOEExporter>(
+                        new TranslationTextComponent("gui.storagetech.poe_exporter"),
+                        (tile, windowId, inventory, p) -> new ContainerPOEExporter(tile, player, windowId),
+                        pos
+                    ),
                     pos
-                ),
-                pos
-            ));
+                ));
         }
 
         return ActionResultType.SUCCESS;

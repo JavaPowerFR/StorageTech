@@ -140,7 +140,7 @@ public class ScreenStructureConstructor extends BaseScreen<ContainerStructureCon
         	
         	if(internalIndex < elementsWidget.size())
         	{
-        		elementsWidget.get(i).render(this, matrixStack, 8, 20+(22*yOffset), mouseX, mouseY, 0);
+        		elementsWidget.get(internalIndex).render(this, matrixStack, 8, 20+(22*yOffset), mouseX, mouseY, 0);
         		++yOffset;
         	}
         }
@@ -169,7 +169,7 @@ public class ScreenStructureConstructor extends BaseScreen<ContainerStructureCon
         	{
         		double local_x = x - guiLeft - 8;
         		double local_y = (y - guiTop - 20) - 22*yOffset;
-        		elementsWidget.get(i).mouseClicked(this, local_x, local_y, button);
+        		elementsWidget.get(internalIndex).mouseClicked(this, local_x, local_y, button);
         		++yOffset;
         	}
         }

@@ -1,8 +1,9 @@
 package javapower.storagetech.recipe;
 
-import com.refinedmods.refinedstorage.RSItems;
-
-import javapower.storagetech.api.ICustomStoragePart;
+import javapower.storagetech.api.IItemEnergyStoragePart;
+import javapower.storagetech.item.ItemEnergyCell;
+import javapower.storagetech.item.ItemEnergyInterface;
+import javapower.storagetech.item.STItems;
 import javapower.storagetech.setup.CommonSetup;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
@@ -11,10 +12,10 @@ import net.minecraft.item.crafting.SpecialRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-public class StorageTechRecipeCustomDisk extends SpecialRecipe
+public class RecipeCell extends SpecialRecipe
 {
 
-	public StorageTechRecipeCustomDisk(ResourceLocation idIn)
+	public RecipeCell(ResourceLocation idIn)
 	{
 		super(idIn);
 	}
@@ -28,20 +29,24 @@ public class StorageTechRecipeCustomDisk extends SpecialRecipe
 		{
 			ItemStack stack = inv.getStackInSlot(i);
 			
-			if(stack.getItem().equals(RSItems.STORAGE_HOUSING))
+			if(stack.getItem().equals(STItems.item_energy_storage_housing))
 			{
 				if((matcher & 1) == 0) matcher |= 1; else matcher |= 8;
 			}
-			else if(stack.getItem() instanceof ICustomStoragePart)
+			else if(stack.getItem() instanceof IItemEnergyStoragePart)
 			{
 				if((matcher & 2) == 0) matcher |= 2; else matcher |= 8;
+			}
+			else if(stack.getItem() instanceof ItemEnergyInterface)
+			{
+				if((matcher & 4) == 0) matcher |= 4; else matcher |= 8;
 			}
 			else if(!stack.isEmpty())
 				 matcher |= 8;
 		
 		}
 		
-		return matcher == 3;
+		return matcher == 7;
 	}
 
 	@Override
@@ -49,31 +54,35 @@ public class StorageTechRecipeCustomDisk extends SpecialRecipe
 	{
 		int matcher = 0;
 		
-		ICustomStoragePart part = null;
-		ItemStack partStack = ItemStack.EMPTY;
+		long iocap_ef = 0;
+		int cap = 0;
 		
 		for(int i = 0; i < inv.getSizeInventory(); ++i)
 		{
 			ItemStack stack = inv.getStackInSlot(i);
 			
-			if(stack.getItem().equals(RSItems.STORAGE_HOUSING))
+			if(stack.getItem().equals(STItems.item_energy_storage_housing))
 			{
 				if((matcher & 1) == 0) matcher |= 1; else matcher |= 8;
 			}
-			else if(stack.getItem() instanceof ICustomStoragePart)
+			else if(stack.getItem() instanceof IItemEnergyStoragePart)
 			{
 				if((matcher & 2) == 0) matcher |= 2; else matcher |= 8;
-				part = (ICustomStoragePart) stack.getItem();
-				partStack = stack;
+				cap = ((IItemEnergyStoragePart)stack.getItem()).getSize(stack);
+			}
+			else if(stack.getItem() instanceof ItemEnergyInterface)
+			{
+				if((matcher & 4) == 0) matcher |= 4; else matcher |= 8;
+				iocap_ef = ((ItemEnergyInterface)stack.getItem()).getPercentages();
 			}
 			else if(!stack.isEmpty())
 				 matcher |= 8;
 		
 		}
 		
-		if(matcher == 3 && part != null)
+		if(matcher == 7)
 		{
-			return part.createDisk(partStack);
+			return ItemEnergyCell.createItem(cap, (int)((cap*iocap_ef)/100));
 		}
 		
 		return ItemStack.EMPTY;

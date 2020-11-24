@@ -70,17 +70,17 @@ public class ItemCustomChemicalDisk extends Item implements IItemChemicalStorage
 				tooltip.add(new TranslationTextComponent(
 						"misc.refinedstorage.storage.stored",
 						API.instance().getQuantityFormatter().format(sgdsd.getStored())
-						).func_230530_a_(Styles.GRAY));
+						).setStyle(Styles.GRAY));
 			}
 			tooltip.add(new TranslationTextComponent(
 					"misc.refinedstorage.storage.stored_capacity",
 					API.instance().getQuantityFormatter().format(sgdsd.getStored()),
 					API.instance().getQuantityFormatter().format(sgdsd.getCapacity())
-					).func_230530_a_(Styles.GRAY));
+					).setStyle(Styles.GRAY));
 			
 			if (flagIn.isAdvanced())
 			{
-                tooltip.add(new StringTextComponent(id.toString()).func_230530_a_(Styles.GRAY));
+                tooltip.add(new StringTextComponent(id.toString()).setStyle(Styles.GRAY));
             }
 		}
 	}
@@ -114,7 +114,7 @@ public class ItemCustomChemicalDisk extends Item implements IItemChemicalStorage
 		                if (!player.inventory.addItemStackToInventory(stack.copy()))
 		                	InventoryHelper.spawnItemStack(world, player.getPosX(), player.getPosY(), player.getPosZ(), stack);
 	                }
-	                return new ActionResult<>(ActionResultType.SUCCESS, new ItemStack(RSItems.STORAGE_HOUSING));
+	                return new ActionResult<>(ActionResultType.SUCCESS, new ItemStack(RSItems.STORAGE_HOUSING.get()));
 	            }
         	}
         }

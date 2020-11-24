@@ -147,10 +147,10 @@ public class MekanismUtils
 
                 if (displayMb)
                 {
-                    data = new StringTextComponent(API.instance().getQuantityFormatter().formatInBucketForm((int) amount) + " ").func_230529_a_(data);
+                    data = new StringTextComponent(API.instance().getQuantityFormatter().formatInBucketForm((int) amount) + " ").append(data);
                 }
 
-                tooltip.add(data.func_230530_a_(Styles.GRAY));
+                tooltip.add(data.setStyle(Styles.GRAY));
             }
         }
     }

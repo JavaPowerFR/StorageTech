@@ -163,15 +163,15 @@ public class BlockChemicalImporter extends CableBlock
     {
         if (!world.isRemote && CollisionUtils.isInBounds(getLineShape(state), pos, hit.getHitVec()))
         {
-            return NetworkUtils.attemptModify(world, pos, hit.getFace(), player, () -> NetworkHooks.openGui(
-                (ServerPlayerEntity) player,
-                new PositionalTileContainerProvider<TileEntityChemicalImporter>(
-                    new TranslationTextComponent("gui.storagetech.chemical_importer"),
-                    (tile, windowId, inventory, p) -> new ContainerChemicalImporter(tile, player, windowId),
+        	return NetworkUtils.attemptModify(world, pos, player, () -> NetworkHooks.openGui(
+                    (ServerPlayerEntity) player,
+                    new PositionalTileContainerProvider<TileEntityChemicalImporter>(
+                        new TranslationTextComponent("gui.storagetech.chemical_importer"),
+                        (tile, windowId, inventory, p) -> new ContainerChemicalImporter(tile, player, windowId),
+                        pos
+                    ),
                     pos
-                ),
-                pos
-            ));
+                ));
         }
 
         return ActionResultType.SUCCESS;

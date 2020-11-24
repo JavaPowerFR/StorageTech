@@ -4,7 +4,7 @@ import com.refinedmods.refinedstorage.api.util.IFilter;
 
 import mekanism.api.chemical.ChemicalStack;
 
-public class ChemicalFilter implements IFilter<ChemicalStack<?>>
+public class ChemicalFilter implements IFilter
 {
 	private final ChemicalStack<?> stack;
     private final int compare;

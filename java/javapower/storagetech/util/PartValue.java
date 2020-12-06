@@ -1,5 +1,6 @@
 package javapower.storagetech.util;
 
+import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.item.ItemCustomEnergyStoragePart;
 import javapower.storagetech.item.ItemCustomFluidStoragePart;
 import javapower.storagetech.item.ItemCustomStoragePart;
@@ -42,8 +43,9 @@ public class PartValue
 			return ItemCustomFluidStoragePart.createItem(value);
 		if(type == EPartType.ENERGY)
 			return ItemCustomEnergyStoragePart.createItem(value);
-		/*if(type == EPartType.CHEMICAL)
-			return ItemCustomChemicalStoragePart.createItem(value);*/
+		
+		if(type == EPartType.CHEMICAL && StorageTech.MOD_MEKANISM_IS_LOADED)
+			return javapower.storagetech.mekanism.api.MekanismUtils.createPart(value);
 		
 		return ItemCustomStoragePart.createItem(value);
 	}

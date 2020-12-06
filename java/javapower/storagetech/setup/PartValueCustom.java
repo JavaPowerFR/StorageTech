@@ -7,11 +7,9 @@ import net.minecraft.item.ItemStack;
 
 public class PartValueCustom extends PartValue
 {
-	EPartType type;
 	public PartValueCustom(Item i, EPartType _type)
 	{
-		super(i, 0, EPartType.ITEM);
-		type = _type;
+		super(i, 0, _type);
 	}
 	
 	@Override
@@ -21,12 +19,6 @@ public class PartValueCustom extends PartValue
 			return stack.getTag().getInt("partvalue");
 		
 		return super.getValue(stack);
-	}
-	
-	@Override
-	public EPartType getType()
-	{
-		return type;
 	}
 
 }

@@ -11,8 +11,6 @@ import javapower.storagetech.event.ControllerLoadEvent;
 import javapower.storagetech.item.STItems;
 import javapower.storagetech.recipe.RecipeCell;
 import javapower.storagetech.recipe.RecipeCustomDisk;
-import javapower.storagetech.recipe.RecipeSerializerCell;
-import javapower.storagetech.recipe.RecipeSerializerCustomDisk;
 import javapower.storagetech.util.DiskUtils;
 import javapower.storagetech.util.EPartType;
 import javapower.storagetech.util.PartValue;
@@ -97,7 +95,8 @@ public class CommonSetup
 			}
 			else
 			{
-				int sufix = "kKmMgG".indexOf(value.charAt(value.length()-1))/2;
+				
+				int sufix = "kKmMgG".indexOf(value.charAt(index))/2;
 				if(sufix != -1)
 				{
 					if(sufix == 0)
@@ -137,13 +136,13 @@ public class CommonSetup
 	}
 	
 	public static SpecialRecipeSerializer<RecipeCell> CRAFTING_STORAGETECH_CELL = new SpecialRecipeSerializer<>(RecipeCell::new);
-	public static SpecialRecipeSerializer<RecipeCustomDisk> CRAFTING_CUSTOM_DISK =  new SpecialRecipeSerializer<>(RecipeCustomDisk::new);	
+	public static SpecialRecipeSerializer<RecipeCustomDisk> CRAFTING_CUSTOM_DISK = new SpecialRecipeSerializer<>(RecipeCustomDisk::new);	
 
     @SubscribeEvent
     public void onRegisterRecipeSerializers(RegistryEvent.Register<IRecipeSerializer<?>> register)
     {
-    	register.getRegistry().register(new RecipeSerializerCell().setRegistryName(StorageTech.MODID, "recipe_cell"));
-    	register.getRegistry().register(new RecipeSerializerCustomDisk().setRegistryName(StorageTech.MODID, "recipe_custom_disk"));
+    	register.getRegistry().register(CRAFTING_STORAGETECH_CELL.setRegistryName(StorageTech.MODID, "recipe_cell"));
+    	register.getRegistry().register(CRAFTING_CUSTOM_DISK.setRegistryName(StorageTech.MODID, "recipe_custom_disk"));
     }
     
     @SubscribeEvent

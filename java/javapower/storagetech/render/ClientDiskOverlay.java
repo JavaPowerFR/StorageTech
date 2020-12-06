@@ -225,7 +225,7 @@ public class ClientDiskOverlay
 
         for (ITextProperties textLine : textLines)
         {
-            int textLineWidth = font.getStringPropertyWidth(textLine);//TODO
+            int textLineWidth = font.getStringPropertyWidth(textLine);
             if (textLineWidth > tooltipTextWidth)
                 tooltipTextWidth = textLineWidth;
         }
@@ -260,7 +260,7 @@ public class ClientDiskOverlay
 
                 for (ITextProperties line : wrappedLine)
                 {
-                    int lineWidth = font.getStringPropertyWidth(line);//TODO
+                    int lineWidth = font.getStringPropertyWidth(line);
                     if (lineWidth > wrappedTooltipWidth)
                         wrappedTooltipWidth = lineWidth;
                     wrappedTextLines.add(line);

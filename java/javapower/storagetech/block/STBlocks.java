@@ -50,6 +50,8 @@ public class STBlocks
 	public static final BlockPOEFurnace blockPOEFurnace = new BlockPOEFurnace();
 	public static final BlockStructureConstructor blockStructureConstructor = new BlockStructureConstructor();
 	
+	//public static final BlockAdvancedExporter blockAdvancedExporter = new BlockAdvancedExporter();
+	
 	public static final BlockGenerator blockGenerator = new BlockGenerator();
 	
 	public static void registerBlocks(IForgeRegistry<Block> registry)
@@ -61,6 +63,7 @@ public class STBlocks
 		registry.register(blockPOEExporter.getBlock());
 		registry.register(blockPOEFurnace.getBlock());
 		registry.register(blockStructureConstructor.getBlock());
+		//registry.register(blockAdvancedExporter.getBlock());
 		
 		if(StorageTech.DEBUG)
 			registry.register(blockGenerator.getBlock());
@@ -75,6 +78,7 @@ public class STBlocks
 		registry.register(blockPOEExporter.getItem());
 		registry.register(blockPOEFurnace.getItem());
 		registry.register(blockStructureConstructor.getItem());
+		//registry.register(blockAdvancedExporter.getItem());
 		
 		if(StorageTech.DEBUG)
 			registry.register(blockGenerator.getItem());
@@ -89,6 +93,7 @@ public class STBlocks
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityPOEExporter(), blockPOEExporter).build(null).setRegistryName(StorageTech.MODID, BlockPOEExporter.raw_name)));
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityPOEFurnace(), blockPOEFurnace).build(null).setRegistryName(StorageTech.MODID, BlockPOEFurnace.raw_name)));
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityStructureConstructor(), blockStructureConstructor).build(null).setRegistryName(StorageTech.MODID, BlockStructureConstructor.raw_name)));
+		//registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityAdvancedExporter(), blockAdvancedExporter).build(null).setRegistryName(StorageTech.MODID, BlockAdvancedExporter.raw_name)));
 		
 		if(StorageTech.DEBUG)
 			registry.register(TileEntityType.Builder.create(() -> new BlockGenerator.TileEntityGenerator(), blockGenerator).build(null).setRegistryName(StorageTech.MODID, blockGenerator.name));
@@ -103,6 +108,7 @@ public class STBlocks
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerPOEExporter, TileEntityPOEExporter>((windowId, inv, tile) -> new ContainerPOEExporter(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockPOEExporter.raw_name));
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerPOEFurnace, TileEntityPOEFurnace>((windowId, inv, tile) -> new ContainerPOEFurnace(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockPOEFurnace.raw_name));
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerStructureConstructor, TileEntityStructureConstructor>((windowId, inv, tile) -> new ContainerStructureConstructor(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockStructureConstructor.raw_name));
+		//registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerAdvancedExporter, TileEntityAdvancedExporter>((windowId, inv, tile) -> new ContainerAdvancedExporter(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockAdvancedExporter.raw_name));
 		
 	}
 
@@ -113,6 +119,7 @@ public class STBlocks
 		registry.add(NetworkNodePOEExporter.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodePOEExporter(world, pos)));
 		registry.add(NetworkNodePOEFurnace.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodePOEFurnace(world, pos)));
 		registry.add(NetworkNodeStructureConstructor.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeStructureConstructor(world, pos)));
+		//registry.add(NetworkNodeAdvancedExporter.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeAdvancedExporter(world, pos)));
 		
 	}
 	

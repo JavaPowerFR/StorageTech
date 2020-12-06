@@ -115,7 +115,7 @@ public class TileEntityPartsCombiner extends TileEntityBase implements ITickable
 				if(output.getCount() < 64)
 				{
 					PartValue outputValue = DiskUtils.getValue(output);
-					if(outputValue.getValue(output) == value)
+					if(outputValue.getValue(output) == value && outputValue.getType() == left.getType())
 					{
 						output.grow(1);
 						
@@ -144,8 +144,17 @@ public class TileEntityPartsCombiner extends TileEntityBase implements ITickable
 		if(left.getType() != right.getType())
 			return false;
 		
-		long value = left.getValue(leftStack) + right.getValue(rightStack);
-		return value >= 0 && value < Long.MAX_VALUE;
+		ItemStack outStack = inventory.getInventory().getStackInSlot(2);
+		PartValue out = DiskUtils.getValue(outStack);
+		if(out != null && out.getType() != left.getType())
+			return false;
+		
+		long value = (long)left.getValue(leftStack) + (long)right.getValue(rightStack);
+		
+		if(out != null && out.getValue(outStack) != value)
+			return false;
+		
+		return value >= 0 && value < Integer.MAX_VALUE;
 	}
 
 	@Override

@@ -93,6 +93,7 @@ public class ClientSetup
 		ScreenManager.registerFactory(ContainerPOEExporter.CURRENT_CONTAINER, ScreenPOEExporter::new);
 		ScreenManager.registerFactory(ContainerPOEFurnace.CURRENT_CONTAINER, ScreenPOEFurnace::new);
 		ScreenManager.registerFactory(ContainerStructureConstructor.CURRENT_CONTAINER, ScreenStructureConstructor::new);
+		//ScreenManager.registerFactory(ContainerAdvancedExporter.CURRENT_CONTAINER, ScreenAdvancedExporter::new);
 		
 		RenderTypeLookup.setRenderLayer(STBlocks.blockPOEImporter, RenderType.getCutout());
 		RenderTypeLookup.setRenderLayer(STBlocks.blockPOEExporter, RenderType.getCutout());

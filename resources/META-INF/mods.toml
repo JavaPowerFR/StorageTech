@@ -15,7 +15,7 @@ license="All rights reserved"
 # The modid of the mod
 modId="storagetech" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="1.16.1-R9.3.2" #mandatory
+version="1.16.1-R9.5" #mandatory
  # A display name for the mod
 displayName="Storage Tech" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -31,7 +31,7 @@ authors="java_power" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 Storage Tech Mod
-1.16.1-R9.3
+1.16.1-R9.5
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.storagetech]] #optional

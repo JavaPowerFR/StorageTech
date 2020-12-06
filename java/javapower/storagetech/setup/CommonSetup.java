@@ -96,7 +96,7 @@ public class CommonSetup
 			}
 			else
 			{
-				int sufix = "kKmMgG".indexOf(value.charAt(value.length()-1))/2;
+				int sufix = "kKmMgG".indexOf(value.charAt(index))/2;
 				if(sufix != -1)
 				{
 					if(sufix == 0)

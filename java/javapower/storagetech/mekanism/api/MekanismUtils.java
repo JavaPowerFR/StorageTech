@@ -15,6 +15,7 @@ import com.refinedmods.refinedstorage.apiimpl.API;
 import com.refinedmods.refinedstorage.render.Styles;
 
 import javapower.storagetech.core.ResourceLocationRegister;
+import javapower.storagetech.mekanism.item.ItemCustomChemicalStoragePart;
 import mekanism.api.Action;
 import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
@@ -253,4 +254,9 @@ public class MekanismUtils
 		}
     	return GasStack.EMPTY;
     }
+    
+    public static ItemStack createPart(int value)
+	{
+		return ItemCustomChemicalStoragePart.createItem(value);
+	}
 }

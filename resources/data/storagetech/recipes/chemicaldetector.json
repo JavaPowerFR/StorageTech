@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " O ",
+    "OMO",
+    " A "
+  ],
+  "key":
+  {
+    "O":
+    {
+      "item": "mekanism:ingot_osmium"
+    },
+    "A":
+    {
+      "item": "mekanism:alloy_infused"
+    },
+    "M":
+    {
+      "item": "refinedstorage:detector"
+    }
+  },
+  "result": {
+    "item": "storagetech:chemicaldetector"
+  }
+}

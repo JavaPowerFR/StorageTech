@@ -1,0 +1,6 @@
+{
+  "parent": "storagetech:block/chemicaldetector",
+  "textures": {
+    "torch": "storagetech:blocks/chemical_detector_off"
+  }
+}

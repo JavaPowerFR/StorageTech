@@ -8,14 +8,17 @@ import com.refinedmods.refinedstorage.tile.BaseTile;
 import com.refinedmods.refinedstorage.tile.data.TileDataManager;
 
 import javapower.storagetech.core.StorageTech;
+import javapower.storagetech.mekanism.container.ContainerChemicalDetector;
 import javapower.storagetech.mekanism.container.ContainerChemicalDrive;
 import javapower.storagetech.mekanism.container.ContainerChemicalExporter;
 import javapower.storagetech.mekanism.container.ContainerChemicalGrid;
 import javapower.storagetech.mekanism.container.ContainerChemicalImporter;
+import javapower.storagetech.mekanism.node.NetworkNodeChemicalDetector;
 import javapower.storagetech.mekanism.node.NetworkNodeChemicalDrive;
 import javapower.storagetech.mekanism.node.NetworkNodeChemicalExporter;
 import javapower.storagetech.mekanism.node.NetworkNodeChemicalGrid;
 import javapower.storagetech.mekanism.node.NetworkNodeChemicalImporter;
+import javapower.storagetech.mekanism.tileentity.TileEntityChemicalDetector;
 import javapower.storagetech.mekanism.tileentity.TileEntityChemicalDrive;
 import javapower.storagetech.mekanism.tileentity.TileEntityChemicalExporter;
 import javapower.storagetech.mekanism.tileentity.TileEntityChemicalGrid;
@@ -35,6 +38,7 @@ public class MKBlocks
 	public static final BlockChemicalImporter blockChemicalImporter = new BlockChemicalImporter();
 	public static final BlockChemicalExporter blockChemicalExporter = new BlockChemicalExporter();
 	public static final BlockChemicalGrid blockChemicalGrid = new BlockChemicalGrid();
+	public static final BlockChemicalDetector blockChemicalDetector = new BlockChemicalDetector();
 	
 	public static void registerBlocks(IForgeRegistry<Block> registry)
 	{
@@ -42,7 +46,7 @@ public class MKBlocks
 		registry.register(blockChemicalImporter.getBlock());
 		registry.register(blockChemicalExporter.getBlock());
 		registry.register(blockChemicalGrid.getBlock());
-		
+		registry.register(blockChemicalDetector.getBlock());
 	}
 
 	public static void registerItems(IForgeRegistry<Item> registry)
@@ -51,6 +55,7 @@ public class MKBlocks
 		registry.register(blockChemicalImporter.getItem());
 		registry.register(blockChemicalExporter.getItem());
 		registry.register(blockChemicalGrid.getItem());
+		registry.register(blockChemicalDetector.getItem());
 		
 	}
 
@@ -60,6 +65,7 @@ public class MKBlocks
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityChemicalImporter(), blockChemicalImporter).build(null).setRegistryName(StorageTech.MODID, BlockChemicalImporter.raw_name)));
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityChemicalExporter(), blockChemicalExporter).build(null).setRegistryName(StorageTech.MODID, BlockChemicalExporter.raw_name)));
 		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityChemicalGrid(), blockChemicalGrid).build(null).setRegistryName(StorageTech.MODID, BlockChemicalGrid.raw_name)));
+		registry.register(registerTileDataParameters(TileEntityType.Builder.create(() -> new TileEntityChemicalDetector(), blockChemicalDetector).build(null).setRegistryName(StorageTech.MODID, BlockChemicalDetector.raw_name)));
 		
 	}
 
@@ -69,6 +75,7 @@ public class MKBlocks
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerChemicalImporter, TileEntityChemicalImporter>((windowId, inv, tile) -> new ContainerChemicalImporter(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockChemicalImporter.raw_name));
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerChemicalExporter, TileEntityChemicalExporter>((windowId, inv, tile) -> new ContainerChemicalExporter(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockChemicalExporter.raw_name));
 		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerChemicalGrid, TileEntityChemicalGrid>((windowId, inv, tile) -> new ContainerChemicalGrid(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockChemicalGrid.raw_name));
+		registry.register(IForgeContainerType.create(new PositionalTileContainerFactory<ContainerChemicalDetector, TileEntityChemicalDetector>((windowId, inv, tile) -> new ContainerChemicalDetector(tile, inv.player, windowId))).setRegistryName(StorageTech.MODID, BlockChemicalDetector.raw_name));
 		
 	}
 
@@ -78,6 +85,7 @@ public class MKBlocks
 		registry.add(NetworkNodeChemicalImporter.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeChemicalImporter(world, pos)));
 		registry.add(NetworkNodeChemicalExporter.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeChemicalExporter(world, pos)));
 		registry.add(NetworkNodeChemicalGrid.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeChemicalGrid(world, pos)));
+		registry.add(NetworkNodeChemicalDetector.NETWORK_NODE_ID, (tag, world, pos) -> readAndReturn(tag, new NetworkNodeChemicalDetector(world, pos)));
 		
 	}
 	

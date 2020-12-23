@@ -144,7 +144,7 @@ public class ItemCustomChemicalDisk extends Item implements IItemChemicalStorage
 	@Override
 	public UUID getId(ItemStack stack)
 	{
-		if(stack.hasTag())
+		if(stack.hasTag() && stack.getTag().hasUniqueId("Id"))
 			return stack.getTag().getUniqueId("Id");
 		return null;
 	}

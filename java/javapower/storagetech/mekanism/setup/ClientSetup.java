@@ -5,12 +5,14 @@ import com.refinedmods.refinedstorage.render.model.FullbrightBakedModel;
 
 import javapower.storagetech.core.StorageTech;
 import javapower.storagetech.mekanism.block.MKBlocks;
+import javapower.storagetech.mekanism.container.ContainerChemicalDetector;
 import javapower.storagetech.mekanism.container.ContainerChemicalDrive;
 import javapower.storagetech.mekanism.container.ContainerChemicalExporter;
 import javapower.storagetech.mekanism.container.ContainerChemicalFilter;
 import javapower.storagetech.mekanism.container.ContainerChemicalGrid;
 import javapower.storagetech.mekanism.container.ContainerChemicalImporter;
 import javapower.storagetech.mekanism.render.BakedModelChemicalDrive;
+import javapower.storagetech.mekanism.screen.ScreenChemicalDetector;
 import javapower.storagetech.mekanism.screen.ScreenChemicalDrive;
 import javapower.storagetech.mekanism.screen.ScreenChemicalExporter;
 import javapower.storagetech.mekanism.screen.ScreenChemicalFilter;
@@ -35,9 +37,13 @@ public class ClientSetup
 		ScreenManager.registerFactory(ContainerChemicalExporter.CURRENT_CONTAINER, ScreenChemicalExporter::new);
 		ScreenManager.registerFactory(ContainerChemicalGrid.CURRENT_CONTAINER, ScreenChemicalGrid::new);
 		ScreenManager.registerFactory(ContainerChemicalFilter.CURRENT_CONTAINER, ScreenChemicalFilter::new);
+		ScreenManager.registerFactory(ContainerChemicalDetector.CURRENT_CONTAINER, ScreenChemicalDetector::new);
+		//ScreenManager.registerFactory(ContainerChemicalExternalStorage.CURRENT_CONTAINER, ScreenChemicalExternalStorage::new);
 		
 		RenderTypeLookup.setRenderLayer(MKBlocks.blockChemicalImporter, RenderType.getCutout());
 		RenderTypeLookup.setRenderLayer(MKBlocks.blockChemicalExporter, RenderType.getCutout());
+		RenderTypeLookup.setRenderLayer(MKBlocks.blockChemicalDetector, RenderType.getCutout());
+		//RenderTypeLookup.setRenderLayer(MKBlocks.blockChemicalExternalStorage, RenderType.getCutout());
 		
 	}
 

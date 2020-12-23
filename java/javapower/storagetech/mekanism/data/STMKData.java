@@ -184,6 +184,24 @@ public class STMKData
 		for(IChemicalViewNode viewNode : chemicalViews)
 			viewNode.updateChemical(chemicalView);
 	}
+	
+	public List<ChemicalStack<?>> getChemicalView()
+	{
+		return chemicalView;
+	}
+
+	public ChemicalStack<?> getChemicalTotalStack(Chemical<?> ch)
+	{
+		for(ChemicalStack<?> stack : chemicalView)
+		{
+			if(stack != null && ch != null && stack.getType() == ch)
+			{
+				return stack;
+			}
+		}
+		
+		return null;
+	}
 
 	/*public long getChemicalValue(Chemical<?> ch)
 	{

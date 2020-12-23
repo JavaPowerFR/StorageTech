@@ -51,6 +51,7 @@
 "block.storagetech.chemicalexporter":"Chemical Exporter",
 "block.storagetech.chemicalgrid":"Chemical Grid",
 "block.storagetech.partscombiner":"Parts Combiner",
+"block.storagetech.chemicaldetector":"Chemical Detector",
 
 "_comment": "gui titles",
 "itemGroup.storagetech": "Storage Tech",
@@ -65,6 +66,7 @@
 "gui.storagetech.chemical_grid":"Chemical Grid",
 "gui.storagetech.chemical_filter":"Chemical Filter",
 "gui.storagetech.partscombiner":"Parts Combiner",
+"gui.storagetech.chemical_detector":"Chemical Detector",
 
 "_comment": "jei",
 "jei.storagetech.category.partscombiner": "Parts Combiner",

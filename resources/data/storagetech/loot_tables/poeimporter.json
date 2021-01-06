@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RRR",
+    "RMR",
+    "RRR"
+  ],
+  "key":
+  {
+    "R":
+    {
+      "item": "storagetech:poeimporter"
+    },
+    "M":
+    {
+      "item": "refinedstorage:importer"
+    }
+  },
+  "result": {
+    "item": "storagetech:poeimporter"
+  }
+}

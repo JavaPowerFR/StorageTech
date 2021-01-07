@@ -5,7 +5,7 @@
       "item": "refinedstorage:filter"
     },
     {
-      "item": "forge:ingots/osmium"
+      "tag": "forge:ingots/osmium"
     }
   ],
   "result": {

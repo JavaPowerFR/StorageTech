@@ -1,22 +1,19 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "RRR",
-    "RMR",
-    "RRR"
-  ],
-  "key":
-  {
-    "R":
+  "type": "minecraft:block",
+  "pools": [
     {
-      "item": "storagetech:poeimporter"
-    },
-    "M":
-    {
-      "item": "refinedstorage:importer"
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "storagetech:poeimporter"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
     }
-  },
-  "result": {
-    "item": "storagetech:poeimporter"
-  }
+  ]
 }

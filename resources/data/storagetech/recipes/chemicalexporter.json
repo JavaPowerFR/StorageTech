@@ -11,7 +11,7 @@
       "item": "refinedstorage:improved_processor"
     },
     {
-      "item": "mekanism:ingot_osmium"
+      "tag": "forge:ingots/osmium"
     }
   ],
   "result": {
